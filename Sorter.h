@@ -1,22 +1,14 @@
-/*****
-*
-*	Define structures and function prototypes for your sorter
-*
-*
-*
-******/
 
-//Suggestion: define a struct that mirrors a record (row) of the data set
+#ifndef Sorter_H
+#define	Sorter_H
 
-
-//Suggestion: prototype a mergesort function
-typedef String
-struct _string
+typedef struct _string
 {
 	int size;
 	char* data[];
-};
-struct _data
+}String;
+
+typedef struct _data
 {
 	String dirName; //Director Name
 	int critCount; //Critic counts
@@ -26,14 +18,14 @@ struct _data
 	String act2Name; //Actor 2's Name
 	int act1FB; //Actor 1 Facebook likes 
 	float gross; // Gross (could be long int)
-	String genre; // genere char * of char *
+	String* genre; // genere char * of char *
 	String act1Name; // Actor name
 	String title; // Title
 	String numVoted; // number user voted
 	int totalFB; // Total Facebook likes
 	String act3Name; // Actor 3's Name
 	int faceNum; // Face number in poster
-	String keyWord; // keywords
+	String* keyWord; // keywords
 	String link; // link to website
 	int	numReview; // number of user reviews
 	String lang; // language
@@ -45,4 +37,12 @@ struct _data
 	float score; // movie score out of 10
 	float ratio; // aspect ratio
 	int movieFB; // Movie facebook likes
-};
+}data;
+
+
+void resize(data * ori); // resizes array if the original aribitrary size is too small
+data * split(data * ori); // splits the original array returning one array that is split upper half and only keeping the lower half of the array
+data * merge(data * left, data* right); // Merges the two arrays together returns a combined array
+
+
+#endif
