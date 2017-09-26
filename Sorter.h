@@ -41,8 +41,8 @@ typedef struct _data
 
 
 void resize(data * ori); // resizes array if the original aribitrary size is too small
-data * split(data * ori); // splits the original array returning one array that is split upper half and only keeping the lower half of the array
-data * merge(data * left, data* right); // Merges the two arrays together returns a combined array
-
+void split(data* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
+void merge(data * array,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
+bool compare(data A, data B);
 
 #endif

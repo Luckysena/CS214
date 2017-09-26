@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 #include "Sorter.h"
 
 
@@ -15,28 +16,70 @@ ori=create;
 
 }
 
-data * split(data * ori) // splits the original array returning one array that is split upper half and only keeping the lower half of the array
+void split(data* A, int left, int right)
 {
-	int size=sizeof(ori);
-
-	if (size % 2 == 0) // even array size
+	if (left<right)
 	{
-		data* upper = (data*)malloc(size/2);
-		ori+=(size/2)+1;
-		data* newupper = (data*) memcopy(upper,ori,sizeof(data)*((size/2)-1));
-
-		data * lower=NULL;
-		lower=(data*)realloc(ori,(size/2)*sizeof(ori));
-		while(lower == ori);
-
-		ori=lower;
-
-		return newupper;
+		int middle=floor((left+1)/2);
+		split(A,left,middle);
+		split(A,middle+1,right);
+		merge(A,left,middle,right);
 	}
-	//odd case
 
 }
-data * merge(data * left, data* right) // Merges the two arrays together returns a combined array
+void merge(data * array,int left , int middle , int right) // Merges the two arrays together returns a combined array
+{
+	int size1,size2;
+
+	size1 = middle-left+1;
+	size2 = right-middle;
+
+	data *first = (data*) malloc(sizeof(int)*size1);
+	data *second = (data*) malloc(sizeof(int)*size2);
+
+	for (int i = left; i < size1; ++i)
+	{
+		first[i] = array[i];
+	}
+	for (int j = middle+1; j < size2; ++j)
+	{
+		second[j] = array[j] ;
+	}
+
+int iL = 0;
+int iR = 0;
+int iM = left;
+
+while(iL < size1 && size2 > iR )
+{
+	if (compare(first[iL],second[iR]))  
+	{
+		array[iM] = first[iL];
+		iL++;
+	}
+	 else
+	{
+		array[iM] = second[iR];
+		iR++;
+	}
+
+iM++;
+}
+while(iL < size1)
+{
+	array[iM] = first[iL];
+	iL++;
+	iM++;
+}
+while(size2 > iR)
+{
+	array[iM] = second[iR];
+	iR++;
+	iM++;
+}
+
+}
+bool compare(data A, data B)
 {
 
 }
