@@ -16,21 +16,22 @@ ori=create;
 
 }
 
-void split(data* A, int left, int right)
+void split(const void* A, int left, int right)
 {
 	if (left<right)
 	{
+		data *array=(data*)A;
 		int middle=floor((left+1)/2);
-		split(A,left,middle);
-		split(A,middle+1,right);
-		merge(A,left,middle,right);
+		split(array,left,middle);
+		split(array,middle+1,right);
+		merge(array,left,middle,right);
 	}
 
 }
-void merge(data * array,int left , int middle , int right) // Merges the two arrays together returns a combined array
+void merge(const void * A,int left , int middle , int right) // Merges the two arrays together returns a combined array
 {
 	int size1,size2;
-
+	data *array=(data*)A;
 	size1 = middle-left+1;
 	size2 = right-middle;
 

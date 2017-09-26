@@ -1,6 +1,7 @@
 
 #ifndef Sorter_H
 #define	Sorter_H
+#include <time.h>
 
 typedef struct _string
 {
@@ -10,9 +11,10 @@ typedef struct _string
 
 typedef struct _data
 {
+	String color; //Color
 	String dirName; //Director Name
 	int critCount; //Critic counts
-	int durMin; //Duration in minutes
+	time_t durMin; //Duration in minutes
 	int dirFB; //Director Facebook likes
 	int act3FB; //Actor 3 facebook likes 
 	String act2Name; //Actor 2's Name
@@ -41,8 +43,8 @@ typedef struct _data
 
 
 void resize(data * ori); // resizes array if the original aribitrary size is too small
-void split(data* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
-void merge(data * array,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
+void split(const void* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
+void merge(const void* A,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
 bool compare(data A, data B);
 
 #endif
