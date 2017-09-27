@@ -55,5 +55,4 @@ bool compareDateTime(time_t A, time_t B);
 bool compareInt(int A, int B);
 bool compareFloat(float A, float B);
 bool compareString(char* A, char* B);
-
 #endif
