@@ -39,20 +39,20 @@ typedef struct _data
 	float score; // movie score out of 10
 	float ratio; // aspect ratio
 	int movieFB; // Movie facebook likes
+ int comp_ptr[28];//how to sort/ compare
+ int size;// size of data struct
 }data;
 
 
-void resize(data * ori); // resizes array if the original aribitrary size is too small
-void splitString(const void* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
+void resize(String * ori); // resizes array if the original aribitrary size is too small
 void mergeString(const void* A,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
-void splitInt(const void* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
 void mergeInt(const void* A,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
-void splitFloat(const void* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
 void mergeFloat(const void* A,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
-void splitDateTime(const void* A, int left, int right);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
+void split(const void* array, int left, int right,void (*Merge_ptr)(const void*,int,int,int));// splits the original array returning one array that is split upper half and only keeping the lower half of the array
 void mergeDateTime(const void* A,int left , int middle , int right) ; // Merges the two arrays together returns a combined array
 bool compareDateTime(time_t A, time_t B);
 bool compareInt(int A, int B);
 bool compareFloat(float A, float B);
 bool compareString(char* A, char* B);
+void toString(data* ori);
 #endif
