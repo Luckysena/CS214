@@ -41,29 +41,18 @@ bool compareString(char* A,char* B)
 
 }
 
-void resize(data * ori) // resizes array if the original aribitrary size is too small
+void resizes(String * ori) // resizes array if the original aribitrary size is too small
 {
 
-data * create=NULL;
-create=(data*)realloc(ori,2*sizeof(ori));
+String * create=NULL;
+create=(String*)realloc(ori,2*sizeof(ori));
 while(create == ori);
 
 ori=create;
 
 }
 
-void splitInt(const void* A, int left, int right)
-{
-	if (left < right)
-	{
-		int* array=(int*) A;
-		int middle=left+(right-left)/2;
-		splitInt(array,left,middle);
-		splitInt(array,middle+1,right);
-		mergeInt(array,left,middle,right);
-	}
 
-}
 void mergeInt(const void * A,int left , int middle , int right) // Merges the two arrays together returns a combined array
 {
 	int size1,size2;
@@ -117,21 +106,8 @@ while(iR < size2)
 }
 
 }
-void splitString(const void* A, int left, int right)
-{
-	if (left < right)
-	{
-		String* array=(String*) A;
-		int middle=left+(right-left)/2;
-		splitString(array,left,middle);
-		splitString(array,middle+1,right);
-		mergeString(array,left,middle,right);
-	}
-
-}
 void mergeString(const void * A,int left , int middle , int right) // Merges the two arrays together returns a combined array
 {
-
 	int size1,size2;
 	
 	String * array=(String*) A;
@@ -181,18 +157,7 @@ while(iR < size2)
 }
 
 }
-void splitFloat(const void* A, int left, int right)
-{
-	if (left < right)
-	{
-		float* array=(float*) A;
-		int middle=left+(right-left)/2;
-		splitInt(array,left,middle);
-		splitInt(array,middle+1,right);
-		mergeInt(array,left,middle,right);
-	}
 
-}
 void mergeFloat(const void * A,int left , int middle , int right) // Merges the two arrays together returns a combined array
 {
 	int size1,size2;
@@ -244,18 +209,6 @@ while(iR < size2)
 	iR++;
 	iM++;
 }
-
-}
-void splitDateTime(const void* A, int left, int right)
-{
-	if (left<right)
-	{
-		time_t * array=(time_t*) A;
-		int middle=floor((left+1)/2);
-		splitDateTime(array,left,middle);
-		splitDateTime(array,middle+1,right);
-		mergeDateTime(array,left,middle,right);
-	}
 
 }
 void mergeDateTime(const void * A,int left , int middle , int right) // Merges the two arrays together returns a combined array
@@ -310,38 +263,60 @@ while(size2 > iR)
 }
 
 }
-
-/*
+void printString(String *S)
 {
-	void (*compare_ptr)(const void*,int,int);
-	switch(ptr)
+	int size = sizeof(S)/sizeof(S[0]);
+	 for (int i = 0; i < size; ++i)
+	 {
+	 	printf(",%s ",S[i].data);
+	 }
+	 printf("\n");
+}
+void toString(data *ori)
+{
+	int size = sizeof(ori)/sizeof(ori[0]);
+	for (int i = 0; i <size ; ++i)
 	{
-		case  1 :
-		{
-	void (*compare_ptr)(const void*,int,int) = &splitInt;
-		}
-	break;
-		case 2 :
-		{
-	void (*compare_ptr)(const void*,int,int) = &splitFloat;
-		}	
-	break;
-		case 3:
-		{
-	void (*compare_ptr)(const void*,int,int) = &splitString;
-	break;
-		}
-		case 4:
-		{
-	void (*compare_ptr)(const void*,int,int)= &splitDateTime;
-		}
-	break;
-		default:
-		{
-	void (*compare_ptr)(const void*,int,int) = &splitInt;
-		}
-	break;
+		printf("%s\n",ori[i].color);
+		printf("%s\n",ori[i].dirName);
+		printf("%d\n",ori[i].critCount);
+		printf("%s\n",ori[i].durMin);
+		printf("%d\n",ori[i].dirFB);
+		printf("%d\n",ori[i].act3FB);
+		printf("%s\n",ori[i].act2Name);
+		printf("%d\n",ori[i].act1FB);
+		printf("%f\n",ori[i].gross);
+		printString(ori[i].genre);
+		printf("%s\n",ori[i].act1Name);
+		printf("%s\nr",ori[i].title);
+		printf("%d\n",ori[i].numVoted);
+		printf("%d\n",ori[i].totalFB);
+		printf("%s\n",ori[i].act3Name);
+		printf("%d\n",ori[i].faceNum);
+		printString(ori[i].keyWord);
+		printf("%s\n",ori[i].link);
+		printf("%d\n",ori[i].numReview);
+		printf("%s\n",ori[i].lang);
+		printf("%s\n",ori[i].country);
+		printf("%s\n",ori[i].rated);
+		printf("%f\n",ori[i].budget);
+		printf("%d\n",ori[i].year);
+		printf("%d\n",ori[i].act2FB);
+		printf("%f\n",ori[i].score);
+		printf("%f\n",ori[i].ratio);
+		printf("%d\n",ori[i].movieFB);
+	}
 
 }
-return compare_ptr;
-}*/
+void split(const void* array, int left, int right,void (*Merge_ptr)(const void*,int,int,int))
+{
+
+	if (left < right)
+	{
+		int middle=left+(right-left)/2;
+		split(array,left,middle,Merge_ptr);
+		split(array,middle+1,right,Merge_ptr);
+		Merge_ptr(array,left,middle,right);
+	}
+
+}
