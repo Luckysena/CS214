@@ -1,11 +1,11 @@
-#include "Sorter.c"
+#include "Sorter.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 int main(int argc, char const *argv[])
 {
-	data * a = (data*)malloc(sizeof(data)*12);\
+	data * a = (data*)malloc(sizeof(data)*12);
 	char o[]={'a','b','c','d','y','u','\0'};
 	char b[]={'v','i','n','c','\0'};
 	char g[]={'c','o','o','l','\0'};
@@ -19,9 +19,10 @@ int main(int argc, char const *argv[])
 	test[4].data = t;
 	int size = (sizeof(test)/sizeof(test[0]));
 	int comp_ptr = 3;
-		
-	void (*Merge_ptr)(const void*,int,int,int);
-	if(comp_ptr==1)
+
+
+	void (*Merge_ptr)(const void*,int,int,int) = &mergeString;
+	/*if(comp_ptr==1)
 	{
 		void (*Merge_ptr)(const void*,int,int,int) = &mergeInt;
 	}
@@ -32,12 +33,12 @@ int main(int argc, char const *argv[])
 		void (*Merge_ptr)(const void*,int,int,int) = &mergeString;
 	}
 	if (comp_ptr==4){
-		void (*Merge_ptr)(const void*,int,int,int)= &mergeDateTime;	
+		void (*Merge_ptr)(const void*,int,int,int)= &mergeDateTime;
 	}
-
+*/
 
 	split(test,0,size-1,(*Merge_ptr));
-
+printf("hi\n");
 	for (int i = 0; i < sizeof(test)/sizeof(test[0]); ++i)
 	{
 		printf("%s ",test[i].data);

@@ -3,8 +3,12 @@
 #include <unistd.h>
 #include <math.h>
 #include "Sorter.h"
+enum _boolean {false, true};
 
-bool compareInt(int A,int B)
+
+
+
+bool compareInt(int A,int B)    // ***** Didn't define bool anywhere? -M
 {
 	return A<B;
 }
@@ -78,8 +82,8 @@ int iR = 0;
 int iM = left;
 while(iL < size1 && iR < size2)
 {
-	
-	if(compareInt(first[iL],second[iR]))  
+
+	if(compareInt(first[iL],second[iR]))
 	{
 		array[iM] = first[iL];
 		iL++;
@@ -109,7 +113,7 @@ while(iR < size2)
 void mergeString(const void * A,int left , int middle , int right) // Merges the two arrays together returns a combined array
 {
 	int size1,size2;
-	
+
 	String * array=(String*) A;
 	size1 = middle-left+1;
 	size2 = right-middle;
@@ -130,7 +134,7 @@ int iR = 0;
 int iM = left;
 while(iL < size1 && iR < size2)
 {
-	if(compareString(first[iL].data,second[iR].data))  
+	if(compareString(first[iL].data,second[iR].data))
 	{
 		array[iM].data = first[iL].data;
 		iL++;
@@ -183,8 +187,8 @@ int iR = 0;
 int iM = left;
 while(iL < size1 && iR < size2)
 {
-	
-	if(compareFloat(first[iL],second[iR]))  
+
+	if(compareFloat(first[iL],second[iR]))
 	{
 		array[iM] = first[iL];
 		iL++;
@@ -235,8 +239,8 @@ int iR = 0;
 int iM = left;
 while(iL < size1 && size2 > iR )
 {
-	
-	if(compareDateTime(first[iL],second[iR]))  
+
+	if(compareDateTime(first[iL],second[iR]))
 	{
 		array[iM] = first[iL];
 		iL++;
@@ -310,7 +314,12 @@ void toString(data *ori)
 }
 void split(const void* array, int left, int right,void (*Merge_ptr)(const void*,int,int,int))
 {
-
+printf("on subarray: \n");
+int i;
+for(i = left; i<=right; i++ ){
+	printf("%c", array);
+}
+printf("\n");
 	if (left < right)
 	{
 		int middle=left+(right-left)/2;

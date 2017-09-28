@@ -2,7 +2,7 @@
 #ifndef Sorter_H
 #define	Sorter_H
 #include <time.h>
-
+typedef enum _boolean bool;
 typedef struct _string
 {
 	int size;
@@ -14,11 +14,11 @@ typedef struct _data
 	String color; //Color
 	String dirName; //Director Name
 	int critCount; //Critic counts
-	time_t durMin; //Duration in minutes
+	time_t durMin; //Duration in minutes  *****we could just use an int val? -M
 	int dirFB; //Director Facebook likes
-	int act3FB; //Actor 3 facebook likes 
+	int act3FB; //Actor 3 facebook likes
 	String act2Name; //Actor 2's Name
-	int act1FB; //Actor 1 Facebook likes 
+	int act1FB; //Actor 1 Facebook likes
 	float gross; // Gross (could be long int)
 	String* genre; // genere char * of char *
 	String act1Name; // Actor name
@@ -32,7 +32,7 @@ typedef struct _data
 	int	numReview; // number of user reviews
 	String lang; // language
 	String country; // country
-	String rated; // rating 
+	String rated; // rating
 	float budget; // budget
 	int year; // year created
 	int act2FB; // Actor 2's Facebook like
