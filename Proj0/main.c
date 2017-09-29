@@ -1,51 +1,95 @@
-#include "Sorter.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "testSorterV1.c"
 
 int main(int argc, char const *argv[])
 {
-	data * a = (data*)malloc(sizeof(data)*12);
-	char o[]={'a','b','c','d','y','u','\0'};
-	char b[]={'v','i','n','c','\0'};
-	char g[]={'c','o','o','l','\0'};
-	char y[]={'d','i','e','d','\0'};
-	char t[]={'t','l','o','o','\0'};
-	String test[5];
-	test[0].data = o;
-	test[1].data = b;
-	test[2].data = g;
-	test[3].data = y;
-	test[4].data = t;
-	int size = (sizeof(test)/sizeof(test[0]));
-	int comp_ptr = 3;
+	FILE *fp;
+	FILE *wf;
 
+	fp=fopen("movie_metadata.csv","r");
+	wf=fopen("movie_new_metadata.csv","ab+");
+	int init=0;
+	data* ori = (data*) malloc(sizeof(data)*4);
+	
+	char *token;
+	int filled[28] =  {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27} ;
 
-	void (*Merge_ptr)(const void*,int,int,int) = &mergeString;
-	/*if(comp_ptr==1)
+	while(init<4)
 	{
-		void (*Merge_ptr)(const void*,int,int,int) = &mergeInt;
+		char buffer[4000];
+		char *token;
+		fgets(buffer,4000,(FILE*) fp);	
+		if(init != 0)
+		{
+			token = strtok(buffer, ",");
+				token = strtok(NULL,",");
+			ori[init-1].color.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].dirName.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].critCount = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].durMin = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].act3FB = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].dirFB = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].act2Name.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].act1FB = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].gross = (float)atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].genre.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].act1Name.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].title.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].numVoted = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].totalFB = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].act3Name.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].faceNum = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].keyWord.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].link.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].numReview = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].lang.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].country.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].rated.data = token;
+				token = strtok(NULL,",");
+			ori[init-1].budget = (float)atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].year = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].act2FB = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].score = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].ratio = atoi(token);
+				token = strtok(NULL,",");
+			ori[init-1].comp_ptr = filled;
+			ori[init-1].size = 27 ;
+			printf("%d\n",ori[init-1].dirFB);
+		}
+		else
+		{
+			fputs(buffer,wf);
+		}
+			
+		init++;
 	}
-	if(comp_ptr==2){
-		void (*Merge_ptr)(const void*,int,int,int) = &mergeFloat;
-	}
-	if(comp_ptr==3){
-		void (*Merge_ptr)(const void*,int,int,int) = &mergeString;
-	}
-	if (comp_ptr==4){
-		void (*Merge_ptr)(const void*,int,int,int)= &mergeDateTime;
-	}
-*/
-
-	split(test,0,size-1,(*Merge_ptr));
-printf("hi\n");
-	for (int i = 0; i < sizeof(test)/sizeof(test[0]); ++i)
-	{
-		printf("%s ",test[i].data);
-	}
-	printf("\n");
-	return 0;
-
+	//toString(ori);
+	fclose(fp);
+	fclose(wf);
 }
 // int is default any number not 2,3,4
 // float is 2
