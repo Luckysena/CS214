@@ -14,7 +14,7 @@ typedef struct _data
 	String color; //Color
 	String dirName; //Director Name
 	int critCount; //Critic counts
-	time_t durMin; //Duration in minutes  *****we could just use an int val? -M
+	int durMin; //Duration in minutes  *****we could just use an int val? -M
 	int dirFB; //Director Facebook likes
 	int act3FB; //Actor 3 facebook likes
 	String act2Name; //Actor 2's Name
@@ -39,7 +39,7 @@ typedef struct _data
 	float score; // movie score out of 10
 	float ratio; // aspect ratio
 	int movieFB; // Movie facebook likes
- int comp_ptr[28];//how to sort/ compare
+ int *comp_ptr;//how to sort/ compare
  int size;// size of data struct
 }data;
 

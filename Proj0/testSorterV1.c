@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
+#include <string.h>
 #include "testSorterV1.h"
 //enum _boolean {false, true};
 
@@ -176,6 +177,10 @@ while(iR < size2)
 	iR++;
 	iM++;
 }
+free(first);
+free(second);
+second = NULL;
+first = NULL;
 
 }
 
@@ -191,39 +196,40 @@ void split(const void* array, int left, int right,int comp_ptr)
 	}
 
 }
-void toString(data *ori)
+void toString(data* ori)
 {
-	int size = sizeof(ori)/sizeof(ori[0]);
-	for (int i = 0; i <size ; ++i)
+	int size = sizeof(ori)-1;
+	printf("%d\n",size);
+	for (int i = 0; i <size ; i++)
 	{
-		printf("%s\n",ori[i].color);
-		printf("%s\n",ori[i].dirName);
+		printf("%s\n %d",ori[i].color.data, i);
+		/*printf("%s\n",ori[i].dirName.data);
 		printf("%d\n",ori[i].critCount);
-		printf("%s\n",ori[i].durMin);
+		printf("%d\n",ori[i].durMin);
 		printf("%d\n",ori[i].dirFB);
 		printf("%d\n",ori[i].act3FB);
-		printf("%s\n",ori[i].act2Name);
+		printf("%s\n",ori[i].act2Name.data);
 		printf("%d\n",ori[i].act1FB);
 		printf("%f\n",ori[i].gross);
-		printf("%s\n",ori[i].genre);
-		printf("%s\n",ori[i].act1Name);
-		printf("%s\nr",ori[i].title);
+		printf("%s\n",ori[i].genre.data);
+		printf("%s\n",ori[i].act1Name.data);
+		printf("%s\nr",ori[i].title.data);
 		printf("%d\n",ori[i].numVoted);
 		printf("%d\n",ori[i].totalFB);
-		printf("%s\n",ori[i].act3Name);
+		printf("%s\n",ori[i].act3Name.data);
 		printf("%d\n",ori[i].faceNum);
-		printf("%s\n",ori[i].keyWord);
-		printf("%s\n",ori[i].link);
+		printf("%s\n",ori[i].keyWord.data);
+		printf("%s\n",ori[i].link.data);
 		printf("%d\n",ori[i].numReview);
-		printf("%s\n",ori[i].lang);
-		printf("%s\n",ori[i].country);
-		printf("%s\n",ori[i].rated);
+		printf("%s\n",ori[i].lang.data);
+		printf("%s\n",ori[i].country.data);
+		printf("%s\n",ori[i].rated.data);
 		printf("%f\n",ori[i].budget);
 		printf("%d\n",ori[i].year);
 		printf("%d\n",ori[i].act2FB);
 		printf("%f\n",ori[i].score);
 		printf("%f\n",ori[i].ratio);
-		printf("%d\n",ori[i].movieFB);
+		printf("%d\n",ori[i].movieFB);*/
 	}
 
 }
