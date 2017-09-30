@@ -6,19 +6,27 @@
 #include "testSorterV1.h"
 //enum _boolean {false, true};
 
-bool compareString(String A,String B)
+bool compareString(char* A,char* B)
 {
-	int size1 = A.size;
-	int size2 =	B.size;
+	int size1 = sizeof(A);
+	int size2 =	sizeof(B);
 	int counter=0;
 	bool final=true;
+	if(A == NULL)
+	{
+		return false;
+	}
+	if (B == NULL)
+	{
+		return true;
+	}
 	while(counter<size1 && counter<size2)
 	{
-		if((int)A.data[counter]==(int)B.data[counter])
+		if((int)A[counter]==(int)B[counter])
 		{
 			counter++;
 		}
-		else if((int)A.data[counter]>(int)B.data[counter])
+		else if((int)A[counter]>(int)B[counter])
 		{
 			return false;
 		}
@@ -41,25 +49,25 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return compareString(leftArr.dirName,rightArr.dirName);	
 		break;
 		case 2:
-			return leftArr.critCount < rightArr.critCount;	
+			return atoi(leftArr.critCount) <= atoi(rightArr.critCount);	
 		break;
 		case 3:
-			return leftArr.durMin < rightArr.durMin;
+			return atoi(leftArr.durMin) <= atoi(rightArr.durMin);
 		break;
 		case 4:
-			return leftArr.dirFB < rightArr.dirFB;
+			return atoi(leftArr.dirFB) <= atoi(rightArr.dirFB);
 		break;
 		case 5:
-			return leftArr.act3FB < rightArr.act3FB;
+			return atoi(leftArr.act3FB) <= atoi(rightArr.act3FB);
 		break;
 		case 6:
 			return compareString(leftArr.act2Name,rightArr.act2Name);
 		break;
 		case 7:
-			return leftArr.act1FB < rightArr.act1FB;
+			return atoi(leftArr.act1FB) <= atoi(rightArr.act1FB);
 		break;
 		case 8:
-			return leftArr.gross < rightArr.gross;
+			return atoi(leftArr.gross) <= atoi(rightArr.gross);
 		break;
 		case 9:
 			return compareString(leftArr.genre,rightArr.genre);
@@ -71,16 +79,16 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return compareString(leftArr.title,rightArr.title);
 		break;
 		case 12:
-			return leftArr.numVoted < rightArr.numVoted;
+			return atoi(leftArr.numVoted) <= atoi(rightArr.numVoted);
 		break;
 		case 13:
-			return leftArr.totalFB < rightArr.totalFB;
+			return atoi(leftArr.totalFB) <= atoi(rightArr.totalFB);
 		break;
 		case 14:
 			return compareString(leftArr.act3Name,rightArr.act3Name);
 		break;
 		case 15:
-			return leftArr.faceNum < rightArr.faceNum;
+			return atoi(leftArr.faceNum) <= atoi(rightArr.faceNum);
 		break;
 		case 16:
 			return compareString(leftArr.keyWord,rightArr.keyWord);
@@ -89,7 +97,7 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return compareString(leftArr.link,rightArr.link);
 		break;
 		case 18:
-			return leftArr.numReview < rightArr.numReview;
+			return atoi(leftArr.numReview) <= atoi(rightArr.numReview);
 		break;
 		case 19:
 			return compareString(leftArr.lang,rightArr.lang);
@@ -101,25 +109,35 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return compareString(leftArr.rated,rightArr.rated);
 		break;
 		case 22:
-			return leftArr.budget < rightArr.budget;
+			return atoi(leftArr.budget) <= atoi(rightArr.budget);
 		break;
 		case 23:
-			return leftArr.year < rightArr.year;
+			return atoi(leftArr.year) <= atoi(rightArr.year);
 		break;
 		case 24:
-			return leftArr.act2FB < rightArr.act2FB;
+			return atoi(leftArr.act2FB) <= atoi(rightArr.act2FB);
 		break;
-		case 25:
-			return leftArr.score < rightArr.score;
+		case 25:{
+			char * endToken;
+			char * endToken2;
+			double left = strtol(leftArr.score,&endToken,10);
+			double right = strtol(rightArr.score,&endToken,10);
+			return left <= right;
+		}
 		break;
-		case 26:
-			return leftArr.ratio < rightArr.ratio;
+		case 26:{
+				char * endToken;
+			char * endToken2;
+			double left = strtol(leftArr.ratio,&endToken,10);
+			double right = strtol(rightArr.ratio,&endToken,10);
+			return left <= right;
+		}
 		break;
 		case 27:
-			return leftArr.movieFB < rightArr.movieFB; 
+			return atoi(leftArr.movieFB) <= atoi(rightArr.movieFB); 
 		break;
 		default:
-		return leftArr.critCount < rightArr.critCount;
+		return atoi(leftArr.critCount) < atoi(rightArr.critCount);
 		break;
 
 	}
@@ -177,10 +195,7 @@ while(iR < size2)
 	iR++;
 	iM++;
 }
-free(first);
-free(second);
-second = NULL;
-first = NULL;
+
 
 }
 
@@ -193,43 +208,6 @@ void split(const void* array, int left, int right,int comp_ptr)
 		split(array,left,middle,comp_ptr);
 		split(array,middle+1,right,comp_ptr);
 		mergeData(array,left,middle,right,comp_ptr);
-	}
-
-}
-void toString(data* ori)
-{
-	int size = sizeof(ori)-1;
-	printf("%d\n",size);
-	for (int i = 0; i <size ; i++)
-	{
-		printf("%s\n %d",ori[i].color.data, i);
-		/*printf("%s\n",ori[i].dirName.data);
-		printf("%d\n",ori[i].critCount);
-		printf("%d\n",ori[i].durMin);
-		printf("%d\n",ori[i].dirFB);
-		printf("%d\n",ori[i].act3FB);
-		printf("%s\n",ori[i].act2Name.data);
-		printf("%d\n",ori[i].act1FB);
-		printf("%f\n",ori[i].gross);
-		printf("%s\n",ori[i].genre.data);
-		printf("%s\n",ori[i].act1Name.data);
-		printf("%s\nr",ori[i].title.data);
-		printf("%d\n",ori[i].numVoted);
-		printf("%d\n",ori[i].totalFB);
-		printf("%s\n",ori[i].act3Name.data);
-		printf("%d\n",ori[i].faceNum);
-		printf("%s\n",ori[i].keyWord.data);
-		printf("%s\n",ori[i].link.data);
-		printf("%d\n",ori[i].numReview);
-		printf("%s\n",ori[i].lang.data);
-		printf("%s\n",ori[i].country.data);
-		printf("%s\n",ori[i].rated.data);
-		printf("%f\n",ori[i].budget);
-		printf("%d\n",ori[i].year);
-		printf("%d\n",ori[i].act2FB);
-		printf("%f\n",ori[i].score);
-		printf("%f\n",ori[i].ratio);
-		printf("%d\n",ori[i].movieFB);*/
 	}
 
 }
