@@ -9,7 +9,7 @@ int main(int argc, char const *argv[])
   FILE *wf;
 
   fp=fopen("movie_metadata.csv","r");
-  wf=fopen("movie_new_metadata.csv","ab+");
+  wf=fopen("movie_metadata_Lydia.csv","ab+");
   int init = 0;
   data* total =(data*) malloc(sizeof(data) * 5044);
 
@@ -62,7 +62,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.critCount,p);
                  else   
-              strcpy(read.critCount,"");
+              strcpy(read.critCount,"0");
               
               p = strtok_new(NULL, delimiter);
           }
@@ -73,7 +73,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.durMin,p);
                  else   
-              strcpy(read.durMin,"");
+              strcpy(read.durMin,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -96,7 +96,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.act3FB,p);
                  else   
-              strcpy(read.act3FB,"");
+              strcpy(read.act3FB,"0");
               
               p = strtok_new(NULL, delimiter);          
           }
@@ -118,7 +118,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.act1FB,p);
                  else   
-              strcpy(read.act1FB,"");
+              strcpy(read.act1FB,"0");
               
               p = strtok_new(NULL, delimiter);          
           }
@@ -129,7 +129,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.gross,p);
                  else   
-              strcpy(read.gross,"");
+              strcpy(read.gross,"0");
               
               p = strtok_new(NULL, delimiter);
               
@@ -179,7 +179,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.numVoted,p);
                  else   
-              strcpy(read.numVoted,"");
+              strcpy(read.numVoted,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -191,7 +191,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.totalFB,p);
                  else   
-              strcpy(read.totalFB,"");
+              strcpy(read.totalFB,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -215,7 +215,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.faceNum,p);
                  else   
-              strcpy(read.faceNum,"");
+              strcpy(read.faceNum,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -250,7 +250,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.numReview,p);
                  else   
-              strcpy(read.numReview,"");
+              strcpy(read.numReview,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -297,7 +297,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.budget,p);
                  else   
-              strcpy(read.budget,"");
+              strcpy(read.budget,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -309,7 +309,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.year,p);
                  else   
-              strcpy(read.year,"");
+              strcpy(read.year,"0");
               
               p = strtok_new(NULL, delimiter);
           }
@@ -320,7 +320,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.act2FB,p);
                  else   
-              strcpy(read.act2FB,"");
+              strcpy(read.act2FB,"0");
               
               p = strtok_new(NULL, delimiter);
           }
@@ -331,7 +331,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.score,p);
                  else   
-              strcpy(read.score,"");
+              strcpy(read.score,"0");
               
               p = strtok_new(NULL, delimiter);
           }
@@ -342,7 +342,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.ratio,p);
                  else   
-              strcpy(read.ratio,"");
+              strcpy(read.ratio,"0");
               
               p = strtok_new(NULL, delimiter);
           
@@ -354,7 +354,7 @@ int main(int argc, char const *argv[])
              if(*p)  
               strcpy(read.movieFB,p);
                  else   
-              strcpy(read.movieFB,"");
+              strcpy(read.movieFB,"0");
               
               p = strtok_new(NULL, delimiter);
           }
@@ -371,12 +371,105 @@ int main(int argc, char const *argv[])
       init++;
     }
  
- for (int i = 0; i < 28; ++i)
- {
-   split(total,0,init,i);
- }
-  system("pause");
-   printf("%s\n","---------------------------------------------------" );
+
+
+
+   split(total,0,init,4);
+   for (int i = 2; i <init ; i++)
+  {
+    printf("%s\n",total [i].color);
+    printf("%s\n",total [i].dirName);
+    printf("%s\n",total [i].critCount);
+    printf("%s\n",total [i].durMin);
+    printf("%s\n",total [i].dirFB);
+    printf("%s\n",total [i].act3FB);
+    printf("%s\n",total [i].act2Name);
+    printf("%s\n",total [i].act1FB);
+    printf("%s\n",total [i].gross);
+    printf("%s\n",total [i].genre);
+    printf("%s\n",total [i].act1Name);
+    printf("%s\n",total [i].title);
+    printf("%s\n",total [i].numVoted);
+    printf("%s\n",total [i].totalFB);
+    printf("%s\n",total [i].act3Name);
+    printf("%s\n",total [i].faceNum);
+    printf("%s\n",total [i].keyWord);
+    printf("%s\n",total [i].link);
+    printf("%s\n",total [i].numReview);
+    printf("%s\n",total [i].lang);
+    printf("%s\n",total [i].country);
+    printf("%s\n",total [i].rated);
+    printf("%s\n",total [i].budget);
+    printf("%s\n",total [i].year);
+    printf("%s\n",total [i].act2FB);
+    printf("%s\n",total [i].score);
+    printf("%s\n",total [i].ratio);
+    printf("%s\n",total [i].movieFB);
+  }
+   /*
+   for (int i = 2; i <init+1 ; i++)
+  {
+    char * bufferIn = (char*) malloc(sizeof(char)*4000);
+    memset(bufferIn,'\0',sizeof(bufferIn));
+    strcat(bufferIn,total [i].color);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].dirName);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].critCount);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].durMin);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].dirFB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].act3FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].act2Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].act1FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].gross);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].genre);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].act1Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].title);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].numVoted);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].totalFB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].act3Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].faceNum);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].keyWord);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].link);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].numReview);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].lang);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].country);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].rated);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].budget);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].year);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].act2FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].score);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].ratio);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total [i].movieFB);
+    //printf("%s\n",bufferIn );
+    fprintf(wf, "%s\n",bufferIn);
+  }*/
+  
 
 
   fclose(fp); 
@@ -411,10 +504,10 @@ return riturn;
 void toString(data *total,int size)
 {
   printf("%s\n",size);
- for (int i = 0; i <size ; i++)
+ for (int i = 2; i <size ; i++)
   {
     printf("%s\n",total [i].color);
-    /*printf("%s\n",total [i].dirName);
+    printf("%s\n",total [i].dirName);
     printf("%s\n",total [i].critCount);
     printf("%s\n",total [i].durMin);
     printf("%s\n",total [i].dirFB);
@@ -440,7 +533,7 @@ void toString(data *total,int size)
     printf("%s\n",total [i].act2FB);
     printf("%s\n",total [i].score);
     printf("%s\n",total [i].ratio);
-    printf("%s\n",total [i].movieFB);*/
+    printf("%s\n",total [i].movieFB);
   }
 
 }
