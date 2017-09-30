@@ -1,49 +1,44 @@
-#include "Sorter.h"
+#include "testSorterV1.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <string.h>
 int main(int argc, char const *argv[])
 {
-	data * a = (data*)malloc(sizeof(data)*12);
-	char o[]={'a','b','c','d','y','u','\0'};
-	char b[]={'v','i','n','c','\0'};
-	char g[]={'c','o','o','l','\0'};
-	char y[]={'d','i','e','d','\0'};
-	char t[]={'t','l','o','o','\0'};
-	String test[5];
-	test[0].data = o;
-	test[1].data = b;
-	test[2].data = g;
-	test[3].data = y;
-	test[4].data = t;
-	int size = (sizeof(test)/sizeof(test[0]));
-	int comp_ptr = 3;
+
+	// 1) make array of data structs
+
+	struct _data DataArray[5000];
+	int DataArraySize = sizeof(DataArray)/sizeof(DataArray[0]);
+
+	// 2) read each newline into a new data struct
+	String s;
+	fscanf(stdin, "%s", s.data);  //initial row removal
+	int i;
+	for(i = 0; i < DataArraySize; i++){    //iterate through all the newlines
+	DataArray[i].critCount = malloc((sizeof(DataArray[0].critCount)));   // needs work: need to malloc for all the struct variables
+	fscanf(stdin, "%s%*c %s%*c %d%*c %d%*c %d%*c %d%*c %s%*c %d%*c %f%*c %s%*c %s%*c %s%*c %s%*c %d%*c %d%*c %s%*c %d%*c %s%*c %s%*c %d%*c %s%*c %s%*c %s%*c %f%*c %d%*c %d%*c %f%*c %f%*c %d", DataArray[i].color, DataArray[i].dirName,
+  // this will read the data in a formatted way to the struct itself. the %*c means it will tokenize with commas and ignore comma itself
+	DataArray[i].critCount, DataArray[i].durMin, DataArray[i].dirFB, DataArray[i].act3FB,
+	DataArray[i].act2Name, DataArray[i].act1FB, DataArray[i].gross, DataArray[i].genre,
+	DataArray[i].act1Name, DataArray[i].title, DataArray[i].numVoted, DataArray[i].totalFB,
+	DataArray[i].act3Name, DataArray[i].faceNum, DataArray[i].keyWord, DataArray[i].link,
+	DataArray[i].numReview, DataArray[i].lang, DataArray[i].country, DataArray[i].rated,
+	DataArray[i].budget, DataArray[i].year, DataArray[i].act2FB, DataArray[i].score,
+	DataArray[i].ratio, DataArray[i].movieFB);
+
+	// ISSUES: 1) need to figure out efficient malloc method for each struct attribute.
+	//         2) not 100% sure how to move onto next row with stdin
+
+}
+	// 3) read input arg, and find it using comp ptr
+	// 4) sort somehow..
 
 
-	void (*Merge_ptr)(const void*,int,int,int) = &mergeString;
-	/*if(comp_ptr==1)
-	{
-		void (*Merge_ptr)(const void*,int,int,int) = &mergeInt;
-	}
-	if(comp_ptr==2){
-		void (*Merge_ptr)(const void*,int,int,int) = &mergeFloat;
-	}
-	if(comp_ptr==3){
-		void (*Merge_ptr)(const void*,int,int,int) = &mergeString;
-	}
-	if (comp_ptr==4){
-		void (*Merge_ptr)(const void*,int,int,int)= &mergeDateTime;
-	}
-*/
+	void (*Merge_ptr)(const void*,int,int,int) = &mergeData;
 
-	split(test,0,size-1,(*Merge_ptr));
-printf("hi\n");
-	for (int i = 0; i < sizeof(test)/sizeof(test[0]); ++i)
-	{
-		printf("%s ",test[i].data);
-	}
-	printf("\n");
+
+
 	return 0;
 
 }
