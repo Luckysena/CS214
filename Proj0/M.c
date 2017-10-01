@@ -9,9 +9,9 @@ int main(int argc, char const *argv[])
   FILE *wf;
 
   fp=fopen("movie_metadata.csv","r");
-  wf=fopen("movie_metadata_Lydia.csv","ab+");
+ 
   int init = 0;
-  data* total =(data*) malloc(sizeof(data) * 5044);
+  data total[5044];
 
  
   char string[4000];
@@ -372,10 +372,10 @@ int main(int argc, char const *argv[])
     }
  
 
-
-
-   split(total,0,init,4);
-   for (int i = 2; i <init ; i++)
+fclose(fp); 
+ wf=fopen("movie_metadata_FUCK.csv","ab+");
+  split(total,0,init-2,1);
+/*for (int i = 0; i <init-1 ; i++)
   {
     printf("%s\n",total [i].color);
     printf("%s\n",total [i].dirName);
@@ -405,11 +405,11 @@ int main(int argc, char const *argv[])
     printf("%s\n",total [i].score);
     printf("%s\n",total [i].ratio);
     printf("%s\n",total [i].movieFB);
-  }
-   /*
-   for (int i = 2; i <init+1 ; i++)
+  }*/
+   char * bufferIn = (char*) malloc(sizeof(char)*9000);
+   for (int i = 0; i <init-2 ; i++)
   {
-    char * bufferIn = (char*) malloc(sizeof(char)*4000);
+   
     memset(bufferIn,'\0',sizeof(bufferIn));
     strcat(bufferIn,total [i].color);
     strcat(bufferIn,",");
@@ -466,13 +466,12 @@ int main(int argc, char const *argv[])
     strcat(bufferIn,total [i].ratio);
     strcat(bufferIn,",");
     strcat(bufferIn,total [i].movieFB);
-    //printf("%s\n",bufferIn );
     fprintf(wf, "%s\n",bufferIn);
-  }*/
+  }
   
 
 
-  fclose(fp); 
+  
   fclose(wf);
   return 0;
 
