@@ -496,7 +496,8 @@ return riturn;
 void toString(data *total,int size)
 {
   printf("%s\n",size);
- for (i = 2; i <size ; i++)
+int i;  
+for (i = 2; i <size ; i++)
   {
     printf("%s\n",total [i].color);
     printf("%s\n",total [i].dirName);
