@@ -156,11 +156,13 @@ void mergeData(data *array,int left , int middle , int right, int comp_ptr) // M
 
 	data *first = (data*) malloc(sizeof(data)*size1);
 	data *second = (data*) malloc(sizeof(data)*size2);
-	for (int i = 0; i < size1; ++i)
+	int i;
+	for (i = 0; i < size1; ++i)
 	{
 		first[i] = array[left+i];
 	}
-	for (int j = 0; j < size2; ++j)
+	int j;
+	for (j = 0; j < size2; ++j)
 	{
 		second[j] = array[middle+1+j];
 	}

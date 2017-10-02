@@ -392,7 +392,7 @@ int main(int argc, char const *argv[])
 
   int i;
   char * firstRow = (char *)malloc(sizeof(char)*1000);
-  for(int i = 0; i<28; i++){
+  for(i = 0; i<28; i++){
     strcat(firstRow, col_names[i]);
     strcat(firstRow, ",");
     free(col_names[i]);      //free the memory used for col name array
@@ -400,7 +400,7 @@ int main(int argc, char const *argv[])
 
   fprintf(stdout, "%s\n", firstRow);
   free(firstRow);
-  
+
   if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
     comp_ptr = 2; //defaults to num_critic_for_reviews
   }
@@ -408,7 +408,7 @@ int main(int argc, char const *argv[])
   split(total,0,init-2,comp_ptr);  // sort the data
   //toString(total,init-1)
    char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
-   for (int i = 0; i <init-1 ; i++)
+   for (i = 0; i <init-1 ; i++)
   {
     // copy the sorted information in row by row with commas
     memset(bufferIn,'\0',sizeof(bufferIn));
@@ -496,7 +496,7 @@ return riturn;
 void toString(data *total,int size)
 {
   printf("%s\n",size);
- for (int i = 2; i <size ; i++)
+ for (i = 2; i <size ; i++)
   {
     printf("%s\n",total [i].color);
     printf("%s\n",total [i].dirName);
