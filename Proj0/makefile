@@ -1,2 +1,3 @@
-make1: main.c Sorter.c
-	gcc -w main.c Sorter.c -o Sorter -I. 
+
+make1:M.c 
+	gcc -w M.c -o Sorter -I. 
