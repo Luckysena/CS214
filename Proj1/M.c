@@ -1,5 +1,7 @@
 #include "Sorter.c"
 #include <string.h>
+#include <dirent.h>
+#include <sys/types.h>
 char *strtok_new(char * string, char const * delimiter);
 
 
@@ -37,14 +39,34 @@ int main(int argc, char const *argv[])
     strcpy(_dirIn,".");
   }
 
+  bool updateDirOut = false;
   if(_dirOut == NULL){                    //default is directory it was found in (dirIn)
+    updateDirOut = true;                  //only want to update dirOut at every fork() if true
     _dirOut = _dirIn;
   }
 
+  DIR* dirIn = opendir(_dirIn);
+  DIR* dirOut = opendir(_dirOut);
+
+  // PID crap
+  pid_t initialPID = getpid();
+  pit_t childProcesses[256]; // might need to make larger, will see with testing.
+  int totalProcesses = 1;
+
+  //calling this should recursively iterate through the entire filesystem
+  processDir(dirIn);
+}
+
+void processDir(DIR* dirName){
+  // will accept the current directory and run fileSorter() on any .csv found
+  // should implement fork() into this on any directories found and recursively call this
 
 }
 
-void fileSorter(char* sortingCol){
+
+
+void fileSorter(char* sortingCol, FILE* file){
+  // This was our original main, should modify it to read from given file and output a file
 
   char * col_names[28];  //array which contains name of columns
 
