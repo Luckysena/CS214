@@ -2,6 +2,8 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
 char *strtok_new(char * string, char const * delimiter);
 
 
@@ -10,12 +12,15 @@ int main(int argc, char const *argv[])
 
   //Following code will check for command line args and take them if given or set defaults
 
-  int i;
+  int i, result;
   char colFlag[2], dirInFlag[2], dirOutFlag[2];   //command line flags
-  char * _sortingCol = NULL, _dirIn = NULL, _dirOut = NULL; //pointers to names of args
+  char * _sortingCol = NULL;
+  char * _dirIn = NULL;
+  char * _dirOut = NULL; //pointers to names of args
   strcpy(colFlag,"-c");
   strcpy(dirInFlag,"-d");
   strcpy(dirOutFlag,"-o");
+
 
   for(i = 0; i < argc; i++){
     result = strcmp(colFlag,argv[i]);    //compare arg to column name flag
@@ -47,22 +52,67 @@ int main(int argc, char const *argv[])
 
   DIR* dirIn = opendir(_dirIn);
   DIR* dirOut = opendir(_dirOut);
+  struct dirent* direntIn;
+  struct dirent* direntOut;
 
   // PID crap
   pid_t initialPID = getpid();
-  pit_t childProcesses[256]; // might need to make larger, will see with testing.
+  pid_t childProcesses[256]; // might need to make larger, will see with testing.
   int totalProcesses = 1;
 
   //calling this should recursively iterate through the entire filesystem
-  processDir(dirIn);
+  processDir(dirIn, direntIn);
 }
 
-void processDir(DIR* dirName){
+void processDir(DIR* dirName, struct dirent* direntName){
   // will accept the current directory and run fileSorter() on any .csv found
   // should implement fork() into this on any directories found and recursively call this
+  pid_t PID = getpid();
+  printf("original pid: %d\n",PID);
+  while((direntName = readdir(dirName)) != NULL){
+
+    if(isFile(direntName->d_name) == 0) {
+      if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){
+        printf("%s is not a regular file, forking...\n",direntName->d_name);
+        processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)));
+        continue;
+      }
+      else{
+        continue;
+      }
+    }
+    printf("%s, with PID:%d \n", direntName->d_name, PID);
+    printf("\n");
+
+
+  }
+
 
 }
 
+int is_regular_file(const char *path){
+  struct stat path_stat;
+  stat(path, &path_stat);
+  return S_ISREG(path_stat.st_mode);
+}
+
+int isFile(const char* name)
+{
+    DIR* directory = opendir(name);
+
+    if(directory != NULL)
+    {
+     closedir(directory);
+     return 0;
+    }
+
+    if(errno == ENOTDIR)
+    {
+     return 1;
+    }
+
+    return -1;
+}
 
 
 void fileSorter(char* sortingCol, FILE* file){
