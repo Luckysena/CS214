@@ -71,7 +71,7 @@ void fileSorter(char* sortingCol, FILE* file){
   char * col_names[28];  //array which contains name of columns
 
   int init = 0;         // counter for rows
-  data total[5044];     // array for data structs
+  data total[10000];     // array for data structs
   char string[4000];    // stdin string buffer
 
   while(fgets(string,4000,stdin)!= NULL)   // loop to go thru all of input
@@ -447,7 +447,7 @@ void fileSorter(char* sortingCol, FILE* file){
   // now we need to read the arg column name and set comp_ptr to it
   int comp_ptr = 0;
   for(comp_ptr; comp_ptr < 28; comp_ptr++){
-    if(strcmp(col_names[0], sortingCol)==0){
+    if(strcmp(col_names[comp_ptr], sortingCol)==0){
       break;  //break out of the loop once we reach the col name we need
     }
   }
