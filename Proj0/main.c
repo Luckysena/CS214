@@ -385,7 +385,10 @@ int main(int argc, char const *argv[])
   // now we need to read the arg column name and set comp_ptr to it
   int comp_ptr = 0;
   for(comp_ptr; comp_ptr < 28; comp_ptr++){
-    if(strcmp(col_names[0], argv[2])==0){
+    if(strcmp(col_names[comp_ptr], argv[2])==0){
+
+
+
       break;  //break out of the loop once we reach the col name we need
     }
   }
