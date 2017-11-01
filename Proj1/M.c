@@ -13,13 +13,12 @@ int main(int argc, char const *argv[])
   //Following code will check for command line args and take them if given or set defaults
 
   int i, result;
-  char colFlag[2], dirInFlag[2], dirOutFlag[2];   //command line flags
+  char colFlag[10], dirInFlag[10], dirOutFlag[10];   //command line flags
   char * _dirIn = NULL;
   char * _dirOut = NULL; //pointers to names of args
   strcpy(colFlag,"-c");
   strcpy(dirInFlag,"-d");
   strcpy(dirOutFlag,"-o");
-
 
   for(i = 0; i < argc; i++){
     result = strcmp(colFlag,argv[i]);    //compare arg to column name flag
@@ -38,16 +37,21 @@ int main(int argc, char const *argv[])
     }
   }
 
+  if(_sortingCol == NULL){             //default behavior will be sort by crits
+    _sortingCol = (char*)malloc(25*sizeof(char));
+    strcpy(_sortingCol,"num_critic_for_reviews");
+  }
+
   if(_dirIn == NULL){                     //default behavior is current directory
     _dirIn = (char*)malloc(sizeof(char));
     strcpy(_dirIn,".");
   }
-
   bool updateDirOut = false;
   if(_dirOut == NULL){                    //default is directory it was found in (dirIn)
     updateDirOut = true;                  //only want to update dirOut at every fork() if true
     _dirOut = _dirIn;
   }
+  printf("input parameters are currently: colName: %s, dirInFlag: %s, dirOutFlag: %s\n",_sortingCol,_dirIn,_dirOut);
 
   DIR* dirIn = opendir(_dirIn);
   DIR* dirOut = opendir(_dirOut);
@@ -58,6 +62,7 @@ int main(int argc, char const *argv[])
   pid_t initialPID = getpid();
   pid_t childProcesses[256]; // might need to make larger, will see with testing.
   int totalProcesses = 1;
+  printf("original pid: %d\n",initialPID);
 
   //calling this should recursively iterate through the entire filesystem
   processDir(dirIn, direntIn);
@@ -68,14 +73,14 @@ void processDir(DIR* dirName, struct dirent* direntName){
 
 
   pid_t PID = getpid();    //debugging purposes, get current process PID
-  printf("original pid: %d\n",PID);
+
   while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
     //printf("\n");
     //printf("Working with file: %s\n", direntName->d_name);
     //process sub-directories recursively
     if(isFile(direntName->d_name) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-        printf("%s is not a regular file, forking...\n",direntName->d_name);
+        printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
         fork();   //fork a process to take care of it
         wait();
         if(PID != getpid()){  //only child process will get this shit
@@ -95,16 +100,10 @@ void processDir(DIR* dirName, struct dirent* direntName){
       wait();
       if(PID != getpid()){
         fileSorter(_sortingCol,direntName->d_name);
+        break;
       }
     }
-
-    //printf("%s, with PID:%d \n", direntName->d_name, PID);
-    //printf("\n");
-
-
   }
-
-
 }
 
 int isCSV(const char* str){
@@ -135,24 +134,31 @@ int isFile(const char* name)
     return -1;
 }
 
+void strip_ext(char *fname)
+{
+    char *end = fname + strlen(fname);
+
+    while (end > fname && *end != '.') {
+        --end;
+    }
+
+    if (end > fname) {
+        *end = '\0';
+    }
+}
 
 void fileSorter(char* sortingCol, char* file){
   // This was our original main, should modify it to read from given file and output a file
-  char extension[2], filename[512];
-  strcpy(extension, "./");
-  strcpy(filename, file);
-  strncat(extension,filename,512);
-  printf("opening file: %s\n",extension);
 
-  FILE* _file = fopen(extension, 'r');
-  printf("Sort was attempted!\n");
+  printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
+  //need to check if it fits our format
+  FILE* _file = fopen(file, "r");
+
   char * col_names[28];  //array which contains name of columns
 
   int init = 0;         // counter for rows
   data total[10000];     // array for data structs
   char string[4000];    // stdin string buffer
-
-
 
   while(fgets(string,4000,_file)!= NULL)   // loop to go thru all of input
   {
@@ -532,6 +538,18 @@ void fileSorter(char* sortingCol, char* file){
     }
   }
 
+  //file output creation
+  char* outputName = (char*)malloc(sizeof(char)*100);  //file output name
+  memset(outputName,'\0',sizeof(outputName));
+  strip_ext(file);
+  strcat(outputName, file);
+  strcat(outputName,"-sorted-");
+  strcat(outputName,sortingCol);
+  strcat(outputName,".csv");
+
+  FILE* foutput;
+  foutput = fopen(outputName,"w+");
+
   int i;
   char * firstRow = (char *)malloc(sizeof(char)*1000);
   for(i = 0; i<28; i++){
@@ -540,7 +558,7 @@ void fileSorter(char* sortingCol, char* file){
     free(col_names[i]);      //free the memory used for col name array
   }
 
-  fprintf(stdout, "%s\n", firstRow);
+  fprintf(foutput, "%s\n", firstRow);
   free(firstRow);
 
   if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
@@ -548,9 +566,11 @@ void fileSorter(char* sortingCol, char* file){
   }
 
   split(total,0,init-2,comp_ptr);  // sort the data
-  //toString(total,init-1)
-   char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
-   for (i = 0; i <init-1 ; i++)
+
+
+
+  char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
+  for (i = 0; i <init-1 ; i++)
   {
     // copy the sorted information in row by row with commas
     memset(bufferIn,'\0',sizeof(bufferIn));
@@ -609,7 +629,7 @@ void fileSorter(char* sortingCol, char* file){
     strcat(bufferIn,total [i].ratio);
     strcat(bufferIn,",");
     strcat(bufferIn,total [i].movieFB);
-    fprintf(stdout, "%s\n",bufferIn); //output
+    fprintf(foutput, "%s\n",bufferIn); //output
   }
   return;
 }
