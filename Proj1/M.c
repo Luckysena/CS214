@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 char *strtok_new(char * string, char const * delimiter);
-
+char * _sortingCol;
 
 int main(int argc, char const *argv[])
 {
@@ -14,7 +14,6 @@ int main(int argc, char const *argv[])
 
   int i, result;
   char colFlag[2], dirInFlag[2], dirOutFlag[2];   //command line flags
-  char * _sortingCol = NULL;
   char * _dirIn = NULL;
   char * _dirOut = NULL; //pointers to names of args
   strcpy(colFlag,"-c");
@@ -66,23 +65,41 @@ int main(int argc, char const *argv[])
 
 void processDir(DIR* dirName, struct dirent* direntName){
   // will accept the current directory and run fileSorter() on any .csv found
-  // should implement fork() into this on any directories found and recursively call this
-  pid_t PID = getpid();
-  printf("original pid: %d\n",PID);
-  while((direntName = readdir(dirName)) != NULL){
 
+
+  pid_t PID = getpid();    //debugging purposes, get current process PID
+  printf("original pid: %d\n",PID);
+  while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
+    //printf("\n");
+    //printf("Working with file: %s\n", direntName->d_name);
+    //process sub-directories recursively
     if(isFile(direntName->d_name) == 0) {
-      if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){
+      if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
         printf("%s is not a regular file, forking...\n",direntName->d_name);
-        processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)));
-        continue;
+        fork();   //fork a process to take care of it
+        wait();
+        if(PID != getpid()){  //only child process will get this shit
+          processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)));
+          break;
+        }
+        continue;  //to skip the current pointer value
+
       }
       else{
-        continue;
+        continue;  //to skip . and ..
       }
     }
-    printf("%s, with PID:%d \n", direntName->d_name, PID);
-    printf("\n");
+
+    if(isCSV(direntName->d_name)==0) {   //check for CSV files
+      fork();
+      wait();
+      if(PID != getpid()){
+        fileSorter(_sortingCol,direntName->d_name);
+      }
+    }
+
+    //printf("%s, with PID:%d \n", direntName->d_name, PID);
+    //printf("\n");
 
 
   }
@@ -90,11 +107,15 @@ void processDir(DIR* dirName, struct dirent* direntName){
 
 }
 
-int is_regular_file(const char *path){
-  struct stat path_stat;
-  stat(path, &path_stat);
-  return S_ISREG(path_stat.st_mode);
+int isCSV(const char* str){
+  if(strlen(str) > 4 && !strcmp(str + strlen(str) - 4, ".csv")){
+    return 0;
+  }
+  else{
+    return -1;
+  }
 }
+
 
 int isFile(const char* name)
 {
@@ -115,16 +136,25 @@ int isFile(const char* name)
 }
 
 
-void fileSorter(char* sortingCol, FILE* file){
+void fileSorter(char* sortingCol, char* file){
   // This was our original main, should modify it to read from given file and output a file
+  char extension[2], filename[512];
+  strcpy(extension, "./");
+  strcpy(filename, file);
+  strncat(extension,filename,512);
+  printf("opening file: %s\n",extension);
 
+  FILE* _file = fopen(extension, 'r');
+  printf("Sort was attempted!\n");
   char * col_names[28];  //array which contains name of columns
 
   int init = 0;         // counter for rows
   data total[10000];     // array for data structs
   char string[4000];    // stdin string buffer
 
-  while(fgets(string,4000,stdin)!= NULL)   // loop to go thru all of input
+
+
+  while(fgets(string,4000,_file)!= NULL)   // loop to go thru all of input
   {
       int type = 0;             // counter to assign proper struct attributes
       char delimiter[] = ",";   // delim char
@@ -493,7 +523,7 @@ void fileSorter(char* sortingCol, FILE* file){
         }
       init++;  //increment the row we're on
     }
-
+  fclose(_file);
   // now we need to read the arg column name and set comp_ptr to it
   int comp_ptr = 0;
   for(comp_ptr; comp_ptr < 28; comp_ptr++){
