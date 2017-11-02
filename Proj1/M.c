@@ -570,7 +570,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
     comp_ptr = 2; //defaults to num_critic_for_reviews
   }
 
-  split(total,0,init-2,comp_ptr);  // sort the data
+  split(total,0,init-1,comp_ptr);  // sort the data
 
 
 
