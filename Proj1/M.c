@@ -46,17 +46,16 @@ int main(int argc, char const *argv[])
     _dirIn = (char*)malloc(sizeof(char));
     strcpy(_dirIn,".");
   }
-  bool updateDirOut = false;
+
   if(_dirOut == NULL){                    //default is directory it was found in (dirIn)
-    updateDirOut = true;                  //only want to update dirOut at every fork() if true
     _dirOut = _dirIn;
   }
   printf("input parameters are currently: colName: %s, dirInFlag: %s, dirOutFlag: %s\n",_sortingCol,_dirIn,_dirOut);
 
   DIR* dirIn = opendir(_dirIn);
-  DIR* dirOut = opendir(_dirOut);
+  //DIR* dirOut = opendir(_dirOut);
   struct dirent* direntIn;
-  struct dirent* direntOut;
+  //struct dirent* direntOut;
 
   // PID crap
   pid_t initialPID = getpid();
@@ -65,10 +64,10 @@ int main(int argc, char const *argv[])
   printf("original pid: %d\n",initialPID);
 
   //calling this should recursively iterate through the entire filesystem
-  processDir(dirIn, direntIn);
+  processDir(dirIn, direntIn, _dirOut);
 }
 
-void processDir(DIR* dirName, struct dirent* direntName){
+void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
   // will accept the current directory and run fileSorter() on any .csv found
 
 
@@ -82,9 +81,10 @@ void processDir(DIR* dirName, struct dirent* direntName){
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
         printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
         fork();   //fork a process to take care of it
-        wait();
+
         if(PID != getpid()){  //only child process will get this shit
-          processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)));
+          processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)),dirOut);
+          wait();  //prevent orphans
           break;
         }
         continue;  //to skip the current pointer value
@@ -97,9 +97,9 @@ void processDir(DIR* dirName, struct dirent* direntName){
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
       fork();
-      wait();
       if(PID != getpid()){
-        fileSorter(_sortingCol,direntName->d_name);
+        fileSorter(_sortingCol,direntName->d_name,dirOut);
+        wait();   //placement of wait() is critical here to prevent orphans but also not double sort
         break;
       }
     }
@@ -147,7 +147,7 @@ void strip_ext(char *fname)
     }
 }
 
-void fileSorter(char* sortingCol, char* file){
+void fileSorter(char* sortingCol, char* file, char* dirout){
   // This was our original main, should modify it to read from given file and output a file
 
   printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
@@ -170,6 +170,7 @@ void fileSorter(char* sortingCol, char* file){
       {
       while(type<28)            // fill in struct attributes
       {
+
        // printf("%s\n",p);
         switch(type)
         {
@@ -509,11 +510,13 @@ void fileSorter(char* sortingCol, char* file){
 
         type++;
       }
+    
         total[init-1]=read;     // point the item in struct array to placeholder data struct
 
         }
         else
         {
+
           int counter = 0;       // counter for filling in name of columns row
           while(counter<28){     // loop to create an array of column names
             col_names[counter] = (char *) malloc(sizeof(char)*250);   // make space for the name
@@ -529,6 +532,7 @@ void fileSorter(char* sortingCol, char* file){
         }
       init++;  //increment the row we're on
     }
+
   fclose(_file);
   // now we need to read the arg column name and set comp_ptr to it
   int comp_ptr = 0;
@@ -538,8 +542,9 @@ void fileSorter(char* sortingCol, char* file){
     }
   }
 
+  chdir(dirout);
   //file output creation
-  char* outputName = (char*)malloc(sizeof(char)*100);  //file output name
+  char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
   memset(outputName,'\0',sizeof(outputName));
   strip_ext(file);
   strcat(outputName, file);
@@ -631,6 +636,7 @@ void fileSorter(char* sortingCol, char* file){
     strcat(bufferIn,total [i].movieFB);
     fprintf(foutput, "%s\n",bufferIn); //output
   }
+  fclose(foutput);
   return;
 }
 
