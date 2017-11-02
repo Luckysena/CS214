@@ -6,64 +6,33 @@
 #include "Sorter.h"
 enum _boolean {false, true};
 
-bool compareString(char* A,char* B)
-{
-	int size1 = sizeof(A);
-	int size2 =	sizeof(B);
-	int counter=0;
-	bool final=true;
-	if(A == NULL )
-	{
-		return false;
-	}
-	if (B == NULL)
-	{
-		return true;
-	}
-	while(counter<size1 && counter<size2)
-	{
-		if((int)A[counter]==(int)B[counter])
-		{
-			counter++;
-		}
-		else if((int)A[counter]<(int)B[counter])
-		{
-			return true;
-		}
-		else
-		{
-		return false;
-		}
-	}
-	return true;
-}
 bool compare(data leftArr, data rightArr, int comp_ptr)
 {
 
 	switch(comp_ptr)
 	{
 		case 0:
-			return compareString(leftArr.color,rightArr.color);
+			return strcmp(leftArr.color,rightArr.color) < 0;
 		break;
 		case 1:
 		{
-			return compareString(leftArr.dirName,rightArr.dirName);
+			return strcmp(leftArr.dirName,rightArr.dirName)< 0;
 		}
 		break;
 		case 2:
-			return compareString(leftArr.critCount,rightArr.critCount);
+			return strcmp(leftArr.critCount,rightArr.critCount)< 0;
 		break;
 		case 3:
 			return atoi(leftArr.durMin) <= atoi(rightArr.durMin);
 		break;
 		case 4:
-			return compareString(leftArr.dirFB,rightArr.dirFB);
+			return strcmp(leftArr.dirFB,rightArr.dirFB) < 0;
 		break;
 		case 5:
 			return atoi(leftArr.act3FB) <= atoi(rightArr.act3FB);
 		break;
 		case 6:
-			return compareString(leftArr.act2Name,rightArr.act2Name);
+			return strcmp(leftArr.act2Name,rightArr.act2Name) < 0;
 		break;
 		case 7:
 			return atoi(leftArr.act1FB) <= atoi(rightArr.act1FB);
@@ -72,13 +41,13 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return atoi(leftArr.gross) <= atoi(rightArr.gross);
 		break;
 		case 9:
-			return compareString(leftArr.genre,rightArr.genre);
+			return strcmp(leftArr.genre,rightArr.genre) < 0;
 		break;
 		case 10:
-			return compareString(leftArr.act1Name,rightArr.act1Name);
+			return strcmp(leftArr.act1Name,rightArr.act1Name) < 0;
 		break;
 		case 11:
-			return compareString(leftArr.title,rightArr.title);
+			return strcmp(leftArr.title,rightArr.title) < 0;
 		break;
 		case 12:
 			return atoi(leftArr.numVoted) <= atoi(rightArr.numVoted);
@@ -87,28 +56,28 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return atoi(leftArr.totalFB) <= atoi(rightArr.totalFB);
 		break;
 		case 14:
-			return compareString(leftArr.act3Name,rightArr.act3Name);
+			return strcmp(leftArr.act3Name,rightArr.act3Name) < 0;
 		break;
 		case 15:
 			return atoi(leftArr.faceNum) <= atoi(rightArr.faceNum);
 		break;
 		case 16:
-			return compareString(leftArr.keyWord,rightArr.keyWord);
+			return strcmp(leftArr.keyWord,rightArr.keyWord) < 0;
 		break;
 		case 17:
-			return compareString(leftArr.link,rightArr.link);
+			return strcmp(leftArr.link,rightArr.link) < 0;
 		break;
 		case 18:
 			return atoi(leftArr.numReview) <= atoi(rightArr.numReview);
 		break;
 		case 19:
-			return compareString(leftArr.lang,rightArr.lang);
+			return strcmp(leftArr.lang,rightArr.lang) < 0;
 		break;
 		case 20:
-			return compareString(leftArr.country,rightArr.country);
+			return strcmp(leftArr.country,rightArr.country) < 0;
 		break;
 		case 21:
-			return compareString(leftArr.rated,rightArr.rated);
+			return strcmp(leftArr.rated,rightArr.rated) < 0;
 		break;
 		case 22:
 			return atoi(leftArr.budget) <= atoi(rightArr.budget);
