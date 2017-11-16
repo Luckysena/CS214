@@ -22,7 +22,6 @@ int main(int argc, char const *argv[])
       {
       while(type<28)            // fill in struct attributes
       {
-       // printf("%s\n",p);
         switch(type)
         {
 

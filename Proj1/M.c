@@ -74,8 +74,8 @@ void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
   pid_t PID = getpid();    //debugging purposes, get current process PID
 
   while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
-    //printf("\n");
-    //printf("Working with file: %s\n", direntName->d_name);
+
+    //printf("[%d]Working with file: %s\n", PID,direntName->d_name);
     //process sub-directories recursively
     if(isFile(direntName->d_name) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
@@ -96,6 +96,7 @@ void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
+      printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
       fork();
       if(PID != getpid()){
         fileSorter(_sortingCol,direntName->d_name,dirOut);
@@ -149,13 +150,16 @@ void strip_ext(char *fname)
 
 void fileSorter(char* sortingCol, char* file, char* dirout){
   // This was our original main, should modify it to read from given file and output a file
+  // need to implement a check for format!!!!!!!!!!!!!!!!!!!!!!
 
   printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
   //need to check if it fits our format
   FILE* _file = fopen(file, "r");
-
+  if((_file == NULL) || (ftell(_file)==-1)){
+    printf("[%i]Error sorting file: %s, exiting...\n",getpid(),file);
+    return;
+  }
   char * col_names[28];  //array which contains name of columns
-
   int init = 0;         // counter for rows
   data total[10000];     // array for data structs
   char string[4000];    // stdin string buffer
@@ -165,7 +169,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
       int type = 0;             // counter to assign proper struct attributes
       char delimiter[] = ",";   // delim char
       data read;                // placeholder data struct for filling
-      char * p = strtok_new(string, "delimiter");  // p will iterate through input string
+      char * p = strtok_new(string, delimiter);  // p will iterate through input string
       if(init != 0)             // first stdin is column names string
       {
       while(type<28)            // fill in struct attributes
@@ -507,12 +511,10 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
           default:
           break;
         }
-
         type++;
       }
-    
-        total[init-1]=read;     // point the item in struct array to placeholder data struct
 
+        total[init-1]=read;     // point the item in struct array to placeholder data struct
         }
         else
         {
@@ -520,6 +522,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
           int counter = 0;       // counter for filling in name of columns row
           while(counter<28){     // loop to create an array of column names
             col_names[counter] = (char *) malloc(sizeof(char)*250);   // make space for the name
+            memset(col_names[counter],'\0',sizeof(col_names[counter]));
             if(*p){              // if the pointer isnt empty, copy the string into array
               strcpy(col_names[counter],p);
             }
@@ -541,7 +544,6 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
       break;  //break out of the loop once we reach the col name we need
     }
   }
-
   chdir(dirout);
   //file output creation
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
@@ -552,28 +554,28 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
   strcat(outputName,sortingCol);
   strcat(outputName,".csv");
 
+
   FILE* foutput;
   foutput = fopen(outputName,"w+");
-
+  printf("[%i]Creating file: %s\n",getpid(),outputName);
   int i;
   char * firstRow = (char *)malloc(sizeof(char)*1000);
+  memset(firstRow,'\0',sizeof(firstRow));
   for(i = 0; i<28; i++){
     strcat(firstRow, col_names[i]);
-    strcat(firstRow, ",");
+    if(i != 27){
+      strcat(firstRow, ",");
+    }
     free(col_names[i]);      //free the memory used for col name array
   }
-
+  
   fprintf(foutput, "%s\n", firstRow);
   free(firstRow);
 
   if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
     comp_ptr = 2; //defaults to num_critic_for_reviews
   }
-
-  split(total,0,init-1,comp_ptr);  // sort the data
-
-
-
+  split(total,0,init-2,comp_ptr);  // sort the data
   char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
   for (i = 0; i <init-1 ; i++)
   {
@@ -640,7 +642,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
   return;
 }
 
-char *strtok_new(char * string, char const * delimiter)
+char *strtok_new(char * string, char const* delimiter)
 {
    static char *source = NULL;
    char *p, *riturn = 0;
@@ -652,19 +654,21 @@ char *strtok_new(char * string, char const * delimiter)
     {
     return NULL;
    }
-   if((p = strpbrk (source, ",")) != NULL || (p = strpbrk (source, "\n")) != NULL )
+   if((p = strpbrk (source, ",")) != NULL || (p = strpbrk (source, "\n")) != NULL)
     {
       *p  = 0;
       riturn = source;
       source = ++p;
     }
+    if(riturn == NULL){
+      riturn = source;
+    }
 return riturn;
 }
-void toString(data *total,int size)
+void toString(data *total)
 {
-  printf("%s\n",size);
 int i;
-for (i = 2; i <size ; i++)
+for (i = 0; i <28 ; i++)
   {
     printf("%s\n",total [i].color);
     printf("%s\n",total [i].dirName);
@@ -695,5 +699,5 @@ for (i = 2; i <size ; i++)
     printf("%s\n",total [i].ratio);
     printf("%s\n",total [i].movieFB);
   }
-
+return;
 }

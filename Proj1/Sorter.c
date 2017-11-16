@@ -8,7 +8,6 @@ enum _boolean {false, true};
 
 bool compare(data leftArr, data rightArr, int comp_ptr)
 {
-
 	switch(comp_ptr)
 	{
 		case 0:
@@ -122,7 +121,6 @@ void mergeData(data *array,int left , int middle , int right, int comp_ptr) // M
 	int size1,size2;
 	size1 = middle-left+1;
 	size2 = right-middle;
-
 	data *first = (data*) malloc(sizeof(data)*size1);
 	data *second = (data*) malloc(sizeof(data)*size2);
 	int i;
@@ -135,14 +133,11 @@ void mergeData(data *array,int left , int middle , int right, int comp_ptr) // M
 	{
 		second[j] = array[middle+1+j];
 	}
-
 int iL = 0;
 int iR = 0;
 int iM = left;
-
 while(iL < size1 && iR < size2)
 {
-
 	if(compare(first[iL],second[iR],comp_ptr))
 	{
 		array[iM] = first[iL];
@@ -164,6 +159,7 @@ while(iL < size1)
 }
 while(iR < size2)
 {
+
 	array[iM] = second[iR];
 	iR++;
 	iM++;
@@ -172,19 +168,16 @@ free(first);
 free(second);
 first = NULL;
 second = NULL;
-
+return;
 }
-
 void split(data *array, int left, int right,int comp_ptr)
 {
-
 	if (left < right)
 	{
-
 		int middle=left+(right-left)/2;
 		split(array,left,middle,comp_ptr);
 		split(array,middle+1,right,comp_ptr);
 		mergeData(array,left,middle,right,comp_ptr);
 	}
-
+return;
 }

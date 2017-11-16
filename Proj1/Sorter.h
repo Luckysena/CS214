@@ -42,5 +42,5 @@ typedef struct _data
 void mergeData(data* A,int left , int middle , int right, int comp_ptr) ; // Merges the two arrays together returns a combined array
 void split(data* array, int left, int right,int comp_ptr);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
 bool compareString(char* A, char* B);
-void toString(data* ori,int size);
+void toString(data* ori);
 #endif
