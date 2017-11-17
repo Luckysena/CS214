@@ -149,11 +149,8 @@ void strip_ext(char *fname)
 }
 
 void fileSorter(char* sortingCol, char* file, char* dirout){
-  // This was our original main, should modify it to read from given file and output a file
-  // need to implement a check for format!!!!!!!!!!!!!!!!!!!!!!
 
   printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
-  //need to check if it fits our format
   FILE* _file = fopen(file, "r");
   if((_file == NULL) || (ftell(_file)==-1)){
     printf("[%i]Error sorting file: %s, exiting...\n",getpid(),file);
@@ -534,6 +531,12 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
             p = strtok_new(NULL,delimiter);
             counter++;
           }
+          for(counter = 0; counter<28; counter++){
+            if((strcmp(col_names[counter],"")==0)){
+              printf("[%i]CSV format incorrect, terminating..\n",getpid());
+              return;
+            }
+          }
         }
       init++;  //increment the row we're on
     }
@@ -665,9 +668,7 @@ char *strtok_new(char * string, char const* delimiter)
      if((p = strpbrk(source, "\"")) != NULL){
        if((p = strpbrk(source+1, "\"")) != NULL){
          p++;
-         printf("%s\n",source);
          *p = 0;
-         printf("%s\n",source);
          riturn = source;
          source = ++p;
          return riturn;
