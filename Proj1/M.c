@@ -6,12 +6,12 @@
 #include <errno.h>
 char *strtok_new(char * string, char const * delimiter);
 char * _sortingCol;
-
+int totalProcesses;
 int main(int argc, char const *argv[])
 {
 
   //Following code will check for command line args and take them if given or set defaults
-
+  totalProcesses = 0;
   int i, result;
   char colFlag[10], dirInFlag[10], dirOutFlag[10];   //command line flags
   char * _dirIn = NULL;
@@ -50,17 +50,14 @@ int main(int argc, char const *argv[])
   if(_dirOut == NULL){                    //default is directory it was found in (dirIn)
     _dirOut = _dirIn;
   }
-  printf("input parameters are currently: colName: %s, dirInFlag: %s, dirOutFlag: %s\n",_sortingCol,_dirIn,_dirOut);
-
   DIR* dirIn = opendir(_dirIn);
-  //DIR* dirOut = opendir(_dirOut);
   struct dirent* direntIn;
-  //struct dirent* direntOut;
+
 
   // PID crap
   pid_t initialPID = getpid();
   pid_t childProcesses[256]; // might need to make larger, will see with testing.
-  int totalProcesses = 1;
+  totalProcesses++;
   printf("original pid: %d\n",initialPID);
 
   //calling this should recursively iterate through the entire filesystem
@@ -79,14 +76,15 @@ void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
     //process sub-directories recursively
     if(isFile(direntName->d_name) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-        printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
+        //printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
         fork();   //fork a process to take care of it
 
         if(PID != getpid()){  //only child process will get this shit
+          printf("[%i]Process forked for directory: %s\n",getpid(),direntName->d_name);
           processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)),dirOut);
-          wait();  //prevent orphans
           break;
         }
+        wait();  //prevent orphans
         continue;  //to skip the current pointer value
 
       }
@@ -96,13 +94,14 @@ void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-      printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
+      //printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
       fork();
       if(PID != getpid()){
+        printf("[%i]Process forked for csv file: %s\n",getpid(),direntName->d_name);
         fileSorter(_sortingCol,direntName->d_name,dirOut);
-        wait();   //placement of wait() is critical here to prevent orphans but also not double sort
         break;
       }
+      wait();
     }
   }
 }
@@ -150,7 +149,7 @@ void strip_ext(char *fname)
 
 void fileSorter(char* sortingCol, char* file, char* dirout){
 
-  printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
+  //printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
   FILE* _file = fopen(file, "r");
   if((_file == NULL) || (ftell(_file)==-1)){
     printf("[%i]Error sorting file: %s, exiting...\n",getpid(),file);
@@ -562,7 +561,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
 
   FILE* foutput;
   foutput = fopen(outputName,"w+");
-  printf("[%i]Creating file: %s\n",getpid(),outputName);
+  //printf("[%i]Creating file: %s\n",getpid(),outputName);
   int i;
   char * firstRow = (char *)malloc(sizeof(char)*1000);
   memset(firstRow,'\0',sizeof(firstRow));
