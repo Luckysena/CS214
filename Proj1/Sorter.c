@@ -8,6 +8,11 @@ enum _boolean {false, true};
 
 bool compare(data leftArr, data rightArr, int comp_ptr)
 {
+	char c1 = leftArr.title[0];
+	char c2 = rightArr.title[0];
+	char * tmp1 = leftArr.title;
+	char * tmp2 = rightArr.title;
+
 	switch(comp_ptr)
 	{
 		case 0:
@@ -46,7 +51,15 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			return strcmp(leftArr.act1Name,rightArr.act1Name) < 0;
 		break;
 		case 11:
-			return strcmp(leftArr.title,rightArr.title) < 0;
+
+			if(c1 == '\"'){
+				tmp1++;
+			}
+			if(c2 == '\"'){
+				tmp2++;
+			}
+
+			return strcmp(tmp1,tmp2) < 0;
 		break;
 		case 12:
 			return atoi(leftArr.numVoted) <= atoi(rightArr.numVoted);

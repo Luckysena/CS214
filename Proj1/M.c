@@ -175,7 +175,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
       while(type<28)            // fill in struct attributes
       {
 
-       // printf("%s\n",p);
+
         switch(type)
         {
 
@@ -306,19 +306,21 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
                  else
               strcpy(read.act1Name,"");
 
-              p = strtok_new(NULL, delimiter);
+              p = strtok_new(NULL, "exception");
 
 
           }
           break;
           case 11:
           { read.title= (char*) malloc(sizeof(char)*400);
+
              if(*p)
               strcpy(read.title,p);
                  else
               strcpy(read.title,"");
 
               p = strtok_new(NULL, delimiter);
+
 
           }
           break;
@@ -568,7 +570,7 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
     }
     free(col_names[i]);      //free the memory used for col name array
   }
-  
+
   fprintf(foutput, "%s\n", firstRow);
   free(firstRow);
 
@@ -644,6 +646,10 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
 
 char *strtok_new(char * string, char const* delimiter)
 {
+   char * delim = (char*)malloc(sizeof(char)*25);
+   memset(delim,'/0',sizeof(delim));
+   strcpy(delim,"exception");
+
    static char *source = NULL;
    char *p, *riturn = 0;
    if(string != NULL)
@@ -653,6 +659,21 @@ char *strtok_new(char * string, char const* delimiter)
    if(source == NULL)
     {
     return NULL;
+   }
+   if(strcmp(delimiter,delim)==0){
+
+     if((p = strpbrk(source, "\"")) != NULL){
+       if((p = strpbrk(source+1, "\"")) != NULL){
+         p++;
+         printf("%s\n",source);
+         *p = 0;
+         printf("%s\n",source);
+         riturn = source;
+         source = ++p;
+         return riturn;
+       }
+     }
+
    }
    if((p = strpbrk (source, ",")) != NULL || (p = strpbrk (source, "\n")) != NULL)
     {
