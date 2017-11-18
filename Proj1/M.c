@@ -148,8 +148,6 @@ void strip_ext(char *fname)
 }
 
 void fileSorter(char* sortingCol, char* file, char* dirout){
-
-  //printf("[%i]Sorting file: %s, with column: %s\n",getpid(),file,sortingCol);
   FILE* _file = fopen(file, "r");
   if((_file == NULL) || (ftell(_file)==-1)){
     printf("[%i]Error sorting file: %s, exiting...\n",getpid(),file);
