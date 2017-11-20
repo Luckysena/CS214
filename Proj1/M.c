@@ -5,14 +5,13 @@
 #include <sys/stat.h>
 #include <errno.h>
 char *strtok_new(char * string, char const * delimiter);
+char *getCurrentDir(void);
 char * _sortingCol;
-int totalProcesses;
 int main(int argc, char const *argv[])
 {
 
   //Following code will check for command line args and take them if given or set defaults
-  totalProcesses = 0;
-  int i, result;
+  int i, result, totalProcesses;
   char colFlag[10], dirInFlag[10], dirOutFlag[10];   //command line flags
   char * _dirIn = NULL;
   char * _dirOut = NULL; //pointers to names of args
@@ -51,37 +50,37 @@ int main(int argc, char const *argv[])
     _dirOut = _dirIn;
   }
   DIR* dirIn = opendir(_dirIn);
-  struct dirent* direntIn;
 
 
   // PID crap
   pid_t initialPID = getpid();
-  pid_t childProcesses[256]; // might need to make larger, will see with testing.
-  totalProcesses++;
-  printf("original pid: %d\n",initialPID);
-
+  printf("original pid: %i\n",initialPID);
+  totalProcesses = 1;
   //calling this should recursively iterate through the entire filesystem
-  processDir(dirIn, direntIn, _dirOut);
+  totalProcesses += processDir(dirIn, _dirIn, _dirOut);
+  if(getpid() == initialPID){
+    printf("[%i]Total Processes spawned: %i\n",getpid(),totalProcesses);
+  }
+  return 0;
 }
 
-void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
+int processDir(DIR* dirName, char* _dirName ,char* dirOut){
   // will accept the current directory and run fileSorter() on any .csv found
-
+  int processesCounter = 0;
+  chdir(_dirName);
+  //printf("[%i]The directory we're in is: %s\n",getpid(),getCurrentDir());
 
   pid_t PID = getpid();    //debugging purposes, get current process PID
-
+  struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
 
-    //printf("[%d]Working with file: %s\n", PID,direntName->d_name);
     //process sub-directories recursively
     if(isFile(direntName->d_name) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-        //printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
-        fork();   //fork a process to take care of it
-
-        if(PID != getpid()){  //only child process will get this shit
+        if(fork() == 0){  //only child process will get this shit
           printf("[%i]Process forked for directory: %s\n",getpid(),direntName->d_name);
-          processDir(opendir(direntName->d_name),readdir(opendir(direntName->d_name)),dirOut);
+          processesCounter++;
+          processesCounter += processDir(opendir(direntName->d_name),direntName->d_name,dirOut);
           break;
         }
         wait();  //prevent orphans
@@ -94,16 +93,16 @@ void processDir(DIR* dirName, struct dirent* direntName, char* dirOut){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-      //printf("[%i]%s is not a regular file, forking...\n",getpid(),direntName->d_name);
-      fork();
-      if(PID != getpid()){
+      if(fork()==0){
         printf("[%i]Process forked for csv file: %s\n",getpid(),direntName->d_name);
+        processesCounter++;
         fileSorter(_sortingCol,direntName->d_name,dirOut);
         break;
       }
       wait();
     }
   }
+  return processesCounter;
 }
 
 int isCSV(const char* str){
@@ -147,13 +146,41 @@ void strip_ext(char *fname)
     }
 }
 
+char *getCurrentDir(void){
+    char *currWorkDir, *token;
+    char buffer[PATH_MAX + 1];
+    char *directory;
+    size_t length;
+
+    currWorkDir = getcwd(buffer, PATH_MAX + 1 );
+    token = strrchr(currWorkDir, '/');
+
+    if( currWorkDir == NULL ){
+        printf("Error"); /* You decide here */
+        exit(1);
+    }
+
+    if (token == NULL) {
+        printf("Error"); /* You decide here */
+        exit(1);
+    }
+
+    length = strlen(token);
+    directory = (char*)malloc(length);
+    memcpy(directory, token+1, length);
+
+    return directory;
+}
+
+
 void fileSorter(char* sortingCol, char* file, char* dirout){
+  //printf("[%i]The directory we're in is: %s\n",getpid(),getCurrentDir());
   FILE* _file = fopen(file, "r");
-  if((_file == NULL) || (ftell(_file)==-1)){
-    printf("[%i]Error sorting file: %s, exiting...\n",getpid(),file);
+  if((_file == NULL)){
+    printf("[%i]Error sorting file: %s, exiting...\n",getpid(),strerror(errno));
     return;
   }
-  char * col_names[28];  //array which contains name of columns
+  char * col_names[28];  // array which contains name of columns
   int init = 0;         // counter for rows
   data total[10000];     // array for data structs
   char string[4000];    // stdin string buffer
