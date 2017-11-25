@@ -2,7 +2,25 @@
 #ifndef Sorter_H
 #define	Sorter_H
 #include <time.h>
+#include <string.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <pthread.h>
 typedef enum _boolean bool;
+
+typedef struct _sorterInput{
+	char* sortingCol;
+	char* file;
+	char* dirout;
+}sorterInput;
+
+typedef struct _processDirInput{
+	DIR* dirName;
+	char* _dirName;
+	char* dirOut;
+}processdirInput;
 
 typedef struct _data
 {
@@ -38,7 +56,12 @@ typedef struct _data
 }data;
 
 
-//void resize(String * ori); // resizes array if the original aribitrary size is too small
+typedef struct _arraylist{
+	size_t size;
+	int capacity;
+	data* dataVal;
+}ArrayList;
+
 void mergeData(data* A,int left , int middle , int right, int comp_ptr) ; // Merges the two arrays together returns a combined array
 void split(data* array, int left, int right,int comp_ptr);// splits the original array returning one array that is split upper half and only keeping the lower half of the array
 bool compareString(char* A, char* B);

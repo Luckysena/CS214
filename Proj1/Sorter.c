@@ -129,8 +129,7 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 	}
 
 }
-void mergeData(data *array,int left , int middle , int right, int comp_ptr) // Merges the two arrays together returns a combined array
-{
+void mergeData(data *array,int left , int middle , int right, int comp_ptr){
 	int size1,size2;
 	size1 = middle-left+1;
 	size2 = right-middle;
@@ -193,4 +192,37 @@ void split(data *array, int left, int right,int comp_ptr)
 		mergeData(array,left,middle,right,comp_ptr);
 	}
 return;
+}
+
+ArrayList * ArrayList_create(int n){
+	ArrayList *list = malloc(sizeof(*list));
+	if(list == NULL){
+		return NULL;
+	}
+	list->capacity = n;
+	list->size = 0;
+	list->dataVal = calloc(n,sizeof(data));
+	if(list->dataVal == NULL){
+		free(list);
+		return NULL;
+	}
+	return list;
+}
+ArrayList * Arraylist_resize(ArrayList * list, int cap){
+	ArrayList * newList = ArrayList_create((2*cap));
+	int i;
+	for(i = 0; i < cap; i++){
+		(newList->dataVal)[i] = (list->dataVal)[i];
+	}
+	newList->size = cap;
+	return newList;
+}
+
+ArrayList * ArrayList_add(ArrayList * list, data elem){
+	list->dataVal[list->size] = elem;
+	(list->size)++;
+	if((list->capacity)==(list->size)){
+		list = Arraylist_resize(list,(list->capacity));
+	}
+	return list;
 }

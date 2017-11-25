@@ -1,12 +1,10 @@
 #include "Sorter.c"
-#include <string.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
 char *strtok_new(char * string, char const * delimiter);
-char *getCurrentDir(void);
+void getCurrentDir(void);
 char * _sortingCol;
+void processDir(void*);
+void fileSorter(void* arguments);
+ArrayList * outputList;
 int main(int argc, char const *argv[])
 {
 
@@ -52,35 +50,48 @@ int main(int argc, char const *argv[])
   DIR* dirIn = opendir(_dirIn);
 
 
-  // PID crap
-  pid_t initialPID = getpid();
-  printf("original pid: %i\n",initialPID);
+  // TID crap
+  pthread_t tid;
+  processdirInput values;
+  values.dirName = dirIn;
+  values._dirName = _dirIn;
+  values.dirOut = _dirOut;
 
-  //calling this should recursively iterate through the entire filesystem
-  processDir(dirIn, _dirIn, _dirOut);
+  outputList = ArrayList_create(10000);
+
+
+  pthread_create(&tid,0,processDir,(void*)&values);
+  pthread_join(tid,NULL);
   return 0;
 }
 
-void processDir(DIR* dirName, char* _dirName ,char* dirOut){
-  // will accept the current directory and run fileSorter() on any .csv found
-  chdir(_dirName);
-  //printf("[%i]The directory we're in is: %s\n",getpid(),getCurrentDir());
+void processDir(void* arguments){
 
-  pid_t PID = getpid();    //debugging purposes, get current process PID
+  processdirInput *args = arguments;
+  DIR* dirName = args -> dirName;
+  char* _dirName = args -> _dirName;
+  char* dirOut = args -> dirOut;
+  printf("[%i]Thread created for directory: %s\n",1,_dirName);
+  pthread_t tid;
+
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
+    //printf("Working with file: %s\n",direntName->d_name);
 
-    //process sub-directories recursively
     if(isFile(direntName->d_name) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-        if(fork() == 0){  //only child process will get this shit
-          printf("[%i]Process forked for directory: %s\n",getpid(),direntName->d_name);
-          processDir(opendir(direntName->d_name),direntName->d_name,dirOut);
-          break;
-        }
-        wait();  //prevent orphans
-        continue;  //to skip the current pointer value
-
+          char* directoryName = (char*)malloc(sizeof(char)*1000);
+          memset(directoryName,'\0',sizeof(directoryName));
+          strcat(directoryName,_dirName);
+          strcat(directoryName,"/");
+          strcat(directoryName,direntName->d_name);
+          processdirInput values;
+          values.dirName = opendir(direntName->d_name);
+          values._dirName = directoryName;
+          values.dirOut = dirOut;
+          pthread_create(&tid,0,processDir,(void*)&values);
+          pthread_join(tid,NULL);
+          continue;  //to skip the current pointer value
       }
       else{
         continue;  //to skip . and ..
@@ -88,15 +99,22 @@ void processDir(DIR* dirName, char* _dirName ,char* dirOut){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-      if(fork()==0){
-        printf("[%i]Process forked for csv file: %s\n",getpid(),direntName->d_name);
-        fileSorter(_sortingCol,direntName->d_name,dirOut);
-        break;
-      }
-      wait();
+        char * filename = (char*)malloc(sizeof(char)*1000);
+        memset(filename,'\0',sizeof(filename));
+        strcat(filename,_dirName);
+        strcat(filename,"/");
+        strcat(filename,direntName->d_name);
+        sorterInput sorterValues;
+        sorterValues.sortingCol= _sortingCol;
+        sorterValues.file = filename;
+        sorterValues.dirout = dirOut;
+        pthread_create(&tid,0,fileSorter,(void*)&sorterValues);
+        pthread_join(tid,NULL);
+        continue;
+
     }
   }
-  return;
+  pthread_exit(NULL);
 }
 
 int isCSV(const char* str){
@@ -109,8 +127,7 @@ int isCSV(const char* str){
 }
 
 
-int isFile(const char* name)
-{
+int isFile(const char* name){
     DIR* directory = opendir(name);
 
     if(directory != NULL)
@@ -127,8 +144,7 @@ int isFile(const char* name)
     return -1;
 }
 
-void strip_ext(char *fname)
-{
+void strip_ext(char *fname){
     char *end = fname + strlen(fname);
 
     while (end > fname && *end != '.') {
@@ -140,7 +156,7 @@ void strip_ext(char *fname)
     }
 }
 
-char *getCurrentDir(void){
+void getCurrentDir(void){
     char *currWorkDir, *token;
     char buffer[PATH_MAX + 1];
     char *directory;
@@ -162,16 +178,21 @@ char *getCurrentDir(void){
     length = strlen(token);
     directory = (char*)malloc(length);
     memcpy(directory, token+1, length);
-
-    return directory;
+    printf("Working directory: %s\n",directory);
+    return;
 }
 
 
-void fileSorter(char* sortingCol, char* file, char* dirout){
-  //printf("[%i]The directory we're in is: %s\n",getpid(),getCurrentDir());
+void fileSorter(void* arguments){
+
+  sorterInput *args = arguments;
+  char* sortingCol = args -> sortingCol;
+  char* file = args -> file;
+  char* dirout = args -> dirout;
   FILE* _file = fopen(file, "r");
+  printf("[%i]Thread created for csv file: %s\n",1,file);
   if((_file == NULL)){
-    printf("[%i]Error sorting file: %s, exiting...\n",getpid(),strerror(errno));
+    printf("[%i]Error sorting file: %s, %s exiting...\n",1,file, strerror(errno));
     return;
   }
   char * col_names[28];  // array which contains name of columns
@@ -567,9 +588,8 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
       break;  //break out of the loop once we reach the col name we need
     }
   }
-  chdir(dirout);
-  //file output creation
-  char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
+  //file output creation !!!!!!!!!!!!!!!!!!!!!!!!!!!
+  /*char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
   memset(outputName,'\0',sizeof(outputName));
   strip_ext(file);
   strcat(outputName, file);
@@ -577,10 +597,8 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
   strcat(outputName,sortingCol);
   strcat(outputName,".csv");
 
-
   FILE* foutput;
   foutput = fopen(outputName,"w+");
-  //printf("[%i]Creating file: %s\n",getpid(),outputName);
   int i;
   char * firstRow = (char *)malloc(sizeof(char)*1000);
   memset(firstRow,'\0',sizeof(firstRow));
@@ -598,7 +616,15 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
   if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
     comp_ptr = 2; //defaults to num_critic_for_reviews
   }
+
+  */
+
   split(total,0,init-2,comp_ptr);  // sort the data
+  int i;
+  for(i = 0; i < init; i++){
+    outputList = ArrayList_add(outputList,total[i]);
+  }
+  /*
   char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
   for (i = 0; i <init-1 ; i++)
   {
@@ -662,7 +688,8 @@ void fileSorter(char* sortingCol, char* file, char* dirout){
     fprintf(foutput, "%s\n",bufferIn); //output
   }
   fclose(foutput);
-  return;
+  */
+  pthread_exit(NULL);
 }
 
 char *strtok_new(char * string, char const* delimiter)
@@ -705,8 +732,7 @@ char *strtok_new(char * string, char const* delimiter)
     }
 return riturn;
 }
-void toString(data *total)
-{
+void toString(data *total){
 int i;
 for (i = 0; i <28 ; i++)
   {
