@@ -62,6 +62,85 @@ int main(int argc, char const *argv[])
 
   pthread_create(&tid,0,processDir,(void*)&values);
   pthread_join(tid,NULL);
+
+  printf("Before output file creation, outputList size: %i\n",outputList->size);
+  //output file creation
+  char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
+  memset(outputName,'\0',sizeof(outputName));
+  strcat(outputName, "AllFiles-sorted-");
+  strcat(outputName,_sortingCol);
+  strcat(outputName,".csv");
+  chdir(_dirOut);
+  FILE* foutput;
+  foutput = fopen(outputName,"w+");
+  char * firstRow = (char *)malloc(sizeof(char)*1000);
+  memset(firstRow,'\0',sizeof(firstRow));
+  strcat(firstRow,"color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross	genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes,");
+  fprintf(foutput, "%s\n", firstRow);
+  free(firstRow);
+  char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
+  for (i = 0; i <(outputList->size) ; i++)
+  {
+    memset(bufferIn,'\0',sizeof(bufferIn));
+    strcat(bufferIn,outputList->dataVal[i].color);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].dirName);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].critCount);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].durMin);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].dirFB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].act3FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].act2Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].act1FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].gross);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].genre);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].act1Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].title);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].numVoted);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].totalFB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].act3Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].faceNum);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].keyWord);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].link);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].numReview);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].lang);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].country);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].rated);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].budget);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].year);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].act2FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].score);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].ratio);
+    strcat(bufferIn,",");
+    strcat(bufferIn,outputList->dataVal[i].movieFB);
+    fprintf(foutput, "%s\n",bufferIn); //output
+  }
+  fclose(foutput);
+
   return 0;
 }
 
@@ -76,8 +155,6 @@ void processDir(void* arguments){
 
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
-    //printf("Working with file: %s\n",direntName->d_name);
-
     if(isFile(direntName->d_name) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
           char* directoryName = (char*)malloc(sizeof(char)*1000);
@@ -588,107 +665,19 @@ void fileSorter(void* arguments){
       break;  //break out of the loop once we reach the col name we need
     }
   }
-  //file output creation !!!!!!!!!!!!!!!!!!!!!!!!!!!
-  /*char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
-  memset(outputName,'\0',sizeof(outputName));
-  strip_ext(file);
-  strcat(outputName, file);
-  strcat(outputName,"-sorted-");
-  strcat(outputName,sortingCol);
-  strcat(outputName,".csv");
-
-  FILE* foutput;
-  foutput = fopen(outputName,"w+");
-  int i;
-  char * firstRow = (char *)malloc(sizeof(char)*1000);
-  memset(firstRow,'\0',sizeof(firstRow));
-  for(i = 0; i<28; i++){
-    strcat(firstRow, col_names[i]);
-    if(i != 27){
-      strcat(firstRow, ",");
-    }
-    free(col_names[i]);      //free the memory used for col name array
-  }
-
-  fprintf(foutput, "%s\n", firstRow);
-  free(firstRow);
 
   if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
     comp_ptr = 2; //defaults to num_critic_for_reviews
   }
 
-  */
+
 
   split(total,0,init-2,comp_ptr);  // sort the data
   int i;
-  for(i = 0; i < init; i++){
+  for(i = 0; i < (init-1); i++){
     outputList = ArrayList_add(outputList,total[i]);
   }
-  /*
-  char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
-  for (i = 0; i <init-1 ; i++)
-  {
-    // copy the sorted information in row by row with commas
-    memset(bufferIn,'\0',sizeof(bufferIn));
-    strcat(bufferIn,total [i].color);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].dirName);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].critCount);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].durMin);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].dirFB);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].act3FB);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].act2Name);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].act1FB);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].gross);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].genre);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].act1Name);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].title);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].numVoted);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].totalFB);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].act3Name);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].faceNum);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].keyWord);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].link);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].numReview);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].lang);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].country);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].rated);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].budget);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].year);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].act2FB);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].score);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].ratio);
-    strcat(bufferIn,",");
-    strcat(bufferIn,total [i].movieFB);
-    fprintf(foutput, "%s\n",bufferIn); //output
-  }
-  fclose(foutput);
-  */
+
   pthread_exit(NULL);
 }
 
