@@ -6,6 +6,206 @@
 #include "Sorter.h"
 enum _boolean {false, true};
 
+int heapCompare(data leftArr, data rightArr, int comp_ptr){
+	char c1 = leftArr.title[0];
+	char c2 = rightArr.title[0];
+	char * tmp1 = leftArr.title;
+	char * tmp2 = rightArr.title;
+
+	switch(comp_ptr)
+	{
+		case 0:
+			return strcmp(leftArr.color,rightArr.color);
+		break;
+		case 1:
+		{
+			return strcmp(leftArr.dirName,rightArr.dirName);
+		}
+		break;
+		case 2:
+			return strcmp(leftArr.critCount,rightArr.critCount);
+		break;
+		case 3:
+			if(atoi(leftArr.durMin) < atoi(rightArr.durMin)){
+				return -1;
+			}
+			else if(atoi(leftArr.durMin) == atoi(rightArr.durMin)){
+				return 0;
+			}
+			else return 1;
+		break;
+		case 4:
+			return strcmp(leftArr.dirFB,rightArr.dirFB) ;
+		break;
+		case 5:
+			 if(atoi(leftArr.act3FB) < atoi(rightArr.act3FB)){
+				 return -1;
+			 }
+			 else if(atoi(leftArr.act3FB) == atoi(rightArr.act3FB)){
+				 return 0;
+			 }
+			 else return 1;
+		break;
+		case 6:
+			return strcmp(leftArr.act2Name,rightArr.act2Name);
+		break;
+		case 7:
+		if(atoi(leftArr.act1FB) < atoi(rightArr.act1FB)){
+			return -1;
+		}
+		else if(atoi(leftArr.act1FB) == atoi(rightArr.act1FB)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 8:
+		if(atoi(leftArr.gross) <= atoi(rightArr.gross)){
+			return -1;
+		}
+		else if(atoi(leftArr.gross) <= atoi(rightArr.gross)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 9:
+			return strcmp(leftArr.genre,rightArr.genre);
+		break;
+		case 10:
+			return strcmp(leftArr.act1Name,rightArr.act1Name);
+		break;
+		case 11:
+
+			if(c1 == '\"'){
+				tmp1++;
+			}
+			if(c2 == '\"'){
+				tmp2++;
+			}
+			//printf("When comparing %s and %s, strcmp says: %i\n",tmp1,tmp2,strcmp(tmp1,tmp2));
+			return strcmp(tmp1,tmp2);
+		break;
+		case 12:
+			if(atoi(leftArr.numVoted) <= atoi(rightArr.numVoted)){
+				return -1;
+			}
+			else if(atoi(leftArr.numVoted) <= atoi(rightArr.numVoted)){
+				return 0;
+			}
+			else return 1;
+		break;
+		case 13:
+		if(atoi(leftArr.totalFB) <= atoi(rightArr.totalFB)){
+			return -1;
+		}
+		else if(atoi(leftArr.totalFB) <= atoi(rightArr.totalFB)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 14:
+			return strcmp(leftArr.act3Name,rightArr.act3Name);
+		break;
+		case 15:
+		if(atoi(leftArr.faceNum) <= atoi(rightArr.faceNum)){
+			return -1;
+		}
+		else if(atoi(leftArr.faceNum) <= atoi(rightArr.faceNum)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 16:
+			return strcmp(leftArr.keyWord,rightArr.keyWord);
+		break;
+		case 17:
+			return strcmp(leftArr.link,rightArr.link);
+		break;
+		case 18:
+		if(atoi(leftArr.numReview) <= atoi(rightArr.numReview)){
+			return -1;
+		}
+		else if(atoi(leftArr.numReview) <= atoi(rightArr.numReview)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 19:
+			return strcmp(leftArr.lang,rightArr.lang);
+		break;
+		case 20:
+			return strcmp(leftArr.country,rightArr.country);
+		break;
+		case 21:
+			return strcmp(leftArr.rated,rightArr.rated);
+		break;
+		case 22:
+		if(atoi(leftArr.budget) <= atoi(rightArr.budget)){
+			return -1;
+		}
+		else if(atoi(leftArr.budget) <= atoi(rightArr.budget)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 23:
+		if(atoi(leftArr.year) <= atoi(rightArr.year)){
+			return -1;
+		}
+		else if(atoi(leftArr.year) <= atoi(rightArr.year)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 24:
+		if(atoi(leftArr.act2FB) <= atoi(rightArr.act2FB)){
+			return -1;
+		}
+		else if(atoi(leftArr.act2FB) <= atoi(rightArr.act2FB)){
+			return 0;
+		}
+		else return 1;
+		break;
+		case 25:{
+			char * endToken;
+			char * endToken2;
+			double left = strtol(leftArr.score,&endToken,10);
+			double right = strtol(rightArr.score,&endToken,10);
+			return left <= right;
+		}
+		break;
+		case 26:{
+				char * endToken;
+			char * endToken2;
+			double left = strtol(leftArr.ratio,&endToken,10);
+			double right = strtol(rightArr.ratio,&endToken,10);
+			if(left<right){
+				return -1;
+			}
+			else if(left==right){
+				return 0;
+			}
+			else return 1;
+		}
+		break;
+		case 27:{
+			 int left = atoi(leftArr.movieFB);
+			 int right = atoi(rightArr.movieFB);
+			if(left < right){
+				return -1;
+			}
+			else if (left == right){
+				return 0;
+			}
+			else return 1;
+		}
+		break;
+		default:
+		return -2;
+		break;
+
+	}
+}
+
 bool compare(data leftArr, data rightArr, int comp_ptr)
 {
 	char c1 = leftArr.title[0];
@@ -197,7 +397,8 @@ return;
 Node * Node_create(data * elem){
 	Node * node = malloc(sizeof(Node));
 	node->entries = 1;
-	node->dataVal = elem;
+	node->dataVal = malloc(sizeof(data));
+	memcpy(node->dataVal,elem,sizeof(data));
 	if(node == NULL){
 		printf("Node creation failed\n");
 		return node;
@@ -226,7 +427,7 @@ ArrayList * Arraylist_resize(ArrayList * list, int cap){
 	return newList;
 }
 
-ArrayList * ArrayList_add(ArrayList * list, data * elem){
+void ArrayList_add(ArrayList * list, data * elem){
 	if(elem->color == NULL){
 		printf("Adding elem failed due to null elem\n");
 		return;
@@ -236,7 +437,7 @@ ArrayList * ArrayList_add(ArrayList * list, data * elem){
 	if((list->capacity)==(list->size)){
 		list = Arraylist_resize(list,(list->capacity));
 	}
-	return list;
+	return;
 }
 
 Heap * Heap_create(int n){
@@ -250,32 +451,203 @@ Heap * Heap_create(int n){
 	return heap;
 }
 
-Heap * SiftUp(Heap * heap, int comp_ptr){
+void SiftUp(Heap * heap, int comp_ptr){
 	int k, p;
 	k = (heap->list->size)-1;
 	p = (k-1)/2;
 	if(k==p){
 		//single node case
-		return heap;
+		return;
 	}
-	printf("Swapping %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
+	//printf("Comparing %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
 
-	//doing the swap for the parent and child node, might be potential issue with pointers here
-	while(compare(*(heap->list->nodeList[k]->dataVal),*(heap->list->nodeList[p]->dataVal),comp_ptr)){
-		//printf("Swapping %s with %s\n",heap->list->nodeList[k].dataVal->title,heap->list->nodeList[p].dataVal->title);
-		data temp =  *(heap->list->nodeList[p]->dataVal);
-		heap->list->nodeList[p]->dataVal = heap->list->nodeList[k]->dataVal;
-		heap->list->nodeList[k]->dataVal = &temp;
+	while((heapCompare(*(heap->list->nodeList[k]->dataVal),*(heap->list->nodeList[p]->dataVal),comp_ptr))<0){
+		printf("Swapping %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
+		data * temp = malloc(sizeof(data));
+		memcpy(temp,heap->list->nodeList[p]->dataVal,sizeof(data));
+		memcpy(heap->list->nodeList[p]->dataVal,heap->list->nodeList[k]->dataVal,sizeof(data));
+		memcpy(heap->list->nodeList[k]->dataVal,temp,sizeof(data));
+
 		k = p;
 		p = (k-1)/2;
+		free(temp);
 	}
-	return heap;
+	//if the nodes are equal
+	if(heapCompare(*(heap->list->nodeList[k]->dataVal),*(heap->list->nodeList[p]->dataVal),comp_ptr)==0){
+		return;
+	}
+
+	return;
 }
 
-Heap * Heap_add(Heap * heap, data * elem, int comp_ptr){
-	printf("Adding to heap: %s\n",elem->title);
-	heap->list = ArrayList_add(heap->list,elem);
+void Heap_add(Heap * heap, data * elem, int comp_ptr){
+	//printf("Adding to heap: %s\n",elem->title);
+	ArrayList_add(heap->list,elem);
 	//printf("Item added.\n");
-	heap = SiftUp(heap,comp_ptr);
-	return heap;
+	SiftUp(heap,comp_ptr);
+	return;
+}
+void swapNodes(Heap * heap, int p, int k){
+	data * temp = heap->list->nodeList[p]->dataVal;
+	heap->list->nodeList[p]->dataVal = heap->list->nodeList[k]->dataVal;
+	heap->list->nodeList[k]->dataVal = temp;
+	return;
+}
+
+SiftDown(Heap * heap, int comp_ptr){
+	int p, c1, c2, k, sizeHeap;
+	p = 0; c1 = 1; c2 = 2; sizeHeap = heap->list->size;
+	data * datap, *data1, *data2;
+
+	if(sizeHeap == 1){
+		return;
+	}
+
+	if(c2>(sizeHeap-1)){
+		datap = heap->list->nodeList[p]->dataVal;
+		data1 = heap->list->nodeList[c1]->dataVal;
+		k = heapCompare(*datap,*data1,comp_ptr);
+		if(k<=0){
+			return;
+		}
+		else{
+			printf("Swapping %s with %s\n",datap->title,data1->title);
+			swapNodes(heap,p,c1);
+
+		}
+		return;
+	}
+
+
+	datap = heap->list->nodeList[p]->dataVal;
+	data1 = heap->list->nodeList[c1]->dataVal;
+	data2 = heap->list->nodeList[c2]->dataVal;
+
+		while((heapCompare(*datap,*data1,comp_ptr)>0) && (heapCompare(*datap,*data2,comp_ptr)>0)){
+			//printf("Situation 1\n");
+			k = heapCompare(*data1,*data2,comp_ptr);
+			if(k <= 0){
+				printf("Swapping %s with %s\n",datap->title,data1->title);
+				swapNodes(heap,p,c1);
+				p = c1;
+				c1 = 2*p + 1;
+				c2 = 2*p + 2;
+				printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
+				printf("list size: %i\n",sizeHeap);
+
+				if(c1>(sizeHeap-1)){
+					printf("Happened!\n");
+					return;
+				}
+
+				else if(c2>(sizeHeap-1)){
+					k = heapCompare(*datap,*data1,comp_ptr);
+					if(k<0){
+						swapNodes(heap,p,c1);
+					}
+					return;
+				}
+				datap = heap->list->nodeList[p]->dataVal;
+				data1 = heap->list->nodeList[c1]->dataVal;
+				data2 = heap->list->nodeList[c2]->dataVal;
+				continue;
+			}
+			else if(k > 0){
+				printf("Swapping %s with %s\n",datap->title,data2->title);
+				swapNodes(heap,p,c2);
+				p = c2;
+				c1 = 2*p + 1;
+				c2 = 2*p + 2;
+				printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
+				printf("list size: %i\n",sizeHeap);
+
+				if(c1>sizeHeap){
+					printf("Happened!\n");
+					return;
+				}
+				else if(c2>sizeHeap){
+					k = heapCompare(*datap,*data2,comp_ptr);
+					if(k<0){
+						swapNodes(heap,p,c1);
+						return;
+					}
+				}
+				datap = heap->list->nodeList[p]->dataVal;
+				data1 = heap->list->nodeList[c1]->dataVal;
+				data2 = heap->list->nodeList[c2]->dataVal;
+				continue;
+			}
+		}
+
+		if((heapCompare(*datap,*data1,comp_ptr)<=0) && (heapCompare(*datap,*data2,comp_ptr)<=0)){
+			printf("Situation 2\n");
+			return;
+		}
+		while((heapCompare(*datap,*data1,comp_ptr)>0) && (heapCompare(*datap,*data2,comp_ptr)<=0)){
+			printf("Situation 3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1????????????\n");
+			printf("Swapping %s with %s\n",datap->title,data1->title);
+			swapNodes(heap,p,c1);
+			p = c1;
+			c1 = 2*p + 1;
+			c2 = 2*p + 2;
+			//printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
+			printf("list size: %i\n",sizeHeap);
+
+			if(c1>(sizeHeap)){
+				printf("Happened!\n");
+				return;
+			}
+
+			else if(c2>(sizeHeap)){
+				k = heapCompare(*datap,*data1,comp_ptr);
+				if(k<0){
+					swapNodes(heap,p,c1);
+				}
+				return;
+			}
+			datap = heap->list->nodeList[p]->dataVal;
+			data1 = heap->list->nodeList[c1]->dataVal;
+			data2 = heap->list->nodeList[c2]->dataVal;
+			continue;
+		}
+		while((heapCompare(*datap,*data1,comp_ptr)<=0) && (heapCompare(*datap,*data2,comp_ptr)>0)){
+			printf("Situation 4!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+			printf("Swapping %s with %s\n",datap->title,data2->title);
+			swapNodes(heap,p,c2);
+			p = c1;
+			c1 = 2*p + 1;
+			c2 = 2*p + 2;
+			printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
+			printf("list size: %i\n",sizeHeap);
+
+			if(c1>(sizeHeap)){
+				printf("Happened!\n");
+				return;
+			}
+
+			else if(c2>(sizeHeap)){
+				k = heapCompare(*datap,*data1,comp_ptr);
+				if(k<0){
+					swapNodes(heap,p,c1);
+				}
+				return;
+			}
+			datap = heap->list->nodeList[p]->dataVal;
+			data1 = heap->list->nodeList[c1]->dataVal;
+			data2 = heap->list->nodeList[c2]->dataVal;
+			continue;
+		}
+return;
+}
+data * Heap_remove(Heap * heap, int comp_ptr){
+	int root, last;
+	root = 0;
+	last = (heap->list->size)-1;
+	data * temp = heap->list->nodeList[root]->dataVal;
+	heap->list->nodeList[root]->dataVal = heap->list->nodeList[last]->dataVal;
+	heap->list->nodeList[last]->dataVal = NULL;
+	heap->list->size--;
+	SiftDown(heap,comp_ptr);
+	return temp;
+
 }

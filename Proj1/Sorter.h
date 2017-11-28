@@ -63,10 +63,7 @@ typedef struct _arraylist{
 	data* dataVal;
 }ArrayList;
 
-typedef struct _heap{
-	ArrayList * list;
-	size_t size;
-}Heap;
+
 
 void mergeData(data* A,int left , int middle , int right, int comp_ptr) ; // Merges the two arrays together returns a combined array
 void split(data* array, int left, int right,int comp_ptr);// splits the original array returning one array that is split upper half and only keeping the lower half of the array

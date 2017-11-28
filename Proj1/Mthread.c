@@ -34,9 +34,9 @@ int main(int argc, char const *argv[])
     }
   }
 
-  if(_sortingCol == NULL){             //default behavior will be sort by crits
-    _sortingCol = (char*)malloc(25*sizeof(char));
-    strcpy(_sortingCol,"num_critic_for_reviews");
+  if(_sortingCol == NULL){             //default behavior will be to terminate
+    printf("Error on input: Missing column flag, terminating program...\n");
+    return 0;
   }
 
   if(_dirIn == NULL){                     //default behavior is current directory
@@ -58,12 +58,52 @@ int main(int argc, char const *argv[])
   values.dirOut = _dirOut;
 
   outputList = ArrayList_create(10000);
-
+  char * columnNames[28];
+  for(i = 0; i<28;i++){
+    columnNames[i] = (char *) malloc(sizeof(char)*250);
+  }
+  strcpy(columnNames[0],"color");
+  strcpy(columnNames[1],"director_name");
+  strcpy(columnNames[2],"num_critic_for_reviews");
+  strcpy(columnNames[3],"duration");
+  strcpy(columnNames[4],"director_facebook_likes");
+  strcpy(columnNames[5],"actor_3_facebook_likes");
+  strcpy(columnNames[6],"actor_2_name");
+  strcpy(columnNames[7],"actor_1_facebook_likes");
+  strcpy(columnNames[8],"gross");
+  strcpy(columnNames[9],"genres");
+  strcpy(columnNames[10],"actor_1_name");
+  strcpy(columnNames[11],"movie_title");
+  strcpy(columnNames[12],"num_voted_users");
+  strcpy(columnNames[13],"cast_total_facebook_likes");
+  strcpy(columnNames[14],"actor_3_name");
+  strcpy(columnNames[15],"facenumber_in_poster");
+  strcpy(columnNames[16],"plot_keywords");
+  strcpy(columnNames[17],"movie_imdb_link");
+  strcpy(columnNames[18],"num_user_for_reviews");
+  strcpy(columnNames[19],"language");
+  strcpy(columnNames[20],"country");
+  strcpy(columnNames[21],"content_rating");
+  strcpy(columnNames[22],"budget");
+  strcpy(columnNames[23],"title_year");
+  strcpy(columnNames[24],"actor_2_facebook_likes");
+  strcpy(columnNames[25],"imdb_score");
+  strcpy(columnNames[26],"aspect_ratio");
+  strcpy(columnNames[27],"movie_facebook_likes");
+  int sortVal;
+  for(i = 0; i < 28; i++){
+    if(strcmp(columnNames[i],_sortingCol) == 0){
+      sortVal = i;
+      break;
+    }
+  }
 
   pthread_create(&tid,0,processDir,(void*)&values);
   pthread_join(tid,NULL);
+  printf("\n");
+  printf("Combining entire list...\n");
+  split(outputList->dataVal,0,(outputList->size)-1,sortVal);
 
-  printf("Before output file creation, outputList size: %i\n",outputList->size);
   //output file creation
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
   memset(outputName,'\0',sizeof(outputName));
@@ -667,7 +707,8 @@ void fileSorter(void* arguments){
   }
 
   if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
-    comp_ptr = 2; //defaults to num_critic_for_reviews
+    printf("Error on input: column name invalid, terminating...\n");
+    return;
   }
 
 

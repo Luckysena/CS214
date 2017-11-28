@@ -58,7 +58,6 @@ bool compare(data leftArr, data rightArr, int comp_ptr)
 			if(c2 == '\"'){
 				tmp2++;
 			}
-
 			return strcmp(tmp1,tmp2) < 0;
 		break;
 		case 12:
@@ -229,37 +228,4 @@ ArrayList * ArrayList_add(ArrayList * list, data elem){
 		list = Arraylist_resize(list,(list->capacity));
 	}
 	return list;
-}
-
-Heap * Heap_create(int n){
-	Heap * heap = malloc(sizeof(*heap));
-	if(heap == NULL){
-		return NULL;
-	}
-	heap->size = n;
-	heap->list = ArrayList_create(n);
-	return heap;
-}
-
-Heap * SiftUp(Heap * heap, int comp_ptr){
-	int k, p;
-	k = heap->list->size;
-	p = (k-1)/2;
-	if(k==p){
-		//single node case
-		return heap;
-	}
-	//doing the swap for the parent and child node, might be potential issue with pointers here
-	while(compare(heap->list->dataVal[k],heap->list->dataVal[p],comp_ptr)<0){
-		data temp =  heap->list->dataVal[p];
-		heap->list->dataVal[p] = heap->list->dataVal[k];
-		heap->list->dataVal[k] = temp;
-	}
-	return heap;
-}
-
-Heap * Heap_add(Heap * heap, data elem, int comp_ptr){
-	heap->list = ArrayList_add(heap->list,elem);
-	heap = SiftUp(heap,comp_ptr);
-	return heap;
 }

@@ -79,70 +79,75 @@ int main(int argc, char const *argv[])
   fprintf(foutput, "%s\n", firstRow);
   free(firstRow);
   char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
-  /*for (i = 0; i <(outputHeap->size) ; i++)
+  data * tempData;
+  for (i = 0; i <(outputHeap->list->size) ; i++)
   {
-    if(outputHeap->list->nodeList[i].dataVal->color == NULL){
-      printf("element %i is null\n",i);
-    }
+    printf("[%i]%s\n",i,outputHeap->list->nodeList[i]->dataVal->title);
+  }
+  int listSize = outputHeap->list->size;
+  for (i = 0; i <(listSize-1) ; i++)
+  {
+    tempData = Heap_remove(outputHeap,11);
+    printf("Removed from heap: %s\n",tempData->title);
     memset(bufferIn,'\0',sizeof(bufferIn));
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->color);
+    strcat(bufferIn,tempData->color);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->dirName);
+    strcat(bufferIn,tempData->dirName);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->critCount);
+    strcat(bufferIn,tempData->critCount);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->durMin);
+    strcat(bufferIn,tempData->durMin);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->dirFB);
+    strcat(bufferIn,tempData->dirFB);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->act3FB);
+    strcat(bufferIn,tempData->act3FB);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->act2Name);
+    strcat(bufferIn,tempData->act2Name);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->act1FB);
+    strcat(bufferIn,tempData->act1FB);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->gross);
+    strcat(bufferIn,tempData->gross);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->genre);
+    strcat(bufferIn,tempData->genre);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->act1Name);
+    strcat(bufferIn,tempData->act1Name);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->title);
+    strcat(bufferIn,tempData->title);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->numVoted);
+    strcat(bufferIn,tempData->numVoted);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->totalFB);
+    strcat(bufferIn,tempData->totalFB);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->act3Name);
+    strcat(bufferIn,tempData->act3Name);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->faceNum);
+    strcat(bufferIn,tempData->faceNum);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->keyWord);
+    strcat(bufferIn,tempData->keyWord);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->link);
+    strcat(bufferIn,tempData->link);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->numReview);
+    strcat(bufferIn,tempData->numReview);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->lang);
+    strcat(bufferIn,tempData->lang);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->country);
+    strcat(bufferIn,tempData->country);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->rated);
+    strcat(bufferIn,tempData->rated);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->budget);
+    strcat(bufferIn,tempData->budget);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->year);
+    strcat(bufferIn,tempData->year);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->act2FB);
+    strcat(bufferIn,tempData->act2FB);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->score);
+    strcat(bufferIn,tempData->score);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->ratio);
+    strcat(bufferIn,tempData->ratio);
     strcat(bufferIn,",");
-    strcat(bufferIn,outputHeap->list->nodeList[i].dataVal->movieFB);
+    strcat(bufferIn,tempData->movieFB);
     fprintf(foutput, "%s\n",bufferIn); //output
   }
-  */
+
   fclose(foutput);
 
   return 0;
@@ -191,6 +196,10 @@ void processDir(void* arguments){
         sorterValues.dirout = dirOut;
         pthread_create(&tid,0,fileSorter,(void*)&sorterValues);
         pthread_join(tid,NULL);
+        /*int i;
+        for(i = 0; i < outputHeap->list->size; i++){
+          printf("After Sort, Values at %i, is: %s\n",i,outputHeap->list->nodeList[i]->dataVal->title);
+        }*/
         continue;
 
     }
@@ -676,10 +685,11 @@ void fileSorter(void* arguments){
 
 
 
-  split(total,0,init-2,comp_ptr);  // sort the data
+
   int i;
+  split(total,0,init-2,comp_ptr);  // sort the data
   for(i = 0; i < (init-1); i++){
-    outputHeap = Heap_add(outputHeap,&(total[i]),comp_ptr);
+    Heap_add(outputHeap,&(total[i]),comp_ptr);
   }
 
   pthread_exit(NULL);
