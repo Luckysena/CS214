@@ -103,7 +103,7 @@ int main(int argc, char const *argv[])
   numThreads++;
   pthread_join(tid,NULL);
 
-  //printf("Before output file creation, outputHeap size: %i\n",outputHeap->list->size);
+  printf("Before output file creation, outputHeap size: %i\n",outputHeap->list->size);
   printf("Total number of created threads (excluding main): %i\n",numThreads);
   //output file creation
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
@@ -206,17 +206,20 @@ void processDir(void* arguments){
 
 
   struct dirent* direntName;
-  while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
-    if(isFile(direntName->d_name) == 0) {
+  while((direntName = readdir(dirName)) != NULL){
+    char * filename = (char*)malloc(sizeof(char)*1000);
+    memset(filename,'\0',sizeof(filename));
+    strcat(filename,_dirName);
+    strcat(filename,"/");
+    strcat(filename,direntName->d_name);
+
+
+    //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
+    if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-          char* directoryName = (char*)malloc(sizeof(char)*1000);
-          memset(directoryName,'\0',sizeof(directoryName));
-          strcat(directoryName,_dirName);
-          strcat(directoryName,"/");
-          strcat(directoryName,direntName->d_name);
           processdirInput values;
-          values.dirName = opendir(direntName->d_name);
-          values._dirName = directoryName;
+          values.dirName = opendir(filename);
+          values._dirName = filename;
           values.dirOut = dirOut;
           pthread_create(&tid,0,processDir,(void*)&values);
           //printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
@@ -230,11 +233,6 @@ void processDir(void* arguments){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-        char * filename = (char*)malloc(sizeof(char)*1000);
-        memset(filename,'\0',sizeof(filename));
-        strcat(filename,_dirName);
-        strcat(filename,"/");
-        strcat(filename,direntName->d_name);
         sorterInput sorterValues;
         sorterValues.sortingCol= _sortingCol;
         sorterValues.file = filename;
@@ -335,9 +333,9 @@ void fileSorter(void* arguments){
   char * col_names[28];  // array which contains name of columns
   int init = 0;         // counter for rows
   data total[30000];     // array for data structs
-  char string[4000];    // stdin string buffer
+  char string[10000];    // stdin string buffer
 
-  while(fgets(string,4000,_file)!= NULL)   // loop to go thru all of input
+  while(fgets(string,10000,_file)!= NULL)   // loop to go thru all of input
   {
       int type = 0;             // counter to assign proper struct attributes
       char delimiter[] = ",";   // delim char
@@ -716,7 +714,6 @@ void fileSorter(void* arguments){
         }
       init++;  //increment the row we're on
     }
-
   fclose(_file);
   // now we need to read the arg column name and set comp_ptr to it
   int comp_ptr = 0;
@@ -731,7 +728,6 @@ void fileSorter(void* arguments){
   for(i = 0; i < (init-1); i++){
     Heap_add(outputHeap,&(total[i]),comp_ptr);
   }
-
   pthread_detach(pthread_self());
 }
 

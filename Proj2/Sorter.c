@@ -459,10 +459,10 @@ void SiftUp(Heap * heap, int comp_ptr){
 		//single node case
 		return;
 	}
-	//printf("Comparing %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
+	//printf("Comparing %s with %s\n",heap->list->nodeList[k]->dataVal->durMin,heap->list->nodeList[p]->dataVal->durMin);
 
 	while((heapCompare(*(heap->list->nodeList[k]->dataVal),*(heap->list->nodeList[p]->dataVal),comp_ptr))<0){
-		//printf("Swapping %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
+		//printf("Swapping %s with %s\n",heap->list->nodeList[k]->dataVal->durMin,heap->list->nodeList[p]->dataVal->durMin);
 		swapNodes(heap,p,k);
 		k = p;
 		p = (k-1)/2;
