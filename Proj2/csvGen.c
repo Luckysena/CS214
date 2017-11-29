@@ -16,7 +16,7 @@ void createCSV(char * dirName, char** toCopy){
 
 
   //char string[10000];
-  for(i = 0; i < 5000; i++){
+  for(i = 0; i < 500; i++){
     fprintf(fp1,"%s\n",toCopy[i]);
     //printf("%i\n",i);
   }
