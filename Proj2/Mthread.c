@@ -202,7 +202,7 @@ void processDir(void* arguments){
   DIR* dirName = args -> dirName;
   char* _dirName = args -> _dirName;
   char* dirOut = args -> dirOut;
-  printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
+ // printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
 
 
   struct dirent* direntName;
@@ -325,7 +325,7 @@ void fileSorter(void* arguments){
   char* file = args -> file;
   char* dirout = args -> dirout;
   FILE* _file = fopen(file, "r");
-  printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
+ // printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
   if((_file == NULL)){
     printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
     return;
