@@ -220,7 +220,7 @@ ArrayList * Arraylist_resize(ArrayList * list, int cap){
 ArrayList * ArrayList_add(ArrayList * list, data elem){
 	if(elem.color == NULL){
 		printf("Adding elem failed\n");
-		return;
+		return NULL;
 	}
 	list->dataVal[list->size] = elem;
 	(list->size)++;

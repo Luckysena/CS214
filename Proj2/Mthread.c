@@ -7,6 +7,7 @@ void processDir(void*);
 void fileSorter(void* arguments);
 Heap * outputHeap;
 int numThreads;
+pthread_t tid;
 int main(int argc, char const *argv[])
 {
 
@@ -90,21 +91,20 @@ int main(int argc, char const *argv[])
       break;
     }
   }
-  // TID crap
-  pthread_t tid;
   processdirInput values;
   values.dirName = dirIn;
   values._dirName = _dirIn;
   values.dirOut = _dirOut;
 
   outputHeap = Heap_create(100000);
+  printf("[PID: %i]Original PID\n",getpid());
   printf("[TID: %u]Original thread id\n",pthread_self());
   pthread_create(&tid,0,processDir,(void*)&values);
   numThreads++;
   pthread_join(tid,NULL);
 
-  printf("Before output file creation, outputHeap size: %i\n",outputHeap->list->size);
-  printf("Total number of threads: %i\n",numThreads);
+  //printf("Before output file creation, outputHeap size: %i\n",outputHeap->list->size);
+  printf("Total number of created threads (excluding main): %i\n",numThreads);
   //output file creation
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
   memset(outputName,'\0',sizeof(outputName));
@@ -203,7 +203,7 @@ void processDir(void* arguments){
   char* _dirName = args -> _dirName;
   char* dirOut = args -> dirOut;
   printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
-  pthread_t tid;
+
 
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){    //for every entry in the directory
@@ -219,6 +219,7 @@ void processDir(void* arguments){
           values._dirName = directoryName;
           values.dirOut = dirOut;
           pthread_create(&tid,0,processDir,(void*)&values);
+          //printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
           numThreads++;
           pthread_join(tid,NULL);
           continue;  //to skip the current pointer value
@@ -239,6 +240,7 @@ void processDir(void* arguments){
         sorterValues.file = filename;
         sorterValues.dirout = dirOut;
         pthread_create(&tid,0,fileSorter,(void*)&sorterValues);
+        //printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),filename);
         numThreads++;
         pthread_join(tid,NULL);
         /*int i;
@@ -730,7 +732,7 @@ void fileSorter(void* arguments){
     Heap_add(outputHeap,&(total[i]),comp_ptr);
   }
 
-  pthread_exit(NULL);
+  pthread_detach(pthread_self());
 }
 
 char *strtok_new(char * string, char const* delimiter)
@@ -806,5 +808,5 @@ for (i = 0; i <28 ; i++)
     printf("%s\n",total [i].ratio);
     printf("%s\n",total [i].movieFB);
   }
-return;
+  return;
 }
