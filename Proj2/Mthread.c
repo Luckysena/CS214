@@ -1,3 +1,4 @@
+
 #include "Sorter.c"
 char *strtok_new(char * string, char const * delimiter);
 void getCurrentDir(void);
@@ -5,6 +6,7 @@ char * _sortingCol;
 void processDir(void*);
 void fileSorter(void* arguments);
 Heap * outputHeap;
+int numThreads;
 int main(int argc, char const *argv[])
 {
 
@@ -35,8 +37,8 @@ int main(int argc, char const *argv[])
   }
 
   if(_sortingCol == NULL){             //default behavior will be sort by crits
-    _sortingCol = (char*)malloc(25*sizeof(char));
-    strcpy(_sortingCol,"num_critic_for_reviews");
+    printf("Error on input: sorting column not specified, terminating...\n");
+    return 0;
   }
 
   if(_dirIn == NULL){                     //default behavior is current directory
@@ -49,7 +51,45 @@ int main(int argc, char const *argv[])
   }
   DIR* dirIn = opendir(_dirIn);
 
+  char * columnNames[28];
+  for(i = 0; i<28;i++){
+    columnNames[i] = (char *) malloc(sizeof(char)*250);
+  }
+  strcpy(columnNames[0],"color");
+  strcpy(columnNames[1],"director_name");
+  strcpy(columnNames[2],"num_critic_for_reviews");
+  strcpy(columnNames[3],"duration");
+  strcpy(columnNames[4],"director_facebook_likes");
+  strcpy(columnNames[5],"actor_3_facebook_likes");
+  strcpy(columnNames[6],"actor_2_name");
+  strcpy(columnNames[7],"actor_1_facebook_likes");
+  strcpy(columnNames[8],"gross");
+  strcpy(columnNames[9],"genres");
+  strcpy(columnNames[10],"actor_1_name");
+  strcpy(columnNames[11],"movie_title");
+  strcpy(columnNames[12],"num_voted_users");
+  strcpy(columnNames[13],"cast_total_facebook_likes");
+  strcpy(columnNames[14],"actor_3_name");
+  strcpy(columnNames[15],"facenumber_in_poster");
+  strcpy(columnNames[16],"plot_keywords");
+  strcpy(columnNames[17],"movie_imdb_link");
+  strcpy(columnNames[18],"num_user_for_reviews");
+  strcpy(columnNames[19],"language");
+  strcpy(columnNames[20],"country");
+  strcpy(columnNames[21],"content_rating");
+  strcpy(columnNames[22],"budget");
+  strcpy(columnNames[23],"title_year");
+  strcpy(columnNames[24],"actor_2_facebook_likes");
+  strcpy(columnNames[25],"imdb_score");
+  strcpy(columnNames[26],"aspect_ratio");
+  strcpy(columnNames[27],"movie_facebook_likes");
 
+  int sortingColumn;
+  for(sortingColumn = 0; sortingColumn < 28; sortingColumn++){
+    if(strcmp(columnNames[sortingColumn],_sortingCol) == 0){
+      break;
+    }
+  }
   // TID crap
   pthread_t tid;
   processdirInput values;
@@ -57,13 +97,14 @@ int main(int argc, char const *argv[])
   values._dirName = _dirIn;
   values.dirOut = _dirOut;
 
-  outputHeap = Heap_create(10000);
-
-
+  outputHeap = Heap_create(100000);
+  printf("[TID: %u]Original thread id\n",pthread_self());
   pthread_create(&tid,0,processDir,(void*)&values);
+  numThreads++;
   pthread_join(tid,NULL);
 
   printf("Before output file creation, outputHeap size: %i\n",outputHeap->list->size);
+  printf("Total number of threads: %i\n",numThreads);
   //output file creation
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
   memset(outputName,'\0',sizeof(outputName));
@@ -75,20 +116,22 @@ int main(int argc, char const *argv[])
   foutput = fopen(outputName,"w+");
   char * firstRow = (char *)malloc(sizeof(char)*1000);
   memset(firstRow,'\0',sizeof(firstRow));
-  strcat(firstRow,"color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross	genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes,");
-  fprintf(foutput, "%s\n", firstRow);
-  free(firstRow);
+  for(i=0; i < 28; i++){
+    strcat(firstRow,columnNames[i]);
+    strcat(firstRow,",");
+  }
+  fprintf(foutput, "%s", firstRow);
   char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create buffer for output
   data * tempData;
-  for (i = 0; i <(outputHeap->list->size) ; i++)
+  /*for (i = 0; i <(outputHeap->list->size) ; i++)
   {
-    printf("[%i]%s\n",i,outputHeap->list->nodeList[i]->dataVal->title);
-  }
+    printf("[%i]%s\n",i,outputHeap->list->nodeList[i]->dataVal->durMin);
+  }*/
   int listSize = outputHeap->list->size;
   for (i = 0; i <(listSize-1) ; i++)
   {
-    tempData = Heap_remove(outputHeap,11);
-    printf("Removed from heap: %s\n",tempData->title);
+    tempData = Heap_remove(outputHeap,sortingColumn);
+    //printf("Removed from heap: %s\n",tempData->durMin);
     memset(bufferIn,'\0',sizeof(bufferIn));
     strcat(bufferIn,tempData->color);
     strcat(bufferIn,",");
@@ -159,7 +202,7 @@ void processDir(void* arguments){
   DIR* dirName = args -> dirName;
   char* _dirName = args -> _dirName;
   char* dirOut = args -> dirOut;
-  printf("[%i]Thread created for directory: %s\n",1,_dirName);
+  printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
   pthread_t tid;
 
   struct dirent* direntName;
@@ -176,6 +219,7 @@ void processDir(void* arguments){
           values._dirName = directoryName;
           values.dirOut = dirOut;
           pthread_create(&tid,0,processDir,(void*)&values);
+          numThreads++;
           pthread_join(tid,NULL);
           continue;  //to skip the current pointer value
       }
@@ -195,6 +239,7 @@ void processDir(void* arguments){
         sorterValues.file = filename;
         sorterValues.dirout = dirOut;
         pthread_create(&tid,0,fileSorter,(void*)&sorterValues);
+        numThreads++;
         pthread_join(tid,NULL);
         /*int i;
         for(i = 0; i < outputHeap->list->size; i++){
@@ -280,14 +325,14 @@ void fileSorter(void* arguments){
   char* file = args -> file;
   char* dirout = args -> dirout;
   FILE* _file = fopen(file, "r");
-  printf("[%i]Thread created for csv file: %s\n",1,file);
+  printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
   if((_file == NULL)){
-    printf("[%i]Error sorting file: %s, %s exiting...\n",1,file, strerror(errno));
+    printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
     return;
   }
   char * col_names[28];  // array which contains name of columns
   int init = 0;         // counter for rows
-  data total[10000];     // array for data structs
+  data total[30000];     // array for data structs
   char string[4000];    // stdin string buffer
 
   while(fgets(string,4000,_file)!= NULL)   // loop to go thru all of input
@@ -662,7 +707,7 @@ void fileSorter(void* arguments){
           }
           for(counter = 0; counter<28; counter++){
             if((strcmp(col_names[counter],"")==0)){
-              printf("[%i]CSV format incorrect, terminating..\n",getpid());
+              printf("[TID: %i]CSV format incorrect, terminating..\n",pthread_self());
               return;
             }
           }
@@ -679,15 +724,8 @@ void fileSorter(void* arguments){
     }
   }
 
-  if(comp_ptr == 28){   // this is the case where input doesn't match the col names list
-    comp_ptr = 2; //defaults to num_critic_for_reviews
-  }
-
-
-
-
   int i;
-  split(total,0,init-2,comp_ptr);  // sort the data
+  //split(total,0,init-2,comp_ptr);  // sort the data
   for(i = 0; i < (init-1); i++){
     Heap_add(outputHeap,&(total[i]),comp_ptr);
   }

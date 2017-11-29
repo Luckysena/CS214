@@ -345,42 +345,42 @@ void mergeData(data *array,int left , int middle , int right, int comp_ptr){
 	{
 		second[j] = array[middle+1+j];
 	}
-int iL = 0;
-int iR = 0;
-int iM = left;
-while(iL < size1 && iR < size2)
-{
-	if(compare(first[iL],second[iR],comp_ptr))
+	int iL = 0;
+	int iR = 0;
+	int iM = left;
+	while(iL < size1 && iR < size2)
+	{
+		if(compare(first[iL],second[iR],comp_ptr))
+		{
+			array[iM] = first[iL];
+			iL++;
+		}
+		 else
+		{
+			array[iM] = second[iR];
+			iR++;
+		}
+
+	iM++;
+	}
+	while(iL < size1)
 	{
 		array[iM] = first[iL];
 		iL++;
+		iM++;
 	}
-	 else
+	while(iR < size2)
 	{
+
 		array[iM] = second[iR];
 		iR++;
+		iM++;
 	}
-
-iM++;
-}
-while(iL < size1)
-{
-	array[iM] = first[iL];
-	iL++;
-	iM++;
-}
-while(iR < size2)
-{
-
-	array[iM] = second[iR];
-	iR++;
-	iM++;
-}
-free(first);
-free(second);
-first = NULL;
-second = NULL;
-return;
+		free(first);
+		free(second);
+		first = NULL;
+		second = NULL;
+		return;
 }
 void split(data *array, int left, int right,int comp_ptr)
 {
@@ -391,7 +391,7 @@ void split(data *array, int left, int right,int comp_ptr)
 		split(array,middle+1,right,comp_ptr);
 		mergeData(array,left,middle,right,comp_ptr);
 	}
-return;
+	return;
 }
 
 Node * Node_create(data * elem){
@@ -427,7 +427,7 @@ ArrayList * Arraylist_resize(ArrayList * list, int cap){
 	return newList;
 }
 
-void ArrayList_add(ArrayList * list, data * elem){
+ArrayList * ArrayList_add(ArrayList * list, data * elem){
 	if(elem->color == NULL){
 		printf("Adding elem failed due to null elem\n");
 		return;
@@ -437,7 +437,7 @@ void ArrayList_add(ArrayList * list, data * elem){
 	if((list->capacity)==(list->size)){
 		list = Arraylist_resize(list,(list->capacity));
 	}
-	return;
+	return list;
 }
 
 Heap * Heap_create(int n){
@@ -462,27 +462,18 @@ void SiftUp(Heap * heap, int comp_ptr){
 	//printf("Comparing %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
 
 	while((heapCompare(*(heap->list->nodeList[k]->dataVal),*(heap->list->nodeList[p]->dataVal),comp_ptr))<0){
-		printf("Swapping %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
-		data * temp = malloc(sizeof(data));
-		memcpy(temp,heap->list->nodeList[p]->dataVal,sizeof(data));
-		memcpy(heap->list->nodeList[p]->dataVal,heap->list->nodeList[k]->dataVal,sizeof(data));
-		memcpy(heap->list->nodeList[k]->dataVal,temp,sizeof(data));
-
+		//printf("Swapping %s with %s\n",heap->list->nodeList[k]->dataVal->title,heap->list->nodeList[p]->dataVal->title);
+		swapNodes(heap,p,k);
 		k = p;
 		p = (k-1)/2;
-		free(temp);
+		//free(temp);
 	}
-	//if the nodes are equal
-	if(heapCompare(*(heap->list->nodeList[k]->dataVal),*(heap->list->nodeList[p]->dataVal),comp_ptr)==0){
-		return;
-	}
-
 	return;
 }
 
 void Heap_add(Heap * heap, data * elem, int comp_ptr){
 	//printf("Adding to heap: %s\n",elem->title);
-	ArrayList_add(heap->list,elem);
+	heap->list = ArrayList_add(heap->list,elem);
 	//printf("Item added.\n");
 	SiftUp(heap,comp_ptr);
 	return;
@@ -506,138 +497,64 @@ SiftDown(Heap * heap, int comp_ptr){
 	if(c2>(sizeHeap-1)){
 		datap = heap->list->nodeList[p]->dataVal;
 		data1 = heap->list->nodeList[c1]->dataVal;
-		k = heapCompare(*datap,*data1,comp_ptr);
-		if(k<=0){
+		if(heapCompare(*datap,*data1,comp_ptr)<=0){
 			return;
 		}
 		else{
-			printf("Swapping %s with %s\n",datap->title,data1->title);
+			//printf("Swapping %s with %s\n",datap->durMin,data1->durMin);
 			swapNodes(heap,p,c1);
-
 		}
 		return;
 	}
 
-
-	datap = heap->list->nodeList[p]->dataVal;
-	data1 = heap->list->nodeList[c1]->dataVal;
-	data2 = heap->list->nodeList[c2]->dataVal;
-
-		while((heapCompare(*datap,*data1,comp_ptr)>0) && (heapCompare(*datap,*data2,comp_ptr)>0)){
-			//printf("Situation 1\n");
+	while(c1<=(sizeHeap-1)){
+		if(c2>(sizeHeap-1)){
+			break;
+		}
+		datap = heap->list->nodeList[p]->dataVal;
+		data1 = heap->list->nodeList[c1]->dataVal;
+		data2 = heap->list->nodeList[c2]->dataVal;
+		if((heapCompare(*datap,*data1,comp_ptr)>0) && (heapCompare(*datap,*data2,comp_ptr)>0)){
 			k = heapCompare(*data1,*data2,comp_ptr);
 			if(k <= 0){
-				printf("Swapping %s with %s\n",datap->title,data1->title);
 				swapNodes(heap,p,c1);
+				//printf("Swapping %s with %s\n",datap->durMin,data1->durMin);
 				p = c1;
-				c1 = 2*p + 1;
-				c2 = 2*p + 2;
-				printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
-				printf("list size: %i\n",sizeHeap);
-
-				if(c1>(sizeHeap-1)){
-					printf("Happened!\n");
-					return;
-				}
-
-				else if(c2>(sizeHeap-1)){
-					k = heapCompare(*datap,*data1,comp_ptr);
-					if(k<0){
-						swapNodes(heap,p,c1);
-					}
-					return;
-				}
-				datap = heap->list->nodeList[p]->dataVal;
-				data1 = heap->list->nodeList[c1]->dataVal;
-				data2 = heap->list->nodeList[c2]->dataVal;
-				continue;
 			}
+
 			else if(k > 0){
-				printf("Swapping %s with %s\n",datap->title,data2->title);
 				swapNodes(heap,p,c2);
+				//printf("Swapping %s with %s\n",datap->durMin,data2->durMin);
 				p = c2;
-				c1 = 2*p + 1;
-				c2 = 2*p + 2;
-				printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
-				printf("list size: %i\n",sizeHeap);
-
-				if(c1>sizeHeap){
-					printf("Happened!\n");
-					return;
-				}
-				else if(c2>sizeHeap){
-					k = heapCompare(*datap,*data2,comp_ptr);
-					if(k<0){
-						swapNodes(heap,p,c1);
-						return;
-					}
-				}
-				datap = heap->list->nodeList[p]->dataVal;
-				data1 = heap->list->nodeList[c1]->dataVal;
-				data2 = heap->list->nodeList[c2]->dataVal;
-				continue;
 			}
 		}
-
-		if((heapCompare(*datap,*data1,comp_ptr)<=0) && (heapCompare(*datap,*data2,comp_ptr)<=0)){
-			printf("Situation 2\n");
-			return;
-		}
-		while((heapCompare(*datap,*data1,comp_ptr)>0) && (heapCompare(*datap,*data2,comp_ptr)<=0)){
-			printf("Situation 3!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1????????????\n");
-			printf("Swapping %s with %s\n",datap->title,data1->title);
+		else if((heapCompare(*datap,*data1,comp_ptr)>0) && (heapCompare(*datap,*data2,comp_ptr)<=0)){
 			swapNodes(heap,p,c1);
+			//printf("Swapping %s with %s\n",datap->durMin,data1->durMin);
 			p = c1;
-			c1 = 2*p + 1;
-			c2 = 2*p + 2;
-			//printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
-			printf("list size: %i\n",sizeHeap);
-
-			if(c1>(sizeHeap)){
-				printf("Happened!\n");
-				return;
-			}
-
-			else if(c2>(sizeHeap)){
-				k = heapCompare(*datap,*data1,comp_ptr);
-				if(k<0){
-					swapNodes(heap,p,c1);
-				}
-				return;
-			}
-			datap = heap->list->nodeList[p]->dataVal;
-			data1 = heap->list->nodeList[c1]->dataVal;
-			data2 = heap->list->nodeList[c2]->dataVal;
-			continue;
 		}
-		while((heapCompare(*datap,*data1,comp_ptr)<=0) && (heapCompare(*datap,*data2,comp_ptr)>0)){
-			printf("Situation 4!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-			printf("Swapping %s with %s\n",datap->title,data2->title);
+		else if((heapCompare(*datap,*data1,comp_ptr)<=0) && (heapCompare(*datap,*data2,comp_ptr)>0)){
 			swapNodes(heap,p,c2);
-			p = c1;
-			c1 = 2*p + 1;
-			c2 = 2*p + 2;
-			printf("p: %i, c1: %i, c2: %i\n",p,c1,c2);
-			printf("list size: %i\n",sizeHeap);
-
-			if(c1>(sizeHeap)){
-				printf("Happened!\n");
-				return;
-			}
-
-			else if(c2>(sizeHeap)){
-				k = heapCompare(*datap,*data1,comp_ptr);
-				if(k<0){
-					swapNodes(heap,p,c1);
-				}
-				return;
-			}
-			datap = heap->list->nodeList[p]->dataVal;
-			data1 = heap->list->nodeList[c1]->dataVal;
-			data2 = heap->list->nodeList[c2]->dataVal;
-			continue;
+			//printf("Swapping %s with %s\n",datap->durMin,data2->durMin);
+			p = c2;
 		}
-return;
+		else if((heapCompare(*datap,*data1,comp_ptr)<=0) && (heapCompare(*datap,*data2,comp_ptr)<=0)){
+			break;
+		}
+		c1 = 2*p + 1;
+		c2 = 2*p + 2;
+	}
+	if(c1>(sizeHeap-1)){
+		return;
+	}
+	datap = heap->list->nodeList[p]->dataVal;
+	data1 = heap->list->nodeList[c1]->dataVal;
+	if(c2>(sizeHeap-1)){
+		if(heapCompare(*datap,*data1,comp_ptr)>0){
+			swapNodes(heap,p,c1);
+		}
+	}
+	return;
 }
 data * Heap_remove(Heap * heap, int comp_ptr){
 	int root, last;
