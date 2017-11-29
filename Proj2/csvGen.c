@@ -25,12 +25,12 @@ void createCSV(char * dirName, char** toCopy){
 
 
 char* createChar(int charCount)
-{
+{       int i;
 	if(charCount==0)
 		return NULL;
 
 	char* c = (char *) malloc(sizeof(char)*charCount);
-	for(int i = 0;i<charCount-1;i++)
+	for( i = 0;i<charCount-1;i++)
 	{
 		c[i] = (char) (rand()%(122-97))+97;
 	}
@@ -42,13 +42,13 @@ char * createDir(char* dirName, int avgNumofDir,char** toCopy)
 {
 
 if(strlen(dirName)<=26)
-{
+   {   int i;
 
 	DIR *dir;
   struct dirent *dent;
   char* Newdir = dirName;
 	dir = opendir(dirName);
-	for (int i = 0; i <avgNumofDir ; ++i)
+	for ( i = 0; i <avgNumofDir ; ++i)
 	{
 
 	int changeDir =  (int) rand()%30 + 1;
@@ -131,7 +131,7 @@ int main(int argc, char const* argv[]){
 
 
 
-  for (int i = 0; i < atoi(argv[2])/10; ++i)
+  for ( i = 0; i < atoi(argv[2])/10; ++i)
   	{
   		char* nextDir = createDir(newDir,atoi(argv[2]),data);
   		if(nextDir != NULL)
