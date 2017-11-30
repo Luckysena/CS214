@@ -57,7 +57,7 @@ if(strlen(dirName)<=26)
 	//{
 		//int avgNumofRows = (int) rand() %5444 +1;
 
-		createCSV(dirName,toCopy);
+		//createCSV(dirName,toCopy);
 	//}
 
 	if (changeDir == 1)
@@ -105,7 +105,7 @@ return Newdir;
   //third is file to be copied
 int main(int argc, char const* argv[]){
   int i;
-  char string[1000];
+  /*char string[1000];
   char* data[6000];
   FILE* fp;
   fp = fopen(argv[3],"r+");
@@ -114,9 +114,9 @@ int main(int argc, char const* argv[]){
     data[i] = malloc(sizeof(string));
     strcpy(data[i],string);
     i++;
-  }
+  }*/
 
-
+char** data = NULL;
 
 
   struct stat st;
