@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
-#include "Sorter.h"
+#include "Sorter.c"
 
 int main(int argc, char **argv)
 {
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	hints.ai_family = AF_INET; /* IPv4 only */
 	hints.ai_socktype = SOCK_STREAM; /* TCP */
 
-	s = getaddrinfo("www.cs.rutgers.edu", "80", &hints, &result);
+	s = getaddrinfo("factory.cs.rutgers.edu", "1234", &hints, &result);
 	if (s != 0) {
 	        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
         	exit(1);
