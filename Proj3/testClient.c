@@ -100,10 +100,10 @@ void sortRequest(void* arguments){
   }
   char * col_names[28];  // array which contains name of columns
   int init = 0;         // counter for rows
-  data total[30000];     // array for data structs
-  char string[10000];    // stdin string buffer
+  data total[10000];     // array for data structs
+  char string[1000];    // stdin string buffer
 
-  while(fgets(string,10000,_file)!= NULL){
+  while(fgets(string,1000,_file)!= NULL){
       int type = 0;             // counter to assign proper struct attributes
       char delimiter[] = ",";   // delim char
       data read;                // placeholder data struct for filling
@@ -503,12 +503,11 @@ void sortRequest(void* arguments){
                 exit(2);
         }
 
-  printf("Connecting to server...\n");
 	char *buffer = "Sort";
 
 	n = write(sock_fd, buffer, strlen(buffer));
   if(n != -1){
-    printf("Sending sort request...\n");
+    printf("[TID: %u]Sending sort request...\n",pthread_self());
   }
   else{
     printf("Error writing to socket\n");
@@ -517,7 +516,7 @@ void sortRequest(void* arguments){
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
 	resp[len] = '\0';
-	printf("%s\n", resp);
+	printf("[TID: %u]%s\n", pthread_self()resp);
 
   n = write(sock_fd,sortingCol,strlen(sortingCol));
   if(n != -1){
@@ -529,7 +528,7 @@ void sortRequest(void* arguments){
 
   len = read(sock_fd, resp, 999);
   resp[len] = '\0';
-  printf("%s\n", resp);
+  printf("[TID: %u]%s\n",pthread_self() resp);
   return;
 
 }
@@ -588,5 +587,4 @@ void processDir(void* arguments){
 
     }
   }
-  pthread_exit(NULL);
 }
