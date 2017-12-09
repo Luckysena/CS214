@@ -25,22 +25,26 @@ int main(int argc, char **argv)
 	char *buffer = "Sort";
   char *sortingCol = "movie_title";
 
-  printf("Writing to server...\n");
 	n = write(sock_fd, buffer, strlen(buffer));
-  if(n<0) error("ERROR writing to socket\n");
-  printf("Write complete!\n");
-
+  if(n != -1){
+    printf("Sending sort request...\n");
+  }
+  else{
+    printf("Error writing to socket\n");
+  }
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
-  if(len<0) error("ERROR reading from socket\n");
 	resp[len] = '\0';
 	printf("%s\n", resp);
 
   n = write(sock_fd,sortingCol,strlen(sortingCol));
-  if(n<0) error("ERROR writing to socket\n");
-  
+  if(n != -1){
+    printf("Sending sortingCol...\n");
+  }
+  else{
+    printf("Error writing to socket\n");
+  }
   len = read(sock_fd, resp, 999);
-  if(len<0) error("ERROR reading from socket\n");
   resp[len] = '\0';
   printf("%s\n", resp);
 

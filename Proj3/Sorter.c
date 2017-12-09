@@ -390,10 +390,47 @@ void split(data *array, int left, int right,int comp_ptr)
 	return;
 }
 
+void toString(data *total){
+	int i;
+	for (i = 0; i <28 ; i++)
+	  {
+	    printf("%s\n",total [i].color);
+	    printf("%s\n",total [i].dirName);
+	    printf("%s\n",total [i].critCount);
+	    printf("%s\n",total [i].durMin);
+	    printf("%s\n",total [i].dirFB);
+	    printf("%s\n",total [i].act3FB);
+	    printf("%s\n",total [i].act2Name);
+	    printf("%s\n",total [i].act1FB);
+	    printf("%s\n",total [i].gross);
+	    printf("%s\n",total [i].genre);
+	    printf("%s\n",total [i].act1Name);
+	    printf("%s\n",total [i].title);
+	    printf("%s\n",total [i].numVoted);
+	    printf("%s\n",total [i].totalFB);
+	    printf("%s\n",total [i].act3Name);
+	    printf("%s\n",total [i].faceNum);
+	    printf("%s\n",total [i].keyWord);
+	    printf("%s\n",total [i].link);
+	    printf("%s\n",total [i].numReview);
+	    printf("%s\n",total [i].lang);
+	    printf("%s\n",total [i].country);
+	    printf("%s\n",total [i].rated);
+	    printf("%s\n",total [i].budget);
+	    printf("%s\n",total [i].year);
+	    printf("%s\n",total [i].act2FB);
+	    printf("%s\n",total [i].score);
+	    printf("%s\n",total [i].ratio);
+	    printf("%s\n",total [i].movieFB);
+	  }
+	  return;
+}
+
+
 void acceptService(int* _client_fd){
 	int client_fd = *_client_fd;
-	printf("[%i]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
-	char request[100];
+	printf("[TID:%i]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
+	char request[100], buffer[1000];
 	char * ack = "Acknowledged!";
 
 	int len = read(client_fd, request, sizeof(request) - 1);
@@ -409,6 +446,16 @@ void acceptService(int* _client_fd){
 		sortingCol[len] = '\0';
 		write(client_fd, ack, strlen(ack));
 		//Need to add read for sort
+
+		while(true){
+			data *Data = (data*)malloc(sizeof(data));
+			len = read(client_fd,buffer,sizeof(sortingCol)-1);
+			buffer[len] = '\0';
+			memcpy(Data,buffer,len);
+			toString(Data);
+			break;
+		}
+
 	}
 	close(client_fd);
 	return;

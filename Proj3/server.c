@@ -35,6 +35,8 @@ int main(int argc, char **argv)
         perror("bind()");
         exit(1);
     }
+    
+    outputHeap = Heap_create(10000);
     while(true){
       if (listen(sock_fd, 10) != 0) {
           perror("listen()");
@@ -46,8 +48,6 @@ int main(int argc, char **argv)
       int * client_fd = (int*)malloc(sizeof(int));
       int tempfd = accept(sock_fd,NULL,NULL);
       memcpy(client_fd, &tempfd,sizeof(int));
-      
-
       pthread_create(&tid,0,acceptService,(void*)client_fd);
     }
     return 0;
