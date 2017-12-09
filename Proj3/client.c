@@ -520,7 +520,7 @@ void sortRequest(void* arguments){
 
 	n = write(sock_fd, buffer, strlen(buffer));
   if(n != -1){
-    printf("[TID: %u]Sending sort request...\n",pthread_self());
+    //printf("[TID: %u]Sending sort request...\n",pthread_self());
   }
   else{
     printf("Error writing to socket\n");
@@ -529,11 +529,11 @@ void sortRequest(void* arguments){
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
 	resp[len] = '\0';
-	printf("[TID: %u]%s\n", pthread_self(),resp);
+	//printf("[TID: %u]%s\n", pthread_self(),resp);
 
   n = write(sock_fd,sortingCol,strlen(sortingCol));
   if(n != -1){
-    printf("[TID: %u]Sending sortingCol...\n",pthread_self());
+    //printf("[TID: %u]Sending sortingCol...\n",pthread_self());
   }
   else{
     printf("Error writing to socket\n");
@@ -541,7 +541,7 @@ void sortRequest(void* arguments){
 
   len = read(sock_fd, resp, 999);
   resp[len] = '\0';
-  printf("[TID: %u]%s\n",pthread_self(), resp);
+  //printf("[TID: %u]%s\n",pthread_self(), resp);
   return;
 
 }
@@ -574,6 +574,7 @@ void processDir(void* arguments){
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
     if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
+          pthread_mutex_lock(&mutexA);
           values[c].dirName = opendir(filename);
           values[c]._dirName = filename;
           values[c].dirOut = dirOut;
@@ -581,6 +582,7 @@ void processDir(void* arguments){
           values[c].port = port;
           pthread_create(&tid[c],0,processDir,(void*)&values[c]);
           c++;
+          pthread_mutex_unlock(&mutexA);
           continue;  //to skip the current pointer value
       }
       else{
@@ -589,6 +591,7 @@ void processDir(void* arguments){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
+        pthread_mutex_lock(&mutexB);
         inputVals[d].sortingCol= _sortingCol;
         inputVals[d].file = filename;
         inputVals[d].host = host;
@@ -596,12 +599,14 @@ void processDir(void* arguments){
         pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
         c++;
         d++;
+        pthread_mutex_unlock(&mutexB);
         continue;
     }
   }
   int localcEnd = c;
   int j;
   for(j = localcStart; j <localcEnd; j++){
-      pthread_join(tid[j],NULL);
+    printf("Joining: %i, and c is : %i, the tid is: %u\n",j,c,tid[j]);
+    pthread_join(tid[j],NULL);
   }
 }
