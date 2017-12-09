@@ -1,32 +1,25 @@
 #include "Sorter.c"
-char *strtok_new(char * string, char const * delimiter);
-void getCurrentDir(void);
+void processDir(void* arguments);
 char * _sortingCol;
-void processDir(void*);
-void fileSorter(void* arguments);
-Heap * outputHeap;
-int numThreads;
-pthread_t tid;
+pthread_t tid[1000];
+pthread_mutex_t mutexA = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexB = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexC = PTHREAD_MUTEX_INITIALIZER;
+processdirInput values[1000];
+sortRequestInput inputVals[1000];
+int c = 0;
+int d = 0;
 
-//Client variables -kumail
-// We need a socket
-//int sockfd;
-// We need port number
-int port;
-// We need a sockaddr_in struct for
-// creating server socket
-struct sockaddr_in address;
-// We need a hostent struct pointer to
-// hold server info from gethostbyname()
-struct hostent *server;
 
-int main(int argc, char const *argv[]){
+int main(int argc, char **argv)
+{
+
   int i, result, totalProcesses;
   char colFlag[10], dirInFlag[10], dirOutFlag[10], hflag[10], pflag[10];   //command line flags
   char * _dirIn = NULL;
   char * _dirOut = NULL; //pointers to names of args
   char * host = NULL;
-  int port = 0;
+  char * port = NULL;
   strcpy(colFlag,"-c");
   strcpy(dirInFlag,"-d");
   strcpy(dirOutFlag,"-o");
@@ -56,131 +49,538 @@ int main(int argc, char const *argv[]){
 
     result = strcmp(pflag, argv[i]);
     if(result == 0){
-      port = atoi(argv[i+1]);
+      port = argv[i+1];
     }
   }
 
-  if(_sortingCol == NULL){             //default behavior will be sort by crits
+  if(_sortingCol == NULL){
     printf("Error on input: sorting column not specified, terminating...\n");
     return 0;
   }
 
-  if(host == NULL){             //default behavior will be sort by crits
+  if(host == NULL){
     printf("Error on input: host not specified, terminating...\n");
     return 0;
   }
 
-  if(port == 0){             //default behavior will be sort by crits
+  if(port == NULL){
     printf("Error on input: port not specified, terminating...\n");
     return 0;
   }
 
-  if(_dirIn == NULL){                     //default behavior is current directory
+  if(_dirIn == NULL){
     _dirIn = (char*)malloc(sizeof(char));
     strcpy(_dirIn,".");
   }
 
-  if(_dirOut == NULL){                    //default is directory it was found in (dirIn)
+  if(_dirOut == NULL){
     _dirOut = _dirIn;
   }
 
   DIR* dirIn = opendir(_dirIn);
-
-  char * columnNames[28];
-  for(i = 0; i<28;i++){
-    columnNames[i] = (char *) malloc(sizeof(char)*250);
-  }
-  strcpy(columnNames[0],"color");
-  strcpy(columnNames[1],"director_name");
-  strcpy(columnNames[2],"num_critic_for_reviews");
-  strcpy(columnNames[3],"duration");
-  strcpy(columnNames[4],"director_facebook_likes");
-  strcpy(columnNames[5],"actor_3_facebook_likes");
-  strcpy(columnNames[6],"actor_2_name");
-  strcpy(columnNames[7],"actor_1_facebook_likes");
-  strcpy(columnNames[8],"gross");
-  strcpy(columnNames[9],"genres");
-  strcpy(columnNames[10],"actor_1_name");
-  strcpy(columnNames[11],"movie_title");
-  strcpy(columnNames[12],"num_voted_users");
-  strcpy(columnNames[13],"cast_total_facebook_likes");
-  strcpy(columnNames[14],"actor_3_name");
-  strcpy(columnNames[15],"facenumber_in_poster");
-  strcpy(columnNames[16],"plot_keywords");
-  strcpy(columnNames[17],"movie_imdb_link");
-  strcpy(columnNames[18],"num_user_for_reviews");
-  strcpy(columnNames[19],"language");
-  strcpy(columnNames[20],"country");
-  strcpy(columnNames[21],"content_rating");
-  strcpy(columnNames[22],"budget");
-  strcpy(columnNames[23],"title_year");
-  strcpy(columnNames[24],"actor_2_facebook_likes");
-  strcpy(columnNames[25],"imdb_score");
-  strcpy(columnNames[26],"aspect_ratio");
-  strcpy(columnNames[27],"movie_facebook_likes");
-
-  int sortingColumn;
-  for(sortingColumn = 0; sortingColumn < 28; sortingColumn++){
-    if(strcmp(columnNames[sortingColumn],_sortingCol) == 0){
-      break;
-    }
-  }
   processdirInput values;
   values.dirName = dirIn;
   values._dirName = _dirIn;
   values.dirOut = _dirOut;
-  //client things:
-  server = gethostbyname(host);
-  // Now we need to initialize sockaddr_in struct
-	// before we do initialization, it's good to set buffer zeros
-	// replace corresponding parts
-	memset(&address, 0, sizeof(address));
-	// .sin_family = AF_INET
-	address.sin_family = AF_INET;
-	// .sin_port = htons(portnumber)
-	address.sin_port = htons(port);
-	// replace corresponding parts
-	// we do binary copy to initialize sockaddr_in address part
-	// from hostent pointer
-	bcopy((char*)server->h_addr,
-			(char*)&address.sin_addr.s_addr,
-			server->h_length);
-  /*client things end*/
+  values.host = host;
+  values.port = port;
 
-  pthread_create(&tid,0,processDir,(void*)&values);
-  numThreads++;
-  pthread_join(tid,NULL);
+
+  pthread_create(&tid[c],0,processDir,(void*)&values);
+
+  pthread_join(tid[0],NULL);
+  printf("Total num of threads: %i\n",c+1);
+  return 0;
 
 }
+
+void sortRequest(void* arguments){
+
+  sortRequestInput *args = arguments;
+  char * sortingCol = args -> sortingCol;
+  char * file = args -> file;
+  char * host = args -> host;
+  char * port = args -> port;
+  FILE* _file = fopen(file, "r");
+  printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
+  if((_file == NULL)){
+    printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
+    return;
+  }
+  char * col_names[28];  // array which contains name of columns
+  int init = 0;         // counter for rows
+  data total[10000];     // array for data structs
+  char string[1000];    // stdin string buffer
+  while(fgets(string,1000,_file)!= NULL){
+      pthread_mutex_lock(&mutexB);
+      int type = 0;             // counter to assign proper struct attributes
+      char delimiter[] = ",";   // delim char
+      data read;                // placeholder data struct for filling
+      char * p = strtok_new(string, delimiter);  // p will iterate through input string
+      if(init != 0)             // first stdin is column names string
+      {
+      while(type<28)            // fill in struct attributes
+      {
+
+
+        switch(type)
+        {
+
+          case 0:
+          {
+            read.color = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.color,p);
+                 else
+               strcpy(read.color,"");
+
+              p = strtok_new(NULL, delimiter);
+
+
+          }
+          break;
+          case 1:
+          {
+             read.dirName = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.dirName,p);
+                 else
+              strcpy(read.dirName,"");
+
+              p = strtok_new(NULL, delimiter);
+
+
+          }
+          break;
+          case 2:
+          {
+             read.critCount= (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.critCount,p);
+                 else
+              strcpy(read.critCount,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 3:
+          {
+             read.durMin = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.durMin,p);
+                 else
+              strcpy(read.durMin,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 4:
+          {
+            read.dirFB = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.dirFB,p);
+                 else
+              strcpy(read.dirFB,"");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 5:
+          {
+              read.act3FB = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.act3FB,p);
+                 else
+              strcpy(read.act3FB,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 6:
+          {
+             read.act2Name = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.act2Name,p);
+                 else
+              strcpy(read.act2Name,"");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 7:
+          {
+               read.act1FB = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.act1FB,p);
+                 else
+              strcpy(read.act1FB,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 8:
+          {
+               read.gross = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.gross,p);
+                 else
+              strcpy(read.gross,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+
+          }
+          break;
+          case 9:
+          {
+               read.genre = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.genre,p);
+                 else
+              strcpy(read.genre,"");
+
+              p = strtok_new(NULL, delimiter);
+
+
+          }
+          break;
+          case 10:
+          {
+              read.act1Name = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.act1Name,p);
+                 else
+              strcpy(read.act1Name,"");
+
+              p = strtok_new(NULL, "exception");
+
+
+          }
+          break;
+          case 11:
+          { read.title= (char*) malloc(sizeof(char)*400);
+
+             if(*p)
+              strcpy(read.title,p);
+                 else
+              strcpy(read.title,"");
+
+              p = strtok_new(NULL, delimiter);
+
+
+          }
+          break;
+          case 12:
+          {
+              read.numVoted = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.numVoted,p);
+                 else
+              strcpy(read.numVoted,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 13:
+          {
+              read.totalFB = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.totalFB,p);
+                 else
+              strcpy(read.totalFB,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 14:
+          {
+              read.act3Name = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.act3Name,p);
+                 else
+              strcpy(read.act3Name,"");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 15:
+          {
+            read.faceNum = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.faceNum,p);
+                 else
+              strcpy(read.faceNum,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 16:
+          {
+            read.keyWord = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.keyWord,p);
+                 else
+              strcpy(read.keyWord,"");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 17:
+          {
+             read.link = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.link,p);
+                 else
+              strcpy(read.link,"");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 18:
+          {
+             read.numReview = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.numReview,p);
+                 else
+              strcpy(read.numReview,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 19:
+          {
+            read.lang = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.lang,p);
+                 else
+              strcpy(read.lang,"");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 20:
+          {
+             read.country = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.country,p);
+                 else
+              strcpy(read.country,"");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 21:
+          {
+              read.rated = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.rated,p);
+                 else
+              strcpy(read.rated,"");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 22:
+          {
+            read.budget = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.budget,p);
+                 else
+              strcpy(read.budget,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 23:
+          {
+            read.year = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.year,p);
+                 else
+              strcpy(read.year,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 24:
+          {
+           read.act2FB = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.act2FB,p);
+                 else
+              strcpy(read.act2FB,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 25:
+          {
+            read.score = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.score,p);
+                 else
+              strcpy(read.score,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          case 26:
+          {
+            read.ratio = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.ratio,p);
+                 else
+              strcpy(read.ratio,"0");
+
+              p = strtok_new(NULL, delimiter);
+
+          }
+          break;
+          case 27:
+          {
+         read.movieFB = (char*) malloc(sizeof(char)*400);
+             if(*p)
+              strcpy(read.movieFB,p);
+                 else
+              strcpy(read.movieFB,"0");
+
+              p = strtok_new(NULL, delimiter);
+          }
+          break;
+          default:
+          break;
+        }
+        type++;
+      }
+
+        total[init-1]=read;     // point the item in struct array to placeholder data struct
+        }
+        else
+        {
+
+          int counter = 0;       // counter for filling in name of columns row
+          while(counter<28){     // loop to create an array of column names
+            col_names[counter] = (char *) malloc(sizeof(char)*250);   // make space for the name
+            memset(col_names[counter],'\0',sizeof(col_names[counter]));
+            if(*p){              // if the pointer isnt empty, copy the string into array
+              strcpy(col_names[counter],p);
+            }
+            else{
+              strcpy(col_names[counter],"");
+            }
+            p = strtok_new(NULL,delimiter);
+            counter++;
+          }
+          for(counter = 0; counter<28; counter++){
+            //printf("%s\n",col_names[counter]);
+            if((strcmp(col_names[counter],"")==0)){
+              printf("[TID: %u]CSV format incorrect for file: %s, terminating..\n",pthread_self(),file);
+              return;
+            }
+          }
+
+        }
+      pthread_mutex_unlock(&mutexB);
+      init++;  //increment the row we're on
+    }
+  fclose(_file);
+
+  printf("[TID: %u]File: %s, has been closed, opening socket...\n",pthread_self(),file);
+  // socket connections
+	int s, n;
+	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	struct addrinfo hints, *result;
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+
+	s = getaddrinfo(host, port, &hints, &result);
+	if (s != 0) {
+	        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+        	exit(1);
+	}
+
+	if(connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1){
+                perror("connect");
+                exit(2);
+        }
+
+	char *buffer = "Sort";
+
+	n = write(sock_fd, buffer, strlen(buffer));
+  if(n != -1){
+    printf("[TID: %u]Sending sort request...\n",pthread_self());
+  }
+  else{
+    printf("Error writing to socket\n");
+  }
+
+	char resp[1000];
+	int len = read(sock_fd, resp, 999);
+	resp[len] = '\0';
+	printf("[TID: %u]%s\n", pthread_self(),resp);
+
+  n = write(sock_fd,sortingCol,strlen(sortingCol));
+  if(n != -1){
+    printf("[TID: %u]Sending sortingCol...\n",pthread_self());
+  }
+  else{
+    printf("Error writing to socket\n");
+  }
+
+  len = read(sock_fd, resp, 999);
+  resp[len] = '\0';
+  printf("[TID: %u]%s\n",pthread_self(), resp);
+  return;
+
+}
+
+
 
 void processDir(void* arguments){
   processdirInput *args = arguments;
   DIR* dirName = args -> dirName;
   char* _dirName = args -> _dirName;
   char* dirOut = args -> dirOut;
- //printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
+  char* host = args -> host;
+  char* port = args -> port;
+  int localcStart = c;
+
+  printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
 
 
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){
+    //pthread_mutex_lock(&mutexA);
     char * filename = (char*)malloc(sizeof(char)*1000);
     memset(filename,'\0',sizeof(filename));
     strcat(filename,_dirName);
     strcat(filename,"/");
     strcat(filename,direntName->d_name);
+  //  pthread_mutex_unlock(&mutexA);
 
 
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
     if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-          processdirInput values;
-          values.dirName = opendir(filename);
-          values._dirName = filename;
-          values.dirOut = dirOut;
-          pthread_create(&tid,0,processDir,(void*)&values);
-          //printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
-          numThreads++;
-          pthread_join(tid,NULL);
+          values[c].dirName = opendir(filename);
+          values[c]._dirName = filename;
+          values[c].dirOut = dirOut;
+          values[c].host = host;
+          values[c].port = port;
+          pthread_create(&tid[c],0,processDir,(void*)&values[c]);
+          c++;
           continue;  //to skip the current pointer value
       }
       else{
@@ -189,97 +589,19 @@ void processDir(void* arguments){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-        sorterInput sorterValues;
-        sorterValues.sortingCol= _sortingCol;
-        sorterValues.file = filename;
-        sorterValues.dirout = dirOut;
-        pthread_create(&tid,0,fileSorter,(void*)&sorterValues);
-
-        //printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),filename);
-        numThreads++;
-        pthread_join(tid,NULL);
-        /*int i;
-        for(i = 0; i < outputHeap->list->size; i++){
-          printf("After Sort, Values at %i, is: %s\n",i,outputHeap->list->nodeList[i]->dataVal->title);
-        }*/
+        inputVals[d].sortingCol= _sortingCol;
+        inputVals[d].file = filename;
+        inputVals[d].host = host;
+        inputVals[d].port = port;
+        pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
+        c++;
+        d++;
         continue;
-
     }
   }
-  pthread_exit(NULL);
-}
-
-void fileSorter(void* arguments){
-  sorterInput *args = arguments;
-  char* sortingCol = args -> sortingCol;
-  char* file = args -> file;
-  char* dirout = args -> dirout;
-  FILE* _file = fopen(file, "r");
- // printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
-  if((_file == NULL)){
-    printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
-    return;
-  }
-
-  /****** STEP 1: Create Socket ******/
-  // call socket(AF_INET, SOCK_STREAM, 0) to create socket
-  int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0)
-  {
-    //perror() report error message
-    perror("sock");
-    //exit your program
-    exit(EXIT_FAILURE);
-  }
-
-  /****** STEP 2: Connection *******/
-  // call connect(socketfd, (struct sockaddr*)&..., sizeof(...))
-  if (connect(sockfd, (struct sockaddr*)&address, sizeof(address)) < 0)
-  {
-    // perror() report error message
-    perror("connect");
-    // close socket
-    close(sockfd);
-    // exit your program
-    exit(EXIT_FAILURE);
-  }
-
-  char sortrequest[256];
-  strcat(sortrequest,"Sort");
-  int n = write(sockfd, file, strlen(file));
-   // check if message is sent successfully
-
-  if (n <= 0)
-  {
-    // perror() again...
-    perror("error writing to server");
-  }
-
-}
-//end filesorter method
-
-int isFile(const char* name){
-    DIR* directory = opendir(name);
-
-    if(directory != NULL)
-    {
-     closedir(directory);
-     return 0;
-    }
-
-    if(errno == ENOTDIR)
-    {
-     return 1;
-    }
-
-    return -1;
-}
-
-int isCSV(const char* str){
-  if(strlen(str) > 4 && !strcmp(str + strlen(str) - 4, ".csv")){
-    return 0;
-  }
-  else{
-    return -1;
+  int localcEnd = c;
+  int j;
+  for(j = localcStart; j <localcEnd; j++){
+      pthread_join(tid[j],NULL);
   }
 }
