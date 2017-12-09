@@ -395,13 +395,12 @@ void acceptService(int* client_fd){
 	char request[100];
 	char * ack = "Ack";
 	int len = read(client_fd, request, sizeof(request) - 1);
-	if(len == -1){
-		perror(errno);
-	}
+	if(len < 0) error("ERROR reading from socket\n");
 	printf("Request received from client id: %i, request: %s\n",*client_fd,request);
 	request[len] = '\0';
 
 	if(strcmp(request,"Sort")){
+		printf("Sorting..\n");
 		write(client_fd, ack, strlen(ack));
 		char sortingCol[100];
 		len = read(client_fd,sortingCol,sizeof(sortingCol)-1);

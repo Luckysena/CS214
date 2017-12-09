@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-	int s;
+	int s, n;
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	struct addrinfo hints, *result;
@@ -26,15 +26,21 @@ int main(int argc, char **argv)
   char *sortingCol = "movie_title";
 
   printf("Writing to server...\n");
-	write(sock_fd, buffer, strlen(buffer));
+	n = write(sock_fd, buffer, strlen(buffer));
+  if(n<0) error("ERROR writing to socket\n");
   printf("Write complete!\n");
+
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
+  if(len<0) error("ERROR reading from socket\n");
 	resp[len] = '\0';
 	printf("%s\n", resp);
 
-  write(sock_fd,sortingCol,strlen(sortingCol));
+  n = write(sock_fd,sortingCol,strlen(sortingCol));
+  if(n<0) error("ERROR writing to socket\n");
+  
   len = read(sock_fd, resp, 999);
+  if(len<0) error("ERROR reading from socket\n");
   resp[len] = '\0';
   printf("%s\n", resp);
 
