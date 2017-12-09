@@ -394,7 +394,7 @@ void acceptService(int* _client_fd){
 	int client_fd = *_client_fd;
 	printf("Accepted connection from client id: %i, Awaiting request...\n",client_fd);
 	char request[100];
-	char * ack = "Ack";
+	char * ack = "Acknowledged!";
 
 	int len = read(client_fd, request, sizeof(request) - 1);
 	if(len < 0) error("ERROR reading from socket\n");
