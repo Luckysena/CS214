@@ -46,8 +46,8 @@ int main(int argc, char **argv)
       int * client_fd = (int*)malloc(sizeof(int));
       int tempfd = accept(sock_fd,NULL,NULL);
       memcpy(client_fd, &tempfd,sizeof(int));
-
-      pthread_create(&tid,0,acceptService,(void*)client_fd);
+      acceptService(client_fd);
+      //pthread_create(&tid,0,acceptService,(void*)client_fd);
     }
     return 0;
 }
