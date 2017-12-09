@@ -516,7 +516,7 @@ void sortRequest(void* arguments){
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
 	resp[len] = '\0';
-	printf("[TID: %u]%s\n", pthread_self()resp);
+	printf("[TID: %u]%s\n", pthread_self(),resp);
 
   n = write(sock_fd,sortingCol,strlen(sortingCol));
   if(n != -1){
@@ -528,7 +528,7 @@ void sortRequest(void* arguments){
 
   len = read(sock_fd, resp, 999);
   resp[len] = '\0';
-  printf("[TID: %u]%s\n",pthread_self() resp);
+  printf("[TID: %u]%s\n",pthread_self(), resp);
   return;
 
 }
