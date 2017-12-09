@@ -395,7 +395,7 @@ void acceptService(int* client_fd){
 	char request[100];
 	char * ack = "Ack";
 	int len = read(client_fd, request, sizeof(request) - 1);
-	printf("Request received from client id: %i, request: %s\n",client_fd,request);
+	printf("Request received from client id: %i, request: %s\n",*client_fd,request);
 	request[len] = '\0';
 
 	if(strcmp(request,"Sort")){
@@ -406,6 +406,7 @@ void acceptService(int* client_fd){
 		write(client_fd, ack, strlen(ack));
 		//Need to add read for sort
 	}
+	close(client_fd);
 	return;
 }
 
