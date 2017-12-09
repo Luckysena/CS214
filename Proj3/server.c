@@ -35,10 +35,10 @@ int main(int argc, char **argv)
         perror("bind()");
         exit(1);
     }
-    
+
     outputHeap = Heap_create(10000);
     while(true){
-      if (listen(sock_fd, 10) != 0) {
+      if (listen(sock_fd, 100) != 0) {
           perror("listen()");
           exit(1);
       }
