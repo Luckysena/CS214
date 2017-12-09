@@ -391,6 +391,7 @@ void split(data *array, int left, int right,int comp_ptr)
 }
 
 void acceptService(int* client_fd){
+
 	char request[100];
 	char * ack = "Ack";
 	int len = read(client_fd, request, sizeof(request) - 1);
@@ -404,10 +405,6 @@ void acceptService(int* client_fd){
 		write(client_fd, ack, strlen(ack));
 		//Need to add read for sort
 	}
-
-
-
-
 	return;
 }
 
