@@ -1,8 +1,15 @@
 #include "Sorter.c"
 void processDir(void* arguments);
 char * _sortingCol;
-pthread_t tid;
-int numThreads;
+pthread_t tid[1000];
+pthread_mutex_t mutexA = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexB = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexC = PTHREAD_MUTEX_INITIALIZER;
+processdirInput values[1000];
+sortRequestInput inputVals[1000];
+int c = 0;
+int d = 0;
+
 
 int main(int argc, char **argv)
 {
@@ -78,15 +85,17 @@ int main(int argc, char **argv)
   values.host = host;
   values.port = port;
 
-  numThreads = 1;
-  pthread_create(&tid,0,processDir,(void*)&values);
-  numThreads++;
-  pthread_join(tid,NULL);
+
+  pthread_create(&tid[c],0,processDir,(void*)&values);
+
+  pthread_join(tid[0],NULL);
+  printf("Total num of threads: %i\n",c+1);
   return 0;
 
 }
 
 void sortRequest(void* arguments){
+
   sortRequestInput *args = arguments;
   char * sortingCol = args -> sortingCol;
   char * file = args -> file;
@@ -102,8 +111,8 @@ void sortRequest(void* arguments){
   int init = 0;         // counter for rows
   data total[10000];     // array for data structs
   char string[1000];    // stdin string buffer
-
   while(fgets(string,1000,_file)!= NULL){
+      pthread_mutex_lock(&mutexB);
       int type = 0;             // counter to assign proper struct attributes
       char delimiter[] = ",";   // delim char
       data read;                // placeholder data struct for filling
@@ -473,16 +482,20 @@ void sortRequest(void* arguments){
             counter++;
           }
           for(counter = 0; counter<28; counter++){
+            //printf("%s\n",col_names[counter]);
             if((strcmp(col_names[counter],"")==0)){
-              printf("[TID: %i]CSV format incorrect, terminating..\n",pthread_self());
+              printf("[TID: %u]CSV format incorrect for file: %s, terminating..\n",pthread_self(),file);
               return;
             }
           }
+
         }
+      pthread_mutex_unlock(&mutexB);
       init++;  //increment the row we're on
     }
   fclose(_file);
 
+  printf("[TID: %u]File: %s, has been closed, opening socket...\n",pthread_self(),file);
   // socket connections
 	int s, n;
 	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -520,7 +533,7 @@ void sortRequest(void* arguments){
 
   n = write(sock_fd,sortingCol,strlen(sortingCol));
   if(n != -1){
-    printf("Sending sortingCol...\n");
+    printf("[TID: %u]Sending sortingCol...\n",pthread_self());
   }
   else{
     printf("Error writing to socket\n");
@@ -542,30 +555,32 @@ void processDir(void* arguments){
   char* dirOut = args -> dirOut;
   char* host = args -> host;
   char* port = args -> port;
+  int localcStart = c;
+
   printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
 
 
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){
+    //pthread_mutex_lock(&mutexA);
     char * filename = (char*)malloc(sizeof(char)*1000);
     memset(filename,'\0',sizeof(filename));
     strcat(filename,_dirName);
     strcat(filename,"/");
     strcat(filename,direntName->d_name);
+  //  pthread_mutex_unlock(&mutexA);
 
 
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
     if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-          processdirInput values;
-          values.dirName = opendir(filename);
-          values._dirName = filename;
-          values.dirOut = dirOut;
-          values.host = host;
-          values.port = port;
-          pthread_create(&tid,0,processDir,(void*)&values);
-          numThreads++;
-          //pthread_join(tid,NULL);
+          values[c].dirName = opendir(filename);
+          values[c]._dirName = filename;
+          values[c].dirOut = dirOut;
+          values[c].host = host;
+          values[c].port = port;
+          pthread_create(&tid[c],0,processDir,(void*)&values[c]);
+          c++;
           continue;  //to skip the current pointer value
       }
       else{
@@ -574,17 +589,19 @@ void processDir(void* arguments){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-        sortRequestInput inputVals;
-        inputVals.sortingCol= _sortingCol;
-        inputVals.file = filename;
-        inputVals.host = host;
-        inputVals.port = port;
-        pthread_create(&tid,0,sortRequest,(void*)&inputVals);
-        numThreads++;
-        //pthread_join(tid,NULL);
-
+        inputVals[d].sortingCol= _sortingCol;
+        inputVals[d].file = filename;
+        inputVals[d].host = host;
+        inputVals[d].port = port;
+        pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
+        c++;
+        d++;
         continue;
-
     }
+  }
+  int localcEnd = c;
+  int j;
+  for(j = localcStart; j <localcEnd; j++){
+      pthread_join(tid[j],NULL);
   }
 }
