@@ -8,6 +8,14 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <pthread.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <math.h>
 typedef enum _boolean bool;
 
 typedef struct _sorterInput{
