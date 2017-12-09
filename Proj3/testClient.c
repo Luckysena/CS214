@@ -7,8 +7,8 @@ int main(int argc, char **argv)
 
 	struct addrinfo hints, *result;
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_INET; /* IPv4 only */
-	hints.ai_socktype = SOCK_STREAM; /* TCP */
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
 
 	s = getaddrinfo(argv[1], argv[2], &hints, &result);
 	if (s != 0) {
@@ -47,6 +47,18 @@ int main(int argc, char **argv)
   len = read(sock_fd, resp, 999);
   resp[len] = '\0';
   printf("%s\n", resp);
+
+  data *Data = (data*)malloc(sizeof(data));
+  n = write(sock_fd,Data,sizeof(data));
+  if(n != -1){
+    printf("Sending sortingCol...\n");
+  }
+  else{
+    printf("Error writing to socket\n");
+  }
+
+
+
 
   return 0;
 }
