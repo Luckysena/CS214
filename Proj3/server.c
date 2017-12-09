@@ -47,11 +47,11 @@ int main(int argc, char **argv)
       int * client_fd = (int*)malloc(sizeof(int));
       int tempfd = accept(sock_fd,NULL,NULL);
       memcpy(client_fd, &tempfd,sizeof(int));
-
-      printf("%i\n",*client_fd);
+      printf("Tempfd: %i\n",tempfd);
+      printf("Value it points to: %i\n",*client_fd);
       //pthread_create(&tid,0,acceptService,(void*)&client_fd);
 
-      printf("Connection made: client_fd=%d\n", client_fd);
+      printf("client_fd=%d\n", client_fd);
 
 
       char buffer[1000];
