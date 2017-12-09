@@ -41,8 +41,8 @@ int main(int argc, char **argv)
           exit(1);
       }
 
-      struct sockaddr_in *result_addr = (struct sockaddr_in *) result->ai_addr;
-      printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
+      //struct sockaddr_in *result_addr = (struct sockaddr_in *) result->ai_addr;
+      //printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
       int * client_fd = (int*)malloc(sizeof(int));
       int tempfd = accept(sock_fd,NULL,NULL);
       memcpy(client_fd, &tempfd,sizeof(int));

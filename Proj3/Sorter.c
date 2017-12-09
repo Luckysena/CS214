@@ -391,10 +391,11 @@ void split(data *array, int left, int right,int comp_ptr)
 }
 
 void acceptService(int* client_fd){
-	printf("Accepted connection from client id: %i, Awaiting request...\n",client_fd);
+	printf("Accepted connection from client id: %i, Awaiting request...\n",*client_fd);
 	char request[100];
 	char * ack = "Ack";
 	int len = read(client_fd, request, sizeof(request) - 1);
+	printf("Request received from client id: %i, request: %s\n",client_fd,request);
 	request[len] = '\0';
 
 	if(strcmp(request,"Sort")){

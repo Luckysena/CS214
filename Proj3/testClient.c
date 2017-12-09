@@ -21,10 +21,13 @@ int main(int argc, char **argv)
                 exit(2);
         }
 
+  printf("Connecting to server...\n");
 	char *buffer = "Sort";
   char *sortingCol = "movie_title";
 
+  printf("Writing to server...\n");
 	write(sock_fd, buffer, strlen(buffer));
+  printf("Write complete!\n");
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
 	resp[len] = '\0';
