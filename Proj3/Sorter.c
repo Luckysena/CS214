@@ -446,9 +446,9 @@ void acceptService(int* _client_fd){
 		while(true){
 			data *Data = (data*)malloc(sizeof(data));
 			len = read(client_fd,buffer,sizeof(sortingCol)-1);
+			if(len < 0) error("ERROR reading from socket\n");
 			buffer[len] = '\0';
 			memcpy(Data,buffer,len);
-			toString(Data);
 			break;
 		}
 
