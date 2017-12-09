@@ -401,7 +401,7 @@ void acceptService(int* _client_fd){
 	printf("Request received from client id: %i, request: %s\n",client_fd,request);
 	request[len] = '\0';
 
-	if(strcmp(request,"Sort\0")){
+	if(strcmp(request,"Sort") == 0){
 		printf("Sorting..\n");
 		write(client_fd, ack, strlen(ack));
 		char sortingCol[100];
