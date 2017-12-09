@@ -5,16 +5,16 @@ Heap * outputHeap;
 
 int main(int argc, char **argv)
 {
-    if(argv[1] == NULL){
+    if((argv[1] == NULL) || (argv[2] == NULL)){
       printf("Missing port input, terminating...\n");
       return -1;
     }
-    else if(argc > 2){
+    else if(argc > 3){
       printf("Too many command arguments, terminating...\n");
       return -2;
     }
 
-    char *portNum = argv[1];
+    char *portNum = argv[2];
     int s;
     int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -45,7 +45,8 @@ int main(int argc, char **argv)
 
       printf("Waiting for connection...\n");
       int * client_fd = (int*)malloc(sizeof(int));
-      memcpy(client_fd, accept(sock_fd,NULL,NULL),sizeof(int));
+      int tempfd = accept(sock_fd,NULL,NULL);
+      memcpy(client_fd, &tempfd,sizeof(int));
 
       printf("%i\n",*client_fd);
       //pthread_create(&tid,0,acceptService,(void*)&client_fd);
