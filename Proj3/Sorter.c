@@ -391,38 +391,34 @@ void split(data *array, int left, int right,int comp_ptr)
 }
 
 void toString(data *total){
-	int i;
-	for (i = 0; i <28 ; i++)
-	  {
-	    printf("%s\n",total [i].color);
-	    printf("%s\n",total [i].dirName);
-	    printf("%s\n",total [i].critCount);
-	    printf("%s\n",total [i].durMin);
-	    printf("%s\n",total [i].dirFB);
-	    printf("%s\n",total [i].act3FB);
-	    printf("%s\n",total [i].act2Name);
-	    printf("%s\n",total [i].act1FB);
-	    printf("%s\n",total [i].gross);
-	    printf("%s\n",total [i].genre);
-	    printf("%s\n",total [i].act1Name);
-	    printf("%s\n",total [i].title);
-	    printf("%s\n",total [i].numVoted);
-	    printf("%s\n",total [i].totalFB);
-	    printf("%s\n",total [i].act3Name);
-	    printf("%s\n",total [i].faceNum);
-	    printf("%s\n",total [i].keyWord);
-	    printf("%s\n",total [i].link);
-	    printf("%s\n",total [i].numReview);
-	    printf("%s\n",total [i].lang);
-	    printf("%s\n",total [i].country);
-	    printf("%s\n",total [i].rated);
-	    printf("%s\n",total [i].budget);
-	    printf("%s\n",total [i].year);
-	    printf("%s\n",total [i].act2FB);
-	    printf("%s\n",total [i].score);
-	    printf("%s\n",total [i].ratio);
-	    printf("%s\n",total [i].movieFB);
-	  }
+	    printf("%s\n",total->color);
+	    printf("%s\n",total->dirName);
+	    printf("%s\n",total->critCount);
+	    printf("%s\n",total->durMin);
+	    printf("%s\n",total->dirFB);
+	    printf("%s\n",total->act3FB);
+	    printf("%s\n",total->act2Name);
+	    printf("%s\n",total->act1FB);
+	    printf("%s\n",total->gross);
+	    printf("%s\n",total->genre);
+	    printf("%s\n",total->act1Name);
+	    printf("%s\n",total->title);
+	    printf("%s\n",total->numVoted);
+	    printf("%s\n",total->totalFB);
+	    printf("%s\n",total->act3Name);
+	    printf("%s\n",total->faceNum);
+	    printf("%s\n",total->keyWord);
+	    printf("%s\n",total->link);
+	    printf("%s\n",total->numReview);
+	    printf("%s\n",total->lang);
+	    printf("%s\n",total->country);
+	    printf("%s\n",total->rated);
+	    printf("%s\n",total->budget);
+	    printf("%s\n",total->year);
+	    printf("%s\n",total->act2FB);
+	    printf("%s\n",total->score);
+	    printf("%s\n",total->ratio);
+	    printf("%s\n",total->movieFB);
 	  return;
 }
 

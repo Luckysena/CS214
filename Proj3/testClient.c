@@ -51,7 +51,7 @@ int main(int argc, char **argv)
   data *Data = (data*)malloc(sizeof(data));
   n = write(sock_fd,Data,sizeof(data));
   if(n != -1){
-    printf("Sending sortingCol...\n");
+    printf("Sending data struct...\n");
   }
   else{
     printf("Error writing to socket\n");
