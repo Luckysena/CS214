@@ -18,16 +18,21 @@
 #include <math.h>
 typedef enum _boolean bool;
 
-typedef struct _sorterInput{
+typedef struct _sortRequestInput{
 	char* sortingCol;
 	char* file;
-	char* dirout;
-}sorterInput;
+	char* host;
+	char* port;
+}sortRequestInput;
+
+
 
 typedef struct _processDirInput{
 	DIR* dirName;
 	char* _dirName;
 	char* dirOut;
+	char* host;
+	char* port;
 }processdirInput;
 
 typedef struct _data

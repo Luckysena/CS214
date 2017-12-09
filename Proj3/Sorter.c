@@ -421,7 +421,80 @@ void toString(data *total){
 	    printf("%s\n",total->movieFB);
 	  return;
 }
+int isCSV(const char* str){
+  if(strlen(str) > 4 && !strcmp(str + strlen(str) - 4, ".csv")){
+    return 0;
+  }
+  else{
+    return -1;
+  }
+}
+int isFile(const char* name){
+    DIR* directory = opendir(name);
 
+    if(directory != NULL)
+    {
+     closedir(directory);
+     return 0;
+    }
+
+    if(errno == ENOTDIR)
+    {
+     return 1;
+    }
+
+    return -1;
+}
+void strip_ext(char *fname){
+    char *end = fname + strlen(fname);
+
+    while (end > fname && *end != '.') {
+        --end;
+    }
+
+    if (end > fname) {
+        *end = '\0';
+    }
+}
+char *strtok_new(char * string, char const* delimiter){
+   char * delim = (char*)malloc(sizeof(char)*25);
+   memset(delim,'/0',sizeof(delim));
+   strcpy(delim,"exception");
+
+   static char *source = NULL;
+   char *p, *riturn = 0;
+   if(string != NULL)
+   {
+    source = string;
+    }
+   if(source == NULL)
+    {
+    return NULL;
+   }
+   if(strcmp(delimiter,delim)==0){
+
+     if((p = strpbrk(source, "\"")) != NULL){
+       if((p = strpbrk(source+1, "\"")) != NULL){
+         p++;
+         *p = 0;
+         riturn = source;
+         source = ++p;
+         return riturn;
+       }
+     }
+
+   }
+   if((p = strpbrk (source, ",")) != NULL || (p = strpbrk (source, "\n")) != NULL)
+    {
+      *p  = 0;
+      riturn = source;
+      source = ++p;
+    }
+    if(riturn == NULL){
+      riturn = source;
+    }
+		return riturn;
+}
 
 void acceptService(int* _client_fd){
 	int client_fd = *_client_fd;
