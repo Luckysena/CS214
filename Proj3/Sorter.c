@@ -425,7 +425,7 @@ void toString(data *total){
 
 void acceptService(int* _client_fd){
 	int client_fd = *_client_fd;
-	printf("[TID:%i]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
+	printf("[TID:%u]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
 	char request[100], buffer[1000];
 	char * ack = "Acknowledged!";
 
