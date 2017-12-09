@@ -390,13 +390,15 @@ void split(data *array, int left, int right,int comp_ptr)
 	return;
 }
 
-void acceptService(int* client_fd){
-	printf("Accepted connection from client id: %i, Awaiting request...\n",*client_fd);
+void acceptService(int* _client_fd){
+	client_fd = *_client_fd;
+	printf("Accepted connection from client id: %i, Awaiting request...\n",client_fd);
 	char request[100];
 	char * ack = "Ack";
+
 	int len = read(client_fd, request, sizeof(request) - 1);
 	if(len < 0) error("ERROR reading from socket\n");
-	printf("Request received from client id: %i, request: %s\n",*client_fd,request);
+	printf("Request received from client id: %i, request: %s\n",client_fd,request);
 	request[len] = '\0';
 
 	if(strcmp(request,"Sort")){
