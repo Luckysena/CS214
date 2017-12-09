@@ -395,7 +395,9 @@ void acceptService(int* client_fd){
 	char request[100];
 	char * ack = "Ack";
 	int len = read(client_fd, request, sizeof(request) - 1);
-	printf("Length of request message: %i\n",len);
+	if(len == -1){
+		strerror(errno);
+	}
 	printf("Request received from client id: %i, request: %s\n",*client_fd,request);
 	request[len] = '\0';
 
