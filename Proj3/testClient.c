@@ -21,20 +21,19 @@ int main(int argc, char **argv)
                 exit(2);
         }
 
-	char *buffer = "GET / HTTP/1.0\r\n\r\n";
-	printf("SENDING: %s", buffer);
-	printf("===\n");
-
-     // For this trivial demo just assume write()
-	 //sends all bytes in one go and is not interrupted
+	char *buffer = "Sort";
+  char *sortingCol = "movie_title";
 
 	write(sock_fd, buffer, strlen(buffer));
-
-
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
 	resp[len] = '\0';
 	printf("%s\n", resp);
 
-    return 0;
+  write(sock_fd,sortingCol,strlen(sortingCol));
+  len = read(sock_fd, resp, 999);
+  resp[len] = '\0';
+  printf("%s\n", resp);
+
+  return 0;
 }

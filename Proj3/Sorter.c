@@ -390,6 +390,33 @@ void split(data *array, int left, int right,int comp_ptr)
 	return;
 }
 
+void acceptService(int* client_fd){
+	char request[100];
+	char * ack = "Ack";
+	int len = read(client_fd, request, sizeof(request) - 1);
+	request[len] = '\0';
+
+	if(strcmp(request,"Sort")){
+		write(client_fd, ack, strlen(ack));
+		char sortingCol[100];
+		len = read(client_fd,sortingCol,sizeof(sortingCol)-1);
+		sortingCol[len] = '\0';
+		write(client_fd, ack, strlen(ack));
+		//Need to add read for sort
+	}
+
+
+
+
+	return;
+}
+
+
+
+
+
+
+
 Node * Node_create(data * elem){
 	Node * node = malloc(sizeof(Node));
 	node->entries = 1;

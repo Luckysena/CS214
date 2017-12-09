@@ -3,6 +3,7 @@
 pthread_t tid;
 Heap * outputHeap;
 
+
 int main(int argc, char **argv)
 {
     if((argv[1] == NULL) || (argv[2] == NULL)){
@@ -41,27 +42,12 @@ int main(int argc, char **argv)
       }
 
       struct sockaddr_in *result_addr = (struct sockaddr_in *) result->ai_addr;
-      printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
-
-      printf("Waiting for connection...\n");
+      //printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
       int * client_fd = (int*)malloc(sizeof(int));
       int tempfd = accept(sock_fd,NULL,NULL);
       memcpy(client_fd, &tempfd,sizeof(int));
-      printf("Tempfd: %i\n",tempfd);
-      printf("Value it points to: %i\n",*client_fd);
-      //pthread_create(&tid,0,acceptService,(void*)&client_fd);
 
-      printf("client_fd=%d\n", client_fd);
-
-
-      char buffer[1000];
-      int len = read(client_fd, buffer, sizeof(buffer) - 1);
-      buffer[len] = '\0';
-
-
-
+      pthread_create(&tid,0,acceptService,(void*)&client_fd);
     }
-
-
     return 0;
 }

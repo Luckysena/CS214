@@ -245,10 +245,7 @@ void fileSorter(void* arguments){
   }
 
   char sortrequest[256];
-  strcat(sortrequest,file);
-  strcat(sortrequest," ");
-  strcat(sortrequest,sortingCol);
-  strcat(sortrequest,"\0");
+  strcat(sortrequest,"Sort");
   int n = write(sockfd, file, strlen(file));
    // check if message is sent successfully
 
