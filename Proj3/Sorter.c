@@ -391,7 +391,7 @@ void split(data *array, int left, int right,int comp_ptr)
 }
 
 void acceptService(int* _client_fd){
-	client_fd = *_client_fd;
+	int client_fd = *_client_fd;
 	printf("Accepted connection from client id: %i, Awaiting request...\n",client_fd);
 	char request[100];
 	char * ack = "Ack";
