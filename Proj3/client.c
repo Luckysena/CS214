@@ -87,15 +87,18 @@ int main(int argc, char **argv)
 
 
   pthread_create(&tid[c],0,processDir,(void*)&values);
+  c++;
+  for(i = 0; i<c; i++){
+        pthread_join(tid[i],NULL);
+  }
 
-  pthread_join(tid[0],NULL);
-  printf("Total num of threads: %i\n",c+1);
+    printf("Total num of threads: %i\n",c+1);
   return 0;
 
 }
 
 void sortRequest(void* arguments){
-
+  /*Will be opened by a thread and open a port to communicate with server*/
   sortRequestInput *args = arguments;
   char * sortingCol = args -> sortingCol;
   char * file = args -> file;
@@ -544,6 +547,8 @@ void sortRequest(void* arguments){
   //printf("[TID: %u]%s\n",pthread_self(), resp);
   return;
 
+  /***************This is where we will send the file contents**********/
+
 }
 
 
@@ -555,20 +560,19 @@ void processDir(void* arguments){
   char* dirOut = args -> dirOut;
   char* host = args -> host;
   char* port = args -> port;
-  int localcStart = c;
+  //int localcStart = c;
 
   printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
 
 
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){
-    //pthread_mutex_lock(&mutexA);
     char * filename = (char*)malloc(sizeof(char)*1000);
     memset(filename,'\0',sizeof(filename));
     strcat(filename,_dirName);
     strcat(filename,"/");
     strcat(filename,direntName->d_name);
-  //  pthread_mutex_unlock(&mutexA);
+
 
 
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
@@ -603,10 +607,10 @@ void processDir(void* arguments){
         continue;
     }
   }
-  int localcEnd = c;
+  /*int localcEnd = c;
   int j;
   for(j = localcStart; j <localcEnd; j++){
     printf("Joining: %i, and c is : %i, the tid is: %u\n",j,c,tid[j]);
     pthread_join(tid[j],NULL);
-  }
+  }*/
 }
