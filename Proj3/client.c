@@ -545,10 +545,90 @@ void sortRequest(void* arguments){
   len = read(sock_fd, resp, 999);
   resp[len] = '\0';
   //printf("[TID: %u]%s\n",pthread_self(), resp);
-  return;
+  //return;
 
   /***************This is where we will send the file contents**********/
 
+  int i;
+  for (i = 0; i <(int)( sizeof(total) / sizeof(total[0]) ) ; i++)
+  {
+    char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create bufferIn for every line
+    memset(bufferIn,'\0',sizeof(bufferIn));
+    strcat(bufferIn,total[i].color);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].dirName);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].critCount);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].durMin);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].dirFB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].act3FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].act2Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].act1FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].gross);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].genre);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].act1Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].title);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].numVoted);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].totalFB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].act3Name);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].faceNum);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].keyWord);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].link);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].numReview);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].lang);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].country);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].rated);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].budget);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].year);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].act2FB);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].score);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].ratio);
+    strcat(bufferIn,",");
+    strcat(bufferIn,total[i].movieFB);
+    n = write(sock_fd, bufferIn, sizeof(bufferIn));
+    if(n != -1){
+      printf("[TID: %u]Successfully wrote bufferIn line\n",pthread_self());
+    }
+    else{
+      printf("Error writing bufferIn to socket\n");
+      break;
+    }
+    len = read(sock_fd, resp, 999);
+    resp[len] = '\0';
+    if(strcmp(resp, "Accepted line")){
+      printf("[TID: %u]Successfully recieved bufferIn line by server\n",pthread_self());
+    }
+    else{
+      printf("Error recieving bufferIn by server\n");
+      break;
+    }
+    free(bufferIn);
+  }
+return;
 }
 
 
