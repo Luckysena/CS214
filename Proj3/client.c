@@ -105,7 +105,7 @@ void sortRequest(void* arguments){
   char * host = args -> host;
   char * port = args -> port;
   FILE* _file = fopen(file, "r");
-  printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
+  //printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
   if((_file == NULL)){
     printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
     return;
@@ -513,14 +513,11 @@ void sortRequest(void* arguments){
 	        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
         	exit(1);
 	}
-
 	if(connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1){
                 perror("connect");
                 exit(2);
         }
-
 	char *buffer = "Sort";
-
 	n = write(sock_fd, buffer, strlen(buffer));
   if(n != -1){
     //printf("[TID: %u]Sending sort request...\n",pthread_self());
@@ -640,9 +637,8 @@ void processDir(void* arguments){
   char* dirOut = args -> dirOut;
   char* host = args -> host;
   char* port = args -> port;
-  //int localcStart = c;
 
-  printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
+  //printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
 
 
   struct dirent* direntName;
@@ -687,10 +683,4 @@ void processDir(void* arguments){
         continue;
     }
   }
-  /*int localcEnd = c;
-  int j;
-  for(j = localcStart; j <localcEnd; j++){
-    printf("Joining: %i, and c is : %i, the tid is: %u\n",j,c,tid[j]);
-    pthread_join(tid[j],NULL);
-  }*/
 }

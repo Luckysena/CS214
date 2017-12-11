@@ -201,9 +201,7 @@ int heapCompare(data leftArr, data rightArr, int comp_ptr){
 
 	}
 }
-
-bool compare(data leftArr, data rightArr, int comp_ptr)
-{
+bool compare(data leftArr, data rightArr, int comp_ptr){
 	char c1 = leftArr.title[0];
 	char c2 = rightArr.title[0];
 	char * tmp1 = leftArr.title;
@@ -378,8 +376,7 @@ void mergeData(data *array,int left , int middle , int right, int comp_ptr){
 		second = NULL;
 		return;
 }
-void split(data *array, int left, int right,int comp_ptr)
-{
+void split(data *array, int left, int right,int comp_ptr){
 	if (left < right)
 	{
 		int middle=left+(right-left)/2;
@@ -389,7 +386,6 @@ void split(data *array, int left, int right,int comp_ptr)
 	}
 	return;
 }
-
 void toString(data *total){
 	    printf("%s\n",total->color);
 	    printf("%s\n",total->dirName);
@@ -496,7 +492,10 @@ char *strtok_new(char * string, char const* delimiter){
 		return riturn;
 }
 
-void acceptService(int* _client_fd){
+void acceptService(void* arguments){
+	serverThreadParams args = arguments;
+	int* _client_fd = args -> client_fd;
+	Heap *heap = args -> heap;
 	int client_fd = *_client_fd;
 	printf("[TID:%u]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
 	char request[100], buffer[1000];
@@ -509,12 +508,12 @@ void acceptService(int* _client_fd){
 
 	if(strcmp(request,"Sort") == 0){
 		printf("Sorting..\n");
-		write(client_fd, ack, strlen(ack));
+		write(client_fd, ack, strlen(ack));   // Acknowledged Sort
 		char sortingCol[100];
 		len = read(client_fd,sortingCol,sizeof(sortingCol)-1);
 		sortingCol[len] = '\0';
-		write(client_fd, ack, strlen(ack));
-		//Need to add read for sort
+		write(client_fd, ack, strlen(ack));   // Acknowledged sortingCol
+
 
 		while(true){
 			data *Data = (data*)malloc(sizeof(data));
