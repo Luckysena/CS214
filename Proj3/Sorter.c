@@ -493,7 +493,7 @@ char *strtok_new(char * string, char const* delimiter){
 }
 
 void acceptService(void* arguments){
-	serverThreadParams args = arguments;
+	serverThreadParams *args = arguments;
 	int* _client_fd = args -> client_fd;
 	Heap *heap = args -> heap;
 	int client_fd = *_client_fd;
