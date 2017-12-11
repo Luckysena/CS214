@@ -531,10 +531,6 @@ void acceptService(void* arguments){
 
 
 
-
-
-
-
 Node * Node_create(data * elem){
 	Node * node = malloc(sizeof(Node));
 	node->entries = 1;

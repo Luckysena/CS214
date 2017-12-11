@@ -50,8 +50,12 @@ int main(int argc, char **argv)
       serverParams[numThreads].heap = outputHeap;
       serverParams[numThreads].client_fd = client_fd;
 
-      pthread_create(&tid,0,acceptService,(void*)&serverParams[numThreads]);
+      pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[numThreads]);
       numThreads++;
+    }
+    int i;
+    for(i = 0; i < numThreads; i++){
+      pthread_join(tid[i],NULL);
     }
     return 0;
 }
