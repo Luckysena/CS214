@@ -74,11 +74,10 @@ int main(int argc, char **argv)
 
 
           //send sessionID to client
-          char* ID = (char*)malloc(sizeof(char)*4);
-          memset(ID,'\0',sizeof(*ID));
+          char ID[4];
           sprintf(ID,"%d",sessionID);
           printf("Giving away SIG: %s\n",ID);
-          write(client_fd,ID,sizeof(*ID));
+          write(client_fd,ID,4);
           printf("New client, session ID: %i\n",sessionID);
 
           //update session list & pass as parameter

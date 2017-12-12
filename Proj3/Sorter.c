@@ -1075,7 +1075,7 @@ void acceptService(void* arguments){
 			if(strcmp(buffer,"Finished") == 0){
 				break;
 			}
-
+			printf("Adding: %s\n",buffer);
 			//fill in the heap with data structs
 			tempData = fillData(buffer);
 			Heap_add(heap,tempData,sortingCol);
