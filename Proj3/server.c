@@ -65,7 +65,7 @@ int main(int argc, char **argv)
         //wait for sessionID request
         char* request = (char*)malloc(sizeof(char)*100);
         memset(request,'\0',sizeof(*request));
-        int len = read(client_fd, request, sizeof(*request));
+        int len = read(client_fd, *request, sizeof(*request));
         if(len < 0) error("ERROR reading from socket\n");
 
         printf("request from client was: %s\n",request);
