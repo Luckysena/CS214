@@ -121,7 +121,7 @@ int main(int argc, char **argv)
         char* sortR = "Sort";
         char* dumpR = "Dump";
         read(client_fd, requestType, sizeof(requestType));
-        printf("[SID: %i]Request is: %s\n"sessionID,requestType);
+        printf("[SID: %i]Request is: %s\n",sessionID,requestType);
 
         //check for error on input
         if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){
