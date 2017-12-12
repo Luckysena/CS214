@@ -107,6 +107,7 @@ int main(int argc, char **argv)
           }
           //if error checks were passed
           char* successfulID = "What is your request";
+          printf("Client input passed\n");
           write(client_fd, successfulID, strlen(successfulID));
         }
         //invalid client input scenario
