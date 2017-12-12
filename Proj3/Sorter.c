@@ -1085,6 +1085,7 @@ void acceptService(void* arguments){
 				printf("then ya lemme know\n");
 			}
 			Heap_add(heap,tempData,sortingCol);
+			write(client_fd,"Accepted line",strlen("Accepted line"));
 		}
 		printf("[SID:%s]Sort Completed\n");
 		close(client_fd);
