@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 
 
         //thread creation for client connection
-        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[sessionID]);
+        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[sessionID-1]);
         numThreads++;
 
 

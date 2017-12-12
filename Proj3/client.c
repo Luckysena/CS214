@@ -102,7 +102,7 @@ int main(int argc, char **argv){
   char *requestForID = "Requesting sessionID";
   write(sock_fd, requestForID, strlen(requestForID));
   char sessionID[10];
-  int len = read(sock_fd, sessionID,sizeof(*sessionID));
+  int len = read(sock_fd, sessionID,9);
   sessionID[len] = "\0";
 
   printf("Connected to server with SID: %s\n",sessionID);
@@ -783,14 +783,14 @@ void sortRequest(void* arguments){
     strcat(bufferIn,total[i].movieFB);
     n = write(sock_fd, bufferIn, sizeof(*bufferIn));
     if(n == -1){
-      printf("[TID: %u]Failed to write bufferIn line\n",pthread_self());
+      printf("[SID: %s]Failed to write bufferIn line\n",sessionID);
       break;
     }
     char resp[1000];
     len = read(sock_fd, resp, 999);
     resp[len] = '\0';
     if(strcmp(resp, "Accepted line") != 0){
-      printf("[TID: %u]Failed to recieve bufferIn line by server\n",pthread_self());
+      printf("[SID: %s]Failed to recieve bufferIn line by server\n",sessionID);
       break;
     }
     free(bufferIn);
