@@ -86,6 +86,7 @@ typedef struct _heap{
 
 typedef struct _serverThreadParams{
 	Heap * heap;
+	char * requestType;
 	int  client_fd;
 	char * sessionID;
 }serverThreadParams;

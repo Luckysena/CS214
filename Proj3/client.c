@@ -106,6 +106,9 @@ int main(int argc, char **argv){
   read(sock_fd, sessionID,strlen(sessionID));
 
 
+  //close socket and process directories
+  //close(sock_fd);
+
 
   //pthread parameters
   DIR* dirIn = opendir(_dirIn);
@@ -126,13 +129,32 @@ int main(int argc, char **argv){
   }
 
 
+  /*open connection for dumpRequest
+  sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  s = getaddrinfo(host, port, &hints, &results);
+  if (s != 0) {
+          fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+          exit(1);
+  }
+  if(connect(sock_fd, results->ai_addr, results->ai_addrlen) == -1){
+                perror("connect");
+                exit(2);
+  }
+  */
 
 
-  //dump request
-  char *dumpRequest = (char*)malloc(sizeof(char)*100);
-  memset(dumpRequest,'\0',sizeof(dumpRequest));
-  strcpy(dumpRequest,sessionID);
-  strcpy(dumpRequest," Dump");
+
+  //sessionID for dumpRequest
+  char tempbuff[100];
+  write(sock_fd,sessionID,strlen(sessionID));
+  read(sock_fd,tempbuff,strlen(tempbuff));
+
+
+  //send dumpRequest
+  char* dumpRequest = "Dump";
   write(sock_fd,dumpRequest,strlen(dumpRequest));
 
 
@@ -205,7 +227,7 @@ int main(int argc, char **argv){
   while(true){
     memset(buffer,'\0',sizeof(buffer));
     len = read(sock_fd,buffer,sizeof(buffer));
-    if(len < 0) error("ERROR reading from socket\n");
+    if(len < 0) error("ERROR reading dump from socket\n");
     if(strcmp(buffer,"Finished") == 0){
       break;
     }
@@ -214,7 +236,12 @@ int main(int argc, char **argv){
   fclose(foutput);
   return 0;
 }
+
+
+
+
 void sortRequest(void* arguments){
+
   /*Will be opened by a thread and open a port to communicate with server*/
   sortRequestInput *args = arguments;
   char * sortingCol = args -> sortingCol;
@@ -223,7 +250,10 @@ void sortRequest(void* arguments){
   char * port = args -> port;
   char * host = args -> host;
   FILE* _file = fopen(file, "r");
-  //printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
+
+
+
+  //File read-in
   if((_file == NULL)){
     printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
     return;
@@ -616,17 +646,19 @@ void sortRequest(void* arguments){
     }
   fclose(_file);
 
-  printf("[TID: %u]File: %s, has been closed, opening socket...\n",pthread_self(),file);
 
-  /**********After this we are communicating to send sorting info********/
+
+  //Socket creation
+  printf("[TID: %u]File: %s, has been closed, opening socket...\n",pthread_self(),file);
   int s,n,i;
   int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-
   struct addrinfo hints, *result;
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
 
+
+  //Get server information & connect
   s = getaddrinfo(host, port, &hints, &result);
   if (s != 0) {
           fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
@@ -637,19 +669,17 @@ void sortRequest(void* arguments){
                 exit(2);
   }
 
-  //conduct sort request with sessionID
-  char *buffer = (char*)malloc(sizeof(char)*250);
-  strcat(buffer,sessionID);
-  strcat(buffer," Sort");
-	n = write(sock_fd, buffer, strlen(buffer));
-  if(n != -1){
-    //printf("[TID: %u]Sending sort request...\n",pthread_self());
-  }
-  else{
-    printf("Error writing to socket\n");
+
+
+  //conduct service request with sessionID
+	n = write(sock_fd, sessionID, strlen(sessionID));
+  if(n == -1){
+    printf("Error communicating sort request to server, terminating...\n");
+    return;
   }
 
-  //get response from sort request
+
+  //get response from service request
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
   if(len == -1){
@@ -657,15 +687,33 @@ void sortRequest(void* arguments){
     return;
   }
 
-  //send sortingCol
-  n = write(sock_fd,sortingCol,strlen(sortingCol));
-  if(n != -1){
-    //printf("[TID: %u]Sending sortingCol...\n",pthread_self());
-  }
-  else{
-    printf("Error writing to socket\n");
+
+  //send sort request
+  char* sortReq = "Sort";
+  n = write(sock_fd, sortReq, strlen(sortReq));
+  if(n == -1){
+    printf("Error communicating sort request to server, terminating...\n");
     return;
   }
+
+
+  //response for sort request
+  len = read(sock_fd, resp, 999);
+  if(len == -1){
+    printf("Error communicating sort request to server, terminating...\n");
+    return;
+  }
+
+
+
+  //send sortingCol
+  n = write(sock_fd,sortingCol,strlen(sortingCol));
+  if(n == -1){
+    printf("Error communicating sort request to server, terminating...\n");
+    return;
+  }
+
+
 
   //get response for sortingCol
   len = read(sock_fd, resp, 999);
@@ -674,8 +722,9 @@ void sortRequest(void* arguments){
     return;
   }
 
-  /***************This is where we will send the file contents**********/
 
+
+  //send file contents
   for (i = 0; i <(init-1); i++){
     char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create bufferIn for every line
     memset(bufferIn,'\0',sizeof(bufferIn));
@@ -735,36 +784,31 @@ void sortRequest(void* arguments){
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].movieFB);
     n = write(sock_fd, bufferIn, sizeof(bufferIn));
-    if(n != -1){
-      printf("[TID: %u]Successfully wrote bufferIn line\n",pthread_self());
-    }
-    else{
-      printf("Error writing bufferIn to socket\n");
+    if(n == -1){
+      printf("[TID: %u]Failed to write bufferIn line\n",pthread_self());
       break;
     }
+    char resp[1000];
     len = read(sock_fd, resp, 999);
     resp[len] = '\0';
-    if(strcmp(resp, "Accepted line") == 0){
-      printf("[TID: %u]Successfully recieved bufferIn line by server\n",pthread_self());
-    }
-    else{
-      printf("Error recieving bufferIn by server\n");
+    if(strcmp(resp, "Accepted line") != 0){
+      printf("[TID: %u]Failed to recieve bufferIn line by server\n",pthread_self());
       break;
     }
     free(bufferIn);
   }
 
+
+
+  //end of sort message
   char *endBuffer = "Finished";
   n = write(sock_fd, endBuffer, strlen(endBuffer));
-  if(n != -1){
-    printf("[TID: %u]Sending finished sort message...\n",pthread_self());
-  }
-  else{
+  if(n == -1){
     printf("Error writing to socket\n");
   }
-
   return;
 }
+
 void processDir(void* arguments){
   processdirInput *args = arguments;
   DIR* dirName = args -> dirName;

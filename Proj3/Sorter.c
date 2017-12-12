@@ -844,53 +844,21 @@ data * fillData(char * input){
   return &read;
 }
 
+bool isNum(char* input){
 
-
-void acceptService(void* arguments){
-	serverThreadParams *args = arguments;
-	int client_fd = args -> client_fd;
-	Heap *heap = args -> heap;
-	
-	printf("[TID:%u]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
-	char request[100];
-	char * buffer = (char*) malloc(sizeof(char)*9000);
-	char * ack = "Acknowledged!";
-	char * ackLine = "Accepted line";
-	data * Data;
-
-	int len = read(client_fd, request, sizeof(request) - 1);
-	if(len < 0) error("ERROR reading from socket\n");
-	printf("Request received from client id: %i, request: %s\n",client_fd,request);
-	request[len] = '\0';
-
-	if(strcmp(request,"Sort") == 0){
-		printf("Sorting..\n");
-		write(client_fd, ack, strlen(ack));   // Acknowledged Sort
-		char sortingCol[100];
-		len = read(client_fd,sortingCol,sizeof(sortingCol)-1);
-		if(len < 0) error("ERROR reading from socket\n");
-		sortingCol[len] = '\0';
-		write(client_fd, ack, strlen(ack));   // Acknowledged sortingCol
-
-
-		while(true){
-			memset(buffer,'\0',sizeof(buffer));
-			len = read(client_fd,buffer,sizeof(sortingCol)-1);
-			if(len < 0) error("ERROR reading from socket\n");
-			buffer[len] = '\0';
-
-			if(strcmp(buffer,"Finished") == 0){
-				break;
-			}
-
-			//pthread_mutex_lock(&mutexD);
-			Data = fillData(buffer);
-			Heap_add(heap,Data,sortingCol);
-			//pthread_mutex_unlock(&mutexD);
+		if(input == NULL){
+			return false;
 		}
-	}
-	return;
+		int i;
+		for(i = 0; i < strlen(input); i++){
+			if(isdigit(input[i]) == 0){
+				return false;
+			}
+		}
+		return true;
 }
+
+
 
 
 
@@ -1061,4 +1029,129 @@ data * Heap_remove(Heap * heap, int comp_ptr){
 	SiftDown(heap,comp_ptr);
 	return temp;
 
+}
+
+void acceptService(void* arguments){
+
+	//parameter unpacking from thread input
+	serverThreadParams *args = arguments;
+	int client_fd = args -> client_fd;
+	char * requestType = args -> requestType;
+	char * sessionID = args -> sessionID;
+	Heap * heap = args -> heap;
+
+
+
+	//string declarations
+	char * buffer = (char*) malloc(sizeof(char)*9000);
+	char * ack = "Acknowledged!";
+	char * finish = "Finished";
+	char * sortingCol =(char*)malloc(sizeof(char)*100);
+	memset(sortingCol,'\0',sizeof(sortingCol));
+	data * tempData;
+
+
+	//sort request
+	if(strcmp(requestType,"Sort") == 0){
+
+		//Acknowledged sort request
+		write(client_fd, ack, strlen(ack));
+
+
+		//Read in sortingCol
+		read(client_fd,sortingCol,sizeof(sortingCol));
+
+
+		// Acknowledged sortingCol
+		write(client_fd, ack, strlen(ack));
+
+
+		//accept file contents
+		while(true){
+			memset(buffer,'\0',sizeof(buffer));
+			read(client_fd,buffer,sizeof(sortingCol));
+
+			//end of file content message
+			if(strcmp(buffer,"Finished") == 0){
+				break;
+			}
+
+			//fill in the heap with data structs
+			tempData = fillData(buffer);
+			Heap_add(heap,tempData,sortingCol);
+		}
+	}
+
+	//dump request
+	else if(strcmp(requestType,"Dump") == 0){
+
+			//convert data struct to strings
+			int i;
+			int listSize = heap->list->size;
+
+			for (i = 0; i <(listSize-1) ; i++){
+				tempData = Heap_remove(heap,sortingCol);
+
+				memset(buffer,'\0',sizeof(buffer));
+				strcat(buffer,tempData->color);
+				strcat(buffer,",");
+				strcat(buffer,tempData->dirName);
+				strcat(buffer,",");
+				strcat(buffer,tempData->critCount);
+				strcat(buffer,",");
+				strcat(buffer,tempData->durMin);
+				strcat(buffer,",");
+				strcat(buffer,tempData->dirFB);
+				strcat(buffer,",");
+				strcat(buffer,tempData->act3FB);
+				strcat(buffer,",");
+				strcat(buffer,tempData->act2Name);
+				strcat(buffer,",");
+				strcat(buffer,tempData->act1FB);
+				strcat(buffer,",");
+				strcat(buffer,tempData->gross);
+				strcat(buffer,",");
+				strcat(buffer,tempData->genre);
+				strcat(buffer,",");
+				strcat(buffer,tempData->act1Name);
+				strcat(buffer,",");
+				strcat(buffer,tempData->title);
+				strcat(buffer,",");
+				strcat(buffer,tempData->numVoted);
+				strcat(buffer,",");
+				strcat(buffer,tempData->totalFB);
+				strcat(buffer,",");
+				strcat(buffer,tempData->act3Name);
+				strcat(buffer,",");
+				strcat(buffer,tempData->faceNum);
+				strcat(buffer,",");
+				strcat(buffer,tempData->keyWord);
+				strcat(buffer,",");
+				strcat(buffer,tempData->link);
+				strcat(buffer,",");
+				strcat(buffer,tempData->numReview);
+				strcat(buffer,",");
+				strcat(buffer,tempData->lang);
+				strcat(buffer,",");
+				strcat(buffer,tempData->country);
+				strcat(buffer,",");
+				strcat(buffer,tempData->rated);
+				strcat(buffer,",");
+				strcat(buffer,tempData->budget);
+				strcat(buffer,",");
+				strcat(buffer,tempData->year);
+				strcat(buffer,",");
+				strcat(buffer,tempData->act2FB);
+				strcat(buffer,",");
+				strcat(buffer,tempData->score);
+				strcat(buffer,",");
+				strcat(buffer,tempData->ratio);
+				strcat(buffer,",");
+				strcat(buffer,tempData->movieFB);
+				write(client_fd, buffer, strlen(buffer));
+			}
+			write(client_fd,finish,strlen(finish));
+			fclose(client_fd);
+	}
+	return;
 }

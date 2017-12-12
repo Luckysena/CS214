@@ -9,6 +9,7 @@ int sessionID = 0;
 
 int main(int argc, char **argv)
 {
+    //command line flag input
     if((argv[1] == NULL) || (argv[2] == NULL)){
       printf("Missing port input, terminating...\n");
       return -1;
@@ -17,72 +18,138 @@ int main(int argc, char **argv)
       printf("Too many command arguments, terminating...\n");
       return -2;
     }
-
     char *portNum = argv[2];
+
+
+
+    //socket creation for server
     int s;
     int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-
     struct addrinfo hints, *result;
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
+
+
+    //getting server address info
     s = getaddrinfo(NULL, portNum, &hints, &result);
     if (s != 0) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
             exit(1);
     }
 
+
+
+    //bind socket to server
     if (bind(sock_fd, result->ai_addr, result->ai_addrlen) != 0) {
         perror("bind()");
         exit(1);
     }
 
+
+
+    //initialize sessions to false
     int i = 0;
     for(i; i < 1000; i++){
       sessions[i] = false;
     }
 
-    //initialize sessions to false
 
+    //spawn service thread and keep listening
     while(true){
       if (listen(sock_fd, 100) == 0) {
-        //spawn service thread and keep listening
-
         int client_fd = accept(sock_fd,NULL,NULL);
 
         //wait for sessionID request
-        char request[100];
-        int len = read(client_fd, request, sizeof(request) - 1);
+        char* request = (char*)malloc(sizeof(char)*100);
+        memset(request,'\0',sizeof(request));
+        int len = read(client_fd, request, sizeof(request));
         if(len < 0) error("ERROR reading from socket\n");
-        request[len] = '\0';
 
-        //fail if the initial request was incorrect
-        if(strcmp(request,"Requesting sessionID")!=0){
-          char* sessionIDFailure = "Request for sessionID invalid, terminating connection";
+
+        //if requesting a sessionID give one
+        if(strcmp(request,"Requesting sessionID")==0){
+
+
+          //send sessionID to client
+          char* ID = (char*)malloc(sizeof(char)*4);
+          memset(ID,'\0',sizeof(ID));
+          sprintf(ID,"d",sessionID);
+          write(client_fd,ID,strlen(ID));
+
+          //update session list & pass as parameter
+          sessions[sessionID] = true;
+          sessionID++;
+          continue;
+        }
+
+
+        //otherwise check if it is a valid sessionID/input
+        else if(isNum(request)){
+          int checkID = atoi(request);
+          //check if sessionID number is in the correct range
+          if((checkID > 999)||(checkID<0)){
+            char* sessionIDFailure = "Invalid sessionID, terminating connection";
+            write(client_fd, sessionIDFailure, strlen(sessionIDFailure));
+            close(client_fd);
+            continue;
+          }
+          //check if session is active
+          if(sessions[checkID] == false){
+            char* sessionIDFailure = "Invalid sessionID, terminating connection";
+            write(client_fd, sessionIDFailure, strlen(sessionIDFailure));
+            close(client_fd);
+            continue;
+          }
+          //if error checks were passed
+          char* successfulID = "What is your request";
+          write(client_fd, successfulID, strlen(successfulID));
+        }
+        //invalid client input scenario
+        else{
+          char* sessionIDFailure = "Invalid client input, terminating connection";
           write(client_fd, sessionIDFailure, strlen(sessionIDFailure));
           close(client_fd);
           continue;
         }
 
-        char ID[10];
-        sprintf(ID,"d",sessionID);
-
-        write(client_fd,ID,strlen(ID));
-
-        sessions[sessionID] = true;
-        sessionID++;
+        //read in type of request
+        char* requestType = (char*)malloc(sizeof(char)*100);
+        char* sortR = "Sort";
+        char* dumpR = "Dump";
+        read(client_fd, requestType, sizeof(requestType));
 
 
-        serverParams[numThreads].heap = Heap_create(10000);
-        serverParams[numThreads].client_fd = client_fd;
-        serverParams[numThreads].sessionID = ID;
+        //check for error on input
+        if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){
+          char* requestTypeFailure = "Invalid request type, terminating connection";
+          write(client_fd, requestTypeFailure, strlen(requestTypeFailure));
+          close(client_fd);
+          continue;
+        }
 
-        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[numThreads]);
+
+        //parameters to pass for each client request
+        serverParams[sessionID].sessionID = request;
+        serverParams[sessionID].requestType = requestType;
+        serverParams[sessionID].client_fd = client_fd;
+
+
+        //for sort requests create a heap
+        if(strcmp(requestType,sortR) == 0){
+          serverParams[sessionID].heap = Heap_create(10000);
+        }
+
+
+
+        //thread creation for client connection
+        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[sessionID]);
         numThreads++;
 
-        //might need to not join pthreads... memory issue and unneeded space usage...
+
+        //might need to not join pthreads... memory issue and unneeded space usage?
         for(i = 0 ; i < numThreads; i++){
           pthread_join(tid[i],NULL);
         }
