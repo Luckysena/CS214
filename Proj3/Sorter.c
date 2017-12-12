@@ -1081,6 +1081,9 @@ void acceptService(void* arguments){
 			printf("Adding: %s\n",buffer);
 			//fill in the heap with data structs
 			tempData = fillData(buffer);
+			if(tempData==NULL){
+				printf("then ya lemme know\n");
+			}
 			Heap_add(heap,tempData,sortingCol);
 		}
 		printf("[SID:%s]Sort Completed\n");
