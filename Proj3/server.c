@@ -4,7 +4,7 @@ pthread_t tid[1000];
 serverThreadParams serverParams[1000];
 int numThreads = 0;
 bool sessions[1000];
-int sessionID = 0;
+int sessionID;
 
 
 int main(int argc, char **argv)
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
       sessions[i] = false;
     }
 
-
+    sessionID = 1;
     //spawn service thread and keep listening
     while(true){
       if (listen(sock_fd, 100) == 0) {
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
           write(client_fd,ID,strlen(ID));
 
           //update session list & pass as parameter
-          sessions[sessionID] = true;
+          sessions[sessionID-1] = true;
           sessionID++;
           continue;
         }
@@ -90,14 +90,14 @@ int main(int argc, char **argv)
         else if(isNum(request)){
           int checkID = atoi(request);
           //check if sessionID number is in the correct range
-          if((checkID > 999)||(checkID<0)){
+          if((checkID > 1000)||(checkID<1)){
             char* sessionIDFailure = "Invalid sessionID, terminating connection";
             write(client_fd, sessionIDFailure, strlen(sessionIDFailure));
             close(client_fd);
             continue;
           }
           //check if session is active
-          if(sessions[checkID] == false){
+          if(sessions[checkID-1] == false){
             char* sessionIDFailure = "Invalid sessionID, terminating connection";
             write(client_fd, sessionIDFailure, strlen(sessionIDFailure));
             close(client_fd);
@@ -132,14 +132,14 @@ int main(int argc, char **argv)
 
 
         //parameters to pass for each client request
-        serverParams[sessionID].sessionID = request;
-        serverParams[sessionID].requestType = requestType;
-        serverParams[sessionID].client_fd = client_fd;
+        serverParams[sessionID-1].sessionID = request;
+        serverParams[sessionID-1].requestType = requestType;
+        serverParams[sessionID-1].client_fd = client_fd;
 
 
         //for sort requests create a heap
         if(strcmp(requestType,sortR) == 0){
-          serverParams[sessionID].heap = Heap_create(10000);
+          serverParams[sessionID-1].heap = Heap_create(10000);
         }
 
 

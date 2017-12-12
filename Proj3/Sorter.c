@@ -1080,6 +1080,7 @@ void acceptService(void* arguments){
 			tempData = fillData(buffer);
 			Heap_add(heap,tempData,sortingCol);
 		}
+		close(client_fd);
 	}
 
 	//dump request
@@ -1151,7 +1152,7 @@ void acceptService(void* arguments){
 				write(client_fd, buffer, strlen(buffer));
 			}
 			write(client_fd,finish,strlen(finish));
-			fclose(client_fd);
+			close(client_fd);
 	}
 	return;
 }

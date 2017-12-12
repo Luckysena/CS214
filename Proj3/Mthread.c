@@ -8,18 +8,6 @@ Heap * outputHeap;
 int numThreads;
 pthread_t tid;
 
-//Client variables -kumail
-// We need a socket
-int sockfd;
-// We need port number
-int port;
-// We need a sockaddr_in struct for
-// creating server socket
-struct sockaddr_in address;
-// We need a hostent struct pointer to
-// hold server info from gethostbyname()
-struct hostent *server;
-
 int main(int argc, char const *argv[])
 {
 

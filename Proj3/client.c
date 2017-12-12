@@ -649,7 +649,7 @@ void sortRequest(void* arguments){
 
 
   //Socket creation
-  printf("[TID: %u]File: %s, has been closed, opening socket...\n",pthread_self(),file);
+  printf("[SID: %s]File: %s, has been closed, opening socket...\n",sessionID,file);
   int s,n,i;
   int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   struct addrinfo hints, *result;
