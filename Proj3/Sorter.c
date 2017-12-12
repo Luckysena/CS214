@@ -1047,7 +1047,7 @@ void acceptService(void* arguments){
 	char * ack = "Acknowledged!";
 	char * finish = "Finished";
 	char * sortingCol =(char*)malloc(sizeof(char)*100);
-	memset(sortingCol,'\0',sizeof(sortingCol));
+	memset(sortingCol,'\0',sizeof(*sortingCol));
 	data * tempData;
 
 
@@ -1059,7 +1059,7 @@ void acceptService(void* arguments){
 
 
 		//Read in sortingCol
-		read(client_fd,sortingCol,sizeof(sortingCol));
+		read(client_fd,sortingCol,sizeof(*sortingCol));
 
 
 		// Acknowledged sortingCol
@@ -1068,8 +1068,8 @@ void acceptService(void* arguments){
 
 		//accept file contents
 		while(true){
-			memset(buffer,'\0',sizeof(buffer));
-			read(client_fd,buffer,sizeof(sortingCol));
+			memset(buffer,'\0',sizeof(*buffer));
+			read(client_fd,buffer,sizeof(*sortingCol));
 
 			//end of file content message
 			if(strcmp(buffer,"Finished") == 0){

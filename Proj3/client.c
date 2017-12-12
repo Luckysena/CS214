@@ -224,7 +224,7 @@ int main(int argc, char **argv){
   char* buffer = (char*)malloc(sizeof(char)*9000);
   while(true){
     memset(buffer,'\0',sizeof(buffer));
-    len = read(sock_fd,buffer,sizeof(buffer));
+    len = read(sock_fd,buffer,sizeof(*buffer));
     if(len < 0) error("ERROR reading dump from socket\n");
     if(strcmp(buffer,"Finished") == 0){
       break;
