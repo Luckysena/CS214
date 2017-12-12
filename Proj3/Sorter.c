@@ -496,10 +496,10 @@ char *strtok_new(char * string, char const* delimiter){
 }
 
 //might need to mutex this
-data fillData(char * input){
+data * fillData(char * input){
 	int type = 0;             // counter to assign proper struct attributes
 	char delimiter[] = ",";   // delim char
-	data read;  // placeholder data struct for filling
+	data * read;  // placeholder data struct for filling
 	char * p = strtok_new(input, delimiter);  // p will iterate through input string
 
 	while(type<28){
@@ -507,11 +507,11 @@ data fillData(char * input){
 
 			case 0:
 			{
-				read.color = (char*) malloc(sizeof(char)*400);
+				read->color = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.color,p);
+					strcpy(read->color,p);
 						 else
-					 strcpy(read.color,"");
+					 strcpy(read->color,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -520,11 +520,11 @@ data fillData(char * input){
 			break;
 			case 1:
 			{
-				 read.dirName = (char*) malloc(sizeof(char)*400);
+				 read->dirName = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.dirName,p);
+					strcpy(read->dirName,p);
 						 else
-					strcpy(read.dirName,"");
+					strcpy(read->dirName,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -533,22 +533,22 @@ data fillData(char * input){
 			break;
 			case 2:
 			{
-				 read.critCount= (char*) malloc(sizeof(char)*400);
+				 read->critCount= (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.critCount,p);
+					strcpy(read->critCount,p);
 						 else
-					strcpy(read.critCount,"0");
+					strcpy(read->critCount,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 3:
 			{
-				 read.durMin = (char*) malloc(sizeof(char)*400);
+				 read->durMin = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.durMin,p);
+					strcpy(read->durMin,p);
 						 else
-					strcpy(read.durMin,"0");
+					strcpy(read->durMin,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -556,55 +556,55 @@ data fillData(char * input){
 			break;
 			case 4:
 			{
-				read.dirFB = (char*) malloc(sizeof(char)*400);
+				read->dirFB = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.dirFB,p);
+					strcpy(read->dirFB,p);
 						 else
-					strcpy(read.dirFB,"");
+					strcpy(read->dirFB,"");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 5:
 			{
-					read.act3FB = (char*) malloc(sizeof(char)*400);
+					read->act3FB = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.act3FB,p);
+					strcpy(read->act3FB,p);
 						 else
-					strcpy(read.act3FB,"0");
+					strcpy(read->act3FB,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 6:
 			{
-				 read.act2Name = (char*) malloc(sizeof(char)*400);
+				 read->act2Name = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.act2Name,p);
+					strcpy(read->act2Name,p);
 						 else
-					strcpy(read.act2Name,"");
+					strcpy(read->act2Name,"");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 7:
 			{
-					 read.act1FB = (char*) malloc(sizeof(char)*400);
+					 read->act1FB = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.act1FB,p);
+					strcpy(read->act1FB,p);
 						 else
-					strcpy(read.act1FB,"0");
+					strcpy(read->act1FB,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 8:
 			{
-					 read.gross = (char*) malloc(sizeof(char)*400);
+					 read->gross = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.gross,p);
+					strcpy(read->gross,p);
 						 else
-					strcpy(read.gross,"0");
+					strcpy(read->gross,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -613,11 +613,11 @@ data fillData(char * input){
 			break;
 			case 9:
 			{
-					 read.genre = (char*) malloc(sizeof(char)*400);
+					 read->genre = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.genre,p);
+					strcpy(read->genre,p);
 						 else
-					strcpy(read.genre,"");
+					strcpy(read->genre,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -626,11 +626,11 @@ data fillData(char * input){
 			break;
 			case 10:
 			{
-					read.act1Name = (char*) malloc(sizeof(char)*400);
+					read->act1Name = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.act1Name,p);
+					strcpy(read->act1Name,p);
 						 else
-					strcpy(read.act1Name,"");
+					strcpy(read->act1Name,"");
 
 					p = strtok_new(NULL, "exception");
 
@@ -638,12 +638,12 @@ data fillData(char * input){
 			}
 			break;
 			case 11:
-			{ read.title= (char*) malloc(sizeof(char)*400);
+			{ read->title= (char*) malloc(sizeof(char)*400);
 
 				 if(*p)
-					strcpy(read.title,p);
+					strcpy(read->title,p);
 						 else
-					strcpy(read.title,"");
+					strcpy(read->title,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -652,11 +652,11 @@ data fillData(char * input){
 			break;
 			case 12:
 			{
-					read.numVoted = (char*) malloc(sizeof(char)*400);
+					read->numVoted = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.numVoted,p);
+					strcpy(read->numVoted,p);
 						 else
-					strcpy(read.numVoted,"0");
+					strcpy(read->numVoted,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -664,11 +664,11 @@ data fillData(char * input){
 			break;
 			case 13:
 			{
-					read.totalFB = (char*) malloc(sizeof(char)*400);
+					read->totalFB = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.totalFB,p);
+					strcpy(read->totalFB,p);
 						 else
-					strcpy(read.totalFB,"0");
+					strcpy(read->totalFB,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -676,11 +676,11 @@ data fillData(char * input){
 			break;
 			case 14:
 			{
-					read.act3Name = (char*) malloc(sizeof(char)*400);
+					read->act3Name = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.act3Name,p);
+					strcpy(read->act3Name,p);
 						 else
-					strcpy(read.act3Name,"");
+					strcpy(read->act3Name,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -688,11 +688,11 @@ data fillData(char * input){
 			break;
 			case 15:
 			{
-				read.faceNum = (char*) malloc(sizeof(char)*400);
+				read->faceNum = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.faceNum,p);
+					strcpy(read->faceNum,p);
 						 else
-					strcpy(read.faceNum,"0");
+					strcpy(read->faceNum,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -700,22 +700,22 @@ data fillData(char * input){
 			break;
 			case 16:
 			{
-				read.keyWord = (char*) malloc(sizeof(char)*400);
+				read->keyWord = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.keyWord,p);
+					strcpy(read->keyWord,p);
 						 else
-					strcpy(read.keyWord,"");
+					strcpy(read->keyWord,"");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 17:
 			{
-				 read.link = (char*) malloc(sizeof(char)*400);
+				 read->link = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.link,p);
+					strcpy(read->link,p);
 						 else
-					strcpy(read.link,"");
+					strcpy(read->link,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -723,11 +723,11 @@ data fillData(char * input){
 			break;
 			case 18:
 			{
-				 read.numReview = (char*) malloc(sizeof(char)*400);
+				 read->numReview = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.numReview,p);
+					strcpy(read->numReview,p);
 						 else
-					strcpy(read.numReview,"0");
+					strcpy(read->numReview,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -735,11 +735,11 @@ data fillData(char * input){
 			break;
 			case 19:
 			{
-				read.lang = (char*) malloc(sizeof(char)*400);
+				read->lang = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.lang,p);
+					strcpy(read->lang,p);
 						 else
-					strcpy(read.lang,"");
+					strcpy(read->lang,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -747,22 +747,22 @@ data fillData(char * input){
 			break;
 			case 20:
 			{
-				 read.country = (char*) malloc(sizeof(char)*400);
+				 read->country = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.country,p);
+					strcpy(read->country,p);
 						 else
-					strcpy(read.country,"");
+					strcpy(read->country,"");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 21:
 			{
-					read.rated = (char*) malloc(sizeof(char)*400);
+					read->rated = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.rated,p);
+					strcpy(read->rated,p);
 						 else
-					strcpy(read.rated,"");
+					strcpy(read->rated,"");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -770,11 +770,11 @@ data fillData(char * input){
 			break;
 			case 22:
 			{
-				read.budget = (char*) malloc(sizeof(char)*400);
+				read->budget = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.budget,p);
+					strcpy(read->budget,p);
 						 else
-					strcpy(read.budget,"0");
+					strcpy(read->budget,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -782,44 +782,44 @@ data fillData(char * input){
 			break;
 			case 23:
 			{
-				read.year = (char*) malloc(sizeof(char)*400);
+				read->year = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.year,p);
+					strcpy(read->year,p);
 						 else
-					strcpy(read.year,"0");
+					strcpy(read->year,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 24:
 			{
-			 read.act2FB = (char*) malloc(sizeof(char)*400);
+			 read->act2FB = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.act2FB,p);
+					strcpy(read->act2FB,p);
 						 else
-					strcpy(read.act2FB,"0");
+					strcpy(read->act2FB,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 25:
 			{
-				read.score = (char*) malloc(sizeof(char)*400);
+				read->score = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.score,p);
+					strcpy(read->score,p);
 						 else
-					strcpy(read.score,"0");
+					strcpy(read->score,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
 			break;
 			case 26:
 			{
-				read.ratio = (char*) malloc(sizeof(char)*400);
+				read->ratio = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.ratio,p);
+					strcpy(read->ratio,p);
 						 else
-					strcpy(read.ratio,"0");
+					strcpy(read->ratio,"0");
 
 					p = strtok_new(NULL, delimiter);
 
@@ -827,11 +827,11 @@ data fillData(char * input){
 			break;
 			case 27:
 			{
-		 read.movieFB = (char*) malloc(sizeof(char)*400);
+		 read->movieFB = (char*) malloc(sizeof(char)*400);
 				 if(*p)
-					strcpy(read.movieFB,p);
+					strcpy(read->movieFB,p);
 						 else
-					strcpy(read.movieFB,"0");
+					strcpy(read->movieFB,"0");
 
 					p = strtok_new(NULL, delimiter);
 			}
@@ -1080,7 +1080,7 @@ void acceptService(void* arguments){
 			}
 			printf("Adding: %s\n",buffer);
 			//fill in the heap with data structs
-			*tempData = fillData(buffer);
+			tempData = fillData(buffer);
 			if(tempData==NULL){
 				printf("then ya lemme know\n");
 			}
