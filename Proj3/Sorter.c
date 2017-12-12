@@ -499,7 +499,7 @@ char *strtok_new(char * string, char const* delimiter){
 data * fillData(char * input){
 	int type = 0;             // counter to assign proper struct attributes
 	char delimiter[] = ",";   // delim char
-	data * read;  // placeholder data struct for filling
+	data * read = (data*)malloc(sizeof(data));
 	char * p = strtok_new(input, delimiter);  // p will iterate through input string
 
 	while(type<28){
