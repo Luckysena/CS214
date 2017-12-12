@@ -724,8 +724,8 @@ void sortRequest(void* arguments){
 
   //send file contents
   for (i = 0; i <(init-1); i++){
-    char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create bufferIn for every line
-    memset(bufferIn,'\0',sizeof(*bufferIn));
+    char  bufferIn[9000]
+    //memset(bufferIn,'\0',sizeof(*bufferIn));
     strcat(bufferIn,total[i].color);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].dirName);
@@ -781,7 +781,8 @@ void sortRequest(void* arguments){
     strcat(bufferIn,total[i].ratio);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].movieFB);
-    n = write(sock_fd, bufferIn, sizeof(*bufferIn));
+    n = write(sock_fd, bufferIn, 9000);
+    printf("Sending: %s\n",bufferIn);
     if(n == -1){
       printf("[SID: %s]Failed to write bufferIn line\n",sessionID);
       break;

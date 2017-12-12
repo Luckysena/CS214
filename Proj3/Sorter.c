@@ -1043,12 +1043,13 @@ void acceptService(void* arguments){
 
 
 	//string declarations
-	char * buffer = (char*) malloc(sizeof(char)*9000);
+	//char buffer[9000];
 	char * ack = "Acknowledged!";
 	char * finish = "Finished";
 	char * sortingCol =(char*)malloc(sizeof(char)*100);
 	memset(sortingCol,'\0',sizeof(*sortingCol));
 	data * tempData;
+	int len;
 
 
 	//sort request
@@ -1068,8 +1069,10 @@ void acceptService(void* arguments){
 
 		//accept file contents
 		while(true){
-			memset(buffer,'\0',sizeof(*buffer));
-			read(client_fd,buffer,sizeof(*sortingCol));
+			char buffer[9000];
+			//memset(buffer,'\0',sizeof(*buffer));
+			len = read(client_fd,buffer,8999);
+			buffer[len] = '\0';
 
 			//end of file content message
 			if(strcmp(buffer,"Finished") == 0){
