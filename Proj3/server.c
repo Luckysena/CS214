@@ -77,6 +77,7 @@ int main(int argc, char **argv)
           char* ID = (char*)malloc(sizeof(char)*4);
           memset(ID,'\0',sizeof(ID));
           sprintf(ID,"%d",sessionID);
+          printf("Giving away SIG: %s\n",ID);
           write(client_fd,ID,strlen(ID));
           printf("New client, session ID: %i\n",sessionID);
 
