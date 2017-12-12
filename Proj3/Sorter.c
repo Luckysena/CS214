@@ -496,10 +496,10 @@ char *strtok_new(char * string, char const* delimiter){
 }
 
 //might need to mutex this
-data * fillData(char * input){
+data fillData(char * input){
 	int type = 0;             // counter to assign proper struct attributes
 	char delimiter[] = ",";   // delim char
-	data read;                // placeholder data struct for filling
+	data read;  // placeholder data struct for filling
 	char * p = strtok_new(input, delimiter);  // p will iterate through input string
 
 	while(type<28){
@@ -841,7 +841,7 @@ data * fillData(char * input){
 		}
 		type++;
 	}
-  return &read;
+  return read;
 }
 
 bool isNum(char* input){
@@ -1080,7 +1080,7 @@ void acceptService(void* arguments){
 			}
 			printf("Adding: %s\n",buffer);
 			//fill in the heap with data structs
-			tempData = fillData(buffer);
+			*tempData = fillData(buffer);
 			if(tempData==NULL){
 				printf("then ya lemme know\n");
 			}
