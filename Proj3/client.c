@@ -794,7 +794,6 @@ void sortRequest(void* arguments){
       printf("[SID: %s]Failed to recieve bufferIn line by server\n",sessionID);
       break;
     }
-    free(bufferIn);
   }
 
 
