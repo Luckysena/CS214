@@ -105,9 +105,7 @@ int main(int argc, char **argv){
   memset(sessionID,'\0',sizeof(sessionID));
   read(sock_fd, sessionID,strlen(sessionID));
 
-
-  //close socket and process directories
-  //close(sock_fd);
+  printf("Connected to server with SID: %s\n"sessionID);
 
 
   //pthread parameters
@@ -157,7 +155,7 @@ int main(int argc, char **argv){
   char* dumpRequest = "Dump";
   write(sock_fd,dumpRequest,strlen(dumpRequest));
 
-
+  printf("Sending dump request with SID:%s\n"sessionID);
 
 
   //column name creation
@@ -234,6 +232,7 @@ int main(int argc, char **argv){
     fprintf(foutput, "%s\n",buffer);
   }
   fclose(foutput);
+  printf("File creation completed\n");
   return 0;
 }
 

@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-
+    printf("Server initialized\n");
 
     //initialize sessions to false
     int i = 0;
@@ -78,6 +78,7 @@ int main(int argc, char **argv)
           memset(ID,'\0',sizeof(ID));
           sprintf(ID,"d",sessionID);
           write(client_fd,ID,strlen(ID));
+          printf("New client, session ID: %i\n",sessionID);
 
           //update session list & pass as parameter
           sessions[sessionID-1] = true;
@@ -120,7 +121,7 @@ int main(int argc, char **argv)
         char* sortR = "Sort";
         char* dumpR = "Dump";
         read(client_fd, requestType, sizeof(requestType));
-
+        printf("[SID: %i]Request is: %s\n"sessionID,requestType);
 
         //check for error on input
         if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){

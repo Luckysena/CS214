@@ -1080,6 +1080,7 @@ void acceptService(void* arguments){
 			tempData = fillData(buffer);
 			Heap_add(heap,tempData,sortingCol);
 		}
+		printf("[SID:%s]Sort Completed\n");
 		close(client_fd);
 	}
 
@@ -1152,6 +1153,7 @@ void acceptService(void* arguments){
 				write(client_fd, buffer, strlen(buffer));
 			}
 			write(client_fd,finish,strlen(finish));
+			printf("[SID:%s]Dump completed\n");
 			close(client_fd);
 	}
 	return;
