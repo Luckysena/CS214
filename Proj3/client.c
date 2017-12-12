@@ -2,22 +2,17 @@
 void processDir(void* arguments);
 char * _sortingCol;
 pthread_t tid[1000];
-pthread_mutex_t mutexA = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexB = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutexC = PTHREAD_MUTEX_INITIALIZER;
 processdirInput values[1000];
 sortRequestInput inputVals[1000];
 int c = 0;
 int d = 0;
 
-
-int main(int argc, char **argv)
-{
-
-  int i, result, totalProcesses;
-  char colFlag[10], dirInFlag[10], dirOutFlag[10], hflag[10], pflag[10];   //command line flags
+int main(int argc, char **argv){
+  //command line arguments
+  int i, result;
+  char colFlag[10], dirInFlag[10], dirOutFlag[10], hflag[10], pflag[10];
   char * _dirIn = NULL;
-  char * _dirOut = NULL; //pointers to names of args
+  char * _dirOut = NULL;
   char * host = NULL;
   char * port = NULL;
   strcpy(colFlag,"-c");
@@ -77,33 +72,156 @@ int main(int argc, char **argv)
     _dirOut = _dirIn;
   }
 
+
+
+
+
+  //open a connection with server for sessionID
+  int s;
+  int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+  struct addrinfo hints, *results;
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  s = getaddrinfo(host, port, &hints, &results);
+  if (s != 0) {
+          fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+          exit(1);
+  }
+  if(connect(sock_fd, results->ai_addr, results->ai_addrlen) == -1){
+                perror("connect");
+                exit(2);
+  }
+
+
+
+
+
+
+  // need to get sessionID here and pass it along
+  char *requestForID = "Requesting sessionID";
+  write(sock_fd, requestForID, strlen(requestForID));
+  char *sessionID = (char*)malloc(sizeof(char)*10);
+  memset(sessionID,'\0',sizeof(sessionID));
+  read(sock_fd, sessionID,strlen(sessionID));
+
+
+
+  //pthread parameters
   DIR* dirIn = opendir(_dirIn);
   processdirInput values;
   values.dirName = dirIn;
   values._dirName = _dirIn;
-  values.dirOut = _dirOut;
-  values.host = host;
+  values.sessionID = sessionID;
   values.port = port;
+  values.host = host;
 
 
+
+  //directory traversals
   pthread_create(&tid[c],0,processDir,(void*)&values);
   c++;
   for(i = 0; i<c; i++){
         pthread_join(tid[i],NULL);
   }
 
-    printf("Total num of threads: %i\n",c+1);
+
+
+
+  //dump request
+  char *dumpRequest = (char*)malloc(sizeof(char)*100);
+  memset(dumpRequest,'\0',sizeof(dumpRequest));
+  strcpy(dumpRequest,sessionID);
+  strcpy(dumpRequest," Dump");
+  write(sock_fd,dumpRequest,strlen(dumpRequest));
+
+
+
+
+  //column name creation
+  char * columnNames[28];
+  for(i = 0; i<28;i++){
+    columnNames[i] = (char *) malloc(sizeof(char)*250);
+  }
+  strcpy(columnNames[0],"color");
+  strcpy(columnNames[1],"director_name");
+  strcpy(columnNames[2],"num_critic_for_reviews");
+  strcpy(columnNames[3],"duration");
+  strcpy(columnNames[4],"director_facebook_likes");
+  strcpy(columnNames[5],"actor_3_facebook_likes");
+  strcpy(columnNames[6],"actor_2_name");
+  strcpy(columnNames[7],"actor_1_facebook_likes");
+  strcpy(columnNames[8],"gross");
+  strcpy(columnNames[9],"genres");
+  strcpy(columnNames[10],"actor_1_name");
+  strcpy(columnNames[11],"movie_title");
+  strcpy(columnNames[12],"num_voted_users");
+  strcpy(columnNames[13],"cast_total_facebook_likes");
+  strcpy(columnNames[14],"actor_3_name");
+  strcpy(columnNames[15],"facenumber_in_poster");
+  strcpy(columnNames[16],"plot_keywords");
+  strcpy(columnNames[17],"movie_imdb_link");
+  strcpy(columnNames[18],"num_user_for_reviews");
+  strcpy(columnNames[19],"language");
+  strcpy(columnNames[20],"country");
+  strcpy(columnNames[21],"content_rating");
+  strcpy(columnNames[22],"budget");
+  strcpy(columnNames[23],"title_year");
+  strcpy(columnNames[24],"actor_2_facebook_likes");
+  strcpy(columnNames[25],"imdb_score");
+  strcpy(columnNames[26],"aspect_ratio");
+  strcpy(columnNames[27],"movie_facebook_likes");
+
+
+
+
+
+  //open a file to output dump
+  char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
+  memset(outputName,'\0',sizeof(outputName));
+  strcat(outputName, "AllFiles-sorted-");
+  strcat(outputName,_sortingCol);
+  strcat(outputName,".csv");
+  chdir(_dirOut);
+  FILE* foutput;
+  foutput = fopen(outputName,"w+");
+
+
+
+  //first row creation
+  char * firstRow = (char *)malloc(sizeof(char)*1000);
+  memset(firstRow,'\0',sizeof(firstRow));
+  for(i=0; i < 28; i++){
+    strcat(firstRow,columnNames[i]);
+    strcat(firstRow,",");
+  }
+  fprintf(foutput, "%s", firstRow);
+
+
+
+  //dump response
+  int len;
+  char* buffer = (char*)malloc(sizeof(char)*9000);
+  while(true){
+    memset(buffer,'\0',sizeof(buffer));
+    len = read(sock_fd,buffer,sizeof(buffer));
+    if(len < 0) error("ERROR reading from socket\n");
+    if(strcmp(buffer,"Finished") == 0){
+      break;
+    }
+    fprintf(foutput, "%s\n",buffer);
+  }
+  fclose(foutput);
   return 0;
-
 }
-
 void sortRequest(void* arguments){
   /*Will be opened by a thread and open a port to communicate with server*/
   sortRequestInput *args = arguments;
   char * sortingCol = args -> sortingCol;
   char * file = args -> file;
-  char * host = args -> host;
+  char * sessionID = args -> sessionID;
   char * port = args -> port;
+  char * host = args -> host;
   FILE* _file = fopen(file, "r");
   //printf("[TID: %u]Thread created for csv file: %s\n",pthread_self(),file);
   if((_file == NULL)){
@@ -115,7 +233,7 @@ void sortRequest(void* arguments){
   data total[10000];     // array for data structs
   char string[1000];    // stdin string buffer
   while(fgets(string,1000,_file)!= NULL){
-      pthread_mutex_lock(&mutexB);
+      pthread_mutex_lock(&mutexC);
       int type = 0;             // counter to assign proper struct attributes
       char delimiter[] = ",";   // delim char
       data read;                // placeholder data struct for filling
@@ -493,31 +611,36 @@ void sortRequest(void* arguments){
           }
 
         }
-      pthread_mutex_unlock(&mutexB);
+      pthread_mutex_unlock(&mutexC);
       init++;  //increment the row we're on
     }
   fclose(_file);
 
   printf("[TID: %u]File: %s, has been closed, opening socket...\n",pthread_self(),file);
-  // socket connections
-	int s, n;
-	int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-	struct addrinfo hints, *result;
-	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
+  /**********After this we are communicating to send sorting info********/
+  int s,n,i;
+  int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-	s = getaddrinfo(host, port, &hints, &result);
-	if (s != 0) {
-	        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-        	exit(1);
-	}
-	if(connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1){
+  struct addrinfo hints, *result;
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+
+  s = getaddrinfo(host, port, &hints, &result);
+  if (s != 0) {
+          fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+          exit(1);
+  }
+  if(connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1){
                 perror("connect");
                 exit(2);
-        }
-	char *buffer = "Sort";
+  }
+
+  //conduct sort request with sessionID
+  char *buffer = (char*)malloc(sizeof(char)*250);
+  strcat(buffer,sessionID);
+  strcat(buffer," Sort");
 	n = write(sock_fd, buffer, strlen(buffer));
   if(n != -1){
     //printf("[TID: %u]Sending sort request...\n",pthread_self());
@@ -526,29 +649,34 @@ void sortRequest(void* arguments){
     printf("Error writing to socket\n");
   }
 
+  //get response from sort request
 	char resp[1000];
 	int len = read(sock_fd, resp, 999);
-	resp[len] = '\0';
-	//printf("[TID: %u]%s\n", pthread_self(),resp);
+  if(len == -1){
+    printf("Error communicating sort request to server, terminating...\n");
+    return;
+  }
 
+  //send sortingCol
   n = write(sock_fd,sortingCol,strlen(sortingCol));
   if(n != -1){
     //printf("[TID: %u]Sending sortingCol...\n",pthread_self());
   }
   else{
     printf("Error writing to socket\n");
+    return;
   }
 
+  //get response for sortingCol
   len = read(sock_fd, resp, 999);
-  resp[len] = '\0';
-  //printf("[TID: %u]%s\n",pthread_self(), resp);
-  //return;
+  if(len == -1){
+    printf("Error communicating sort request to server, terminating...\n");
+    return;
+  }
 
   /***************This is where we will send the file contents**********/
 
-  int i;
-  for (i = 0; i <(int)( sizeof(total) / sizeof(total[0]) ) ; i++)
-  {
+  for (i = 0; i <(init-1); i++){
     char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create bufferIn for every line
     memset(bufferIn,'\0',sizeof(bufferIn));
     strcat(bufferIn,total[i].color);
@@ -616,7 +744,7 @@ void sortRequest(void* arguments){
     }
     len = read(sock_fd, resp, 999);
     resp[len] = '\0';
-    if(strcmp(resp, "Accepted line")){
+    if(strcmp(resp, "Accepted line") == 0){
       printf("[TID: %u]Successfully recieved bufferIn line by server\n",pthread_self());
     }
     else{
@@ -625,18 +753,25 @@ void sortRequest(void* arguments){
     }
     free(bufferIn);
   }
-return;
+
+  char *endBuffer = "Finished";
+  n = write(sock_fd, endBuffer, strlen(endBuffer));
+  if(n != -1){
+    printf("[TID: %u]Sending finished sort message...\n",pthread_self());
+  }
+  else{
+    printf("Error writing to socket\n");
+  }
+
+  return;
 }
-
-
-
 void processDir(void* arguments){
   processdirInput *args = arguments;
   DIR* dirName = args -> dirName;
   char* _dirName = args -> _dirName;
-  char* dirOut = args -> dirOut;
-  char* host = args -> host;
+  char* sessionID = args -> sessionID;
   char* port = args -> port;
+  char* host = args -> host;
 
   //printf("[TID: %u]Thread created for directory: %s\n",pthread_self(),_dirName);
 
@@ -657,9 +792,9 @@ void processDir(void* arguments){
           pthread_mutex_lock(&mutexA);
           values[c].dirName = opendir(filename);
           values[c]._dirName = filename;
-          values[c].dirOut = dirOut;
-          values[c].host = host;
+          values[c].sessionID = sessionID;
           values[c].port = port;
+          values[c].host = host;
           pthread_create(&tid[c],0,processDir,(void*)&values[c]);
           c++;
           pthread_mutex_unlock(&mutexA);
@@ -674,6 +809,7 @@ void processDir(void* arguments){
         pthread_mutex_lock(&mutexB);
         inputVals[d].sortingCol= _sortingCol;
         inputVals[d].file = filename;
+        inputVals[d].sessionID = sessionID;
         inputVals[d].host = host;
         inputVals[d].port = port;
         pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
@@ -683,4 +819,5 @@ void processDir(void* arguments){
         continue;
     }
   }
+  return;
 }

@@ -1,7 +1,10 @@
 
 #include "Sorter.h"
 enum _boolean {false, true};
-
+pthread_mutex_t mutexA = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexB = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexC = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutexD = PTHREAD_MUTEX_INITIALIZER;
 int heapCompare(data leftArr, data rightArr, int comp_ptr){
 	char c1 = leftArr.title[0];
 	char c2 = rightArr.title[0];
@@ -492,14 +495,368 @@ char *strtok_new(char * string, char const* delimiter){
 		return riturn;
 }
 
+//might need to mutex this
+data * fillData(char * input){
+	int type = 0;             // counter to assign proper struct attributes
+	char delimiter[] = ",";   // delim char
+	data read;                // placeholder data struct for filling
+	char * p = strtok_new(input, delimiter);  // p will iterate through input string
+
+	while(type<28){
+		switch(type){
+
+			case 0:
+			{
+				read.color = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.color,p);
+						 else
+					 strcpy(read.color,"");
+
+					p = strtok_new(NULL, delimiter);
+
+
+			}
+			break;
+			case 1:
+			{
+				 read.dirName = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.dirName,p);
+						 else
+					strcpy(read.dirName,"");
+
+					p = strtok_new(NULL, delimiter);
+
+
+			}
+			break;
+			case 2:
+			{
+				 read.critCount= (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.critCount,p);
+						 else
+					strcpy(read.critCount,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 3:
+			{
+				 read.durMin = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.durMin,p);
+						 else
+					strcpy(read.durMin,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 4:
+			{
+				read.dirFB = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.dirFB,p);
+						 else
+					strcpy(read.dirFB,"");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 5:
+			{
+					read.act3FB = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.act3FB,p);
+						 else
+					strcpy(read.act3FB,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 6:
+			{
+				 read.act2Name = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.act2Name,p);
+						 else
+					strcpy(read.act2Name,"");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 7:
+			{
+					 read.act1FB = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.act1FB,p);
+						 else
+					strcpy(read.act1FB,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 8:
+			{
+					 read.gross = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.gross,p);
+						 else
+					strcpy(read.gross,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+
+			}
+			break;
+			case 9:
+			{
+					 read.genre = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.genre,p);
+						 else
+					strcpy(read.genre,"");
+
+					p = strtok_new(NULL, delimiter);
+
+
+			}
+			break;
+			case 10:
+			{
+					read.act1Name = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.act1Name,p);
+						 else
+					strcpy(read.act1Name,"");
+
+					p = strtok_new(NULL, "exception");
+
+
+			}
+			break;
+			case 11:
+			{ read.title= (char*) malloc(sizeof(char)*400);
+
+				 if(*p)
+					strcpy(read.title,p);
+						 else
+					strcpy(read.title,"");
+
+					p = strtok_new(NULL, delimiter);
+
+
+			}
+			break;
+			case 12:
+			{
+					read.numVoted = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.numVoted,p);
+						 else
+					strcpy(read.numVoted,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 13:
+			{
+					read.totalFB = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.totalFB,p);
+						 else
+					strcpy(read.totalFB,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 14:
+			{
+					read.act3Name = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.act3Name,p);
+						 else
+					strcpy(read.act3Name,"");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 15:
+			{
+				read.faceNum = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.faceNum,p);
+						 else
+					strcpy(read.faceNum,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 16:
+			{
+				read.keyWord = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.keyWord,p);
+						 else
+					strcpy(read.keyWord,"");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 17:
+			{
+				 read.link = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.link,p);
+						 else
+					strcpy(read.link,"");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 18:
+			{
+				 read.numReview = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.numReview,p);
+						 else
+					strcpy(read.numReview,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 19:
+			{
+				read.lang = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.lang,p);
+						 else
+					strcpy(read.lang,"");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 20:
+			{
+				 read.country = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.country,p);
+						 else
+					strcpy(read.country,"");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 21:
+			{
+					read.rated = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.rated,p);
+						 else
+					strcpy(read.rated,"");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 22:
+			{
+				read.budget = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.budget,p);
+						 else
+					strcpy(read.budget,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 23:
+			{
+				read.year = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.year,p);
+						 else
+					strcpy(read.year,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 24:
+			{
+			 read.act2FB = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.act2FB,p);
+						 else
+					strcpy(read.act2FB,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 25:
+			{
+				read.score = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.score,p);
+						 else
+					strcpy(read.score,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			case 26:
+			{
+				read.ratio = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.ratio,p);
+						 else
+					strcpy(read.ratio,"0");
+
+					p = strtok_new(NULL, delimiter);
+
+			}
+			break;
+			case 27:
+			{
+		 read.movieFB = (char*) malloc(sizeof(char)*400);
+				 if(*p)
+					strcpy(read.movieFB,p);
+						 else
+					strcpy(read.movieFB,"0");
+
+					p = strtok_new(NULL, delimiter);
+			}
+			break;
+			default:
+			break;
+		}
+		type++;
+	}
+  return &read;
+}
+
+
+
 void acceptService(void* arguments){
 	serverThreadParams *args = arguments;
-	int* _client_fd = args -> client_fd;
+	int client_fd = args -> client_fd;
 	Heap *heap = args -> heap;
-	int client_fd = *_client_fd;
+	
 	printf("[TID:%u]Accepted connection from client id: %i, Awaiting request...\n",pthread_self(),client_fd);
-	char request[100], buffer[1000];
+	char request[100];
+	char * buffer = (char*) malloc(sizeof(char)*9000);
 	char * ack = "Acknowledged!";
+	char * ackLine = "Accepted line";
+	data * Data;
 
 	int len = read(client_fd, request, sizeof(request) - 1);
 	if(len < 0) error("ERROR reading from socket\n");
@@ -511,21 +868,27 @@ void acceptService(void* arguments){
 		write(client_fd, ack, strlen(ack));   // Acknowledged Sort
 		char sortingCol[100];
 		len = read(client_fd,sortingCol,sizeof(sortingCol)-1);
+		if(len < 0) error("ERROR reading from socket\n");
 		sortingCol[len] = '\0';
 		write(client_fd, ack, strlen(ack));   // Acknowledged sortingCol
 
 
 		while(true){
-			data *Data = (data*)malloc(sizeof(data));
+			memset(buffer,'\0',sizeof(buffer));
 			len = read(client_fd,buffer,sizeof(sortingCol)-1);
 			if(len < 0) error("ERROR reading from socket\n");
 			buffer[len] = '\0';
-			memcpy(Data,buffer,len);
-			break;
-		}
 
+			if(strcmp(buffer,"Finished") == 0){
+				break;
+			}
+
+			//pthread_mutex_lock(&mutexD);
+			Data = fillData(buffer);
+			Heap_add(heap,Data,sortingCol);
+			//pthread_mutex_unlock(&mutexD);
+		}
 	}
-	close(client_fd);
 	return;
 }
 
@@ -542,7 +905,6 @@ Node * Node_create(data * elem){
 	}
 	return node;
 }
-
 ArrayList * ArrayList_create(int n){
 	ArrayList *list = malloc(sizeof(*list));
 	if(list == NULL){
@@ -563,7 +925,6 @@ ArrayList * Arraylist_resize(ArrayList * list, int cap){
 	newList->size = cap;
 	return newList;
 }
-
 ArrayList * ArrayList_add(ArrayList * list, data * elem){
 	if(elem->color == NULL){
 		printf("Adding elem failed due to null elem\n");
@@ -576,7 +937,6 @@ ArrayList * ArrayList_add(ArrayList * list, data * elem){
 	}
 	return list;
 }
-
 Heap * Heap_create(int n){
 	Heap * heap = malloc(sizeof(*heap));
 	if(heap == NULL){
@@ -587,7 +947,6 @@ Heap * Heap_create(int n){
 	heap->list = ArrayList_create(n);
 	return heap;
 }
-
 void SiftUp(Heap * heap, int comp_ptr){
 	int k, p;
 	k = (heap->list->size)-1;
@@ -607,7 +966,6 @@ void SiftUp(Heap * heap, int comp_ptr){
 	}
 	return;
 }
-
 void Heap_add(Heap * heap, data * elem, int comp_ptr){
 	//printf("Adding to heap: %s\n",elem->title);
 	heap->list = ArrayList_add(heap->list,elem);
@@ -621,7 +979,6 @@ void swapNodes(Heap * heap, int p, int k){
 	heap->list->nodeList[k]->dataVal = temp;
 	return;
 }
-
 SiftDown(Heap * heap, int comp_ptr){
 	int p, c1, c2, k, sizeHeap;
 	p = 0; c1 = 1; c2 = 2; sizeHeap = heap->list->size;

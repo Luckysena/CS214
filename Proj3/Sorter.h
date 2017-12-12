@@ -21,6 +21,7 @@ typedef enum _boolean bool;
 typedef struct _sortRequestInput{
 	char* sortingCol;
 	char* file;
+	char* sessionID;
 	char* host;
 	char* port;
 }sortRequestInput;
@@ -29,7 +30,7 @@ typedef struct _sortRequestInput{
 typedef struct _processDirInput{
 	DIR* dirName;
 	char* _dirName;
-	char* dirOut;
+	char* sessionID;
 	char* host;
 	char* port;
 }processdirInput;
@@ -85,7 +86,8 @@ typedef struct _heap{
 
 typedef struct _serverThreadParams{
 	Heap * heap;
-	int * client_fd;
+	int  client_fd;
+	char * sessionID;
 }serverThreadParams;
 
 void mergeData(data* A,int left , int middle , int right, int comp_ptr) ; // Merges the two arrays together returns a combined array

@@ -132,23 +132,7 @@ int main(int argc, char const *argv[])
   values.dirName = dirIn;
   values._dirName = _dirIn;
   values.dirOut = _dirOut;
-  //client things:
-  server = gethostbyname(host);
-  // Now we need to initialize sockaddr_in struct
-	// before we do initialization, it's good to set buffer zeros
-	// replace corresponding parts
-	memset(&address, 0, sizeof(address));
-	// .sin_family = AF_INET
-	address.sin_family = AF_INET;
-	// .sin_port = htons(portnumber)
-	address.sin_port = htons(port);
-	// replace corresponding parts
-	// we do binary copy to initialize sockaddr_in address part
-	// from hostent pointer
-	bcopy((char*)server->h_addr,
-			(char*)&address.sin_addr.s_addr,
-			server->h_length);
-  /*client things end*/
+
 
   outputHeap = Heap_create(100000);
   printf("[PID: %i]Original PID\n",getpid());

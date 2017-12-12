@@ -1,9 +1,11 @@
 
 #include "Sorter.c"
-Heap * outputHeap;
 pthread_t tid[1000];
 serverThreadParams serverParams[1000];
 int numThreads = 0;
+bool sessions[1000];
+int sessionID = 0;
+
 
 int main(int argc, char **argv)
 {
@@ -37,25 +39,60 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    outputHeap = Heap_create(10000);
+    int i = 0;
+    for(i; i < 1000; i++){
+      sessions[i] = false;
+    }
+
+    //initialize sessions to false
+
     while(true){
-      if (listen(sock_fd, 100) != 0) {
-          perror("listen()");
-          exit(1);
+      if (listen(sock_fd, 100) == 0) {
+        //spawn service thread and keep listening
+
+        int client_fd = accept(sock_fd,NULL,NULL);
+
+        //wait for sessionID request
+        char request[100];
+        int len = read(client_fd, request, sizeof(request) - 1);
+        if(len < 0) error("ERROR reading from socket\n");
+        request[len] = '\0';
+
+        //fail if the initial request was incorrect
+        if(strcmp(request,"Requesting sessionID")!=0){
+          char* sessionIDFailure = "Request for sessionID invalid, terminating connection";
+          write(client_fd, sessionIDFailure, strlen(sessionIDFailure));
+          close(client_fd);
+          continue;
+        }
+
+        char ID[10];
+        sprintf(ID,"d",sessionID);
+
+        write(client_fd,ID,strlen(ID));
+
+        sessions[sessionID] = true;
+        sessionID++;
+
+
+        serverParams[numThreads].heap = Heap_create(10000);
+        serverParams[numThreads].client_fd = client_fd;
+        serverParams[numThreads].sessionID = ID;
+
+        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[numThreads]);
+        numThreads++;
+
+        //might need to not join pthreads... memory issue and unneeded space usage...
+        for(i = 0 ; i < numThreads; i++){
+          pthread_join(tid[i],NULL);
+        }
+
       }
 
-      int * client_fd = (int*)malloc(sizeof(int));
-      int tempfd = accept(sock_fd,NULL,NULL);
-      memcpy(client_fd, &tempfd,sizeof(int));
-      serverParams[numThreads].heap = outputHeap;
-      serverParams[numThreads].client_fd = client_fd;
-
-      pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[numThreads]);
-      numThreads++;
-    }
-    int i;
-    for(i = 0; i < numThreads; i++){
-      pthread_join(tid[i],NULL);
+      else{
+        perror("listen()");
+        exit(1);
+      }
     }
     return 0;
 }
