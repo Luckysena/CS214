@@ -101,9 +101,9 @@ int main(int argc, char **argv){
   // need to get sessionID here and pass it along
   char *requestForID = "Requesting sessionID";
   write(sock_fd, requestForID, strlen(requestForID));
-  char *sessionID = (char*)malloc(sizeof(char)*10);
-  memset(sessionID,'\0',sizeof(*sessionID));
-  read(sock_fd, sessionID,sizeof(*sessionID));
+  char sessionID[10];
+  int len = read(sock_fd, sessionID,sizeof(*sessionID));
+  sessionID[len] = "\0";
 
   printf("Connected to server with SID: %s\n",sessionID);
 
@@ -220,7 +220,6 @@ int main(int argc, char **argv){
 
 
   //dump response
-  int len;
   char* buffer = (char*)malloc(sizeof(char)*9000);
   while(true){
     memset(buffer,'\0',sizeof(*buffer));

@@ -119,11 +119,12 @@ int main(int argc, char **argv)
         }
 
         //read in type of request
-        char* requestType = (char*)malloc(sizeof(char)*100);
+        char requestType[100];
         char* sortR = "Sort";
         char* dumpR = "Dump";
-        read(client_fd, requestType, sizeof(*requestType));
-        printf("[SID: %i]Request is: %s\n",sessionID,requestType);
+        len = read(client_fd, requestType, sizeof(requestType)-1);
+        requestType[len] = '\0';
+        printf("[SID: %s]Request is: %s\n",request,requestType);
 
         //check for error on input
         if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){
