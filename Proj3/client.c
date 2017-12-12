@@ -782,6 +782,7 @@ void sortRequest(void* arguments){
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].movieFB);
     n = write(sock_fd, bufferIn, 9000);
+    printf("\n");
     printf("Sending: %s\n",bufferIn);
     if(n == -1){
       printf("[SID: %s]Failed to write bufferIn line\n",sessionID);

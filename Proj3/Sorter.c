@@ -1072,14 +1072,15 @@ void acceptService(void* arguments){
 		while(true){
 			memset(buffer,'\0',sizeof(char)*9000);
 			len = read(client_fd,buffer,8999);
+			printf("len is: %i",len);
 			buffer[len] = '\0';
-
+			printf("Adding: %s\n",buffer);
+			printf("\n");
 			//end of file content message
 			if(strcmp(buffer,"Finished") == 0){
 				break;
 			}
-			printf("Adding: %s\n",buffer);
-			printf("\n");
+
 
 			//fill in the heap with data structs
 			tempData = fillData(buffer);
