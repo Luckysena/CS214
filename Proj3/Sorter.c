@@ -1061,6 +1061,7 @@ void acceptService(void* arguments){
 
 		//Read in sortingCol
 		read(client_fd,sortingCol,sizeof(char)*100);
+		printf("Received sortingCol: %s\n",sortingCol);
 
 
 		// Acknowledged sortingCol
@@ -1070,12 +1071,16 @@ void acceptService(void* arguments){
 		//accept file contents
 		char buffer[9000];
 		while(true){
+
 			memset(buffer,'\0',sizeof(char)*9000);
 			len = read(client_fd,buffer,8999);
-			printf("len is: %i",len);
+			printf("len is: %i\n",len);
 			buffer[len] = '\0';
+
+
 			printf("Adding: %s\n",buffer);
 			printf("\n");
+			
 			//end of file content message
 			if(strcmp(buffer,"Finished") == 0){
 				break;
