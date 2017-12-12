@@ -705,7 +705,7 @@ void sortRequest(void* arguments){
 
 
   //send sortingCol
-  n = write(sock_fd,sortingCol,sizeof(*sortingCol));
+  n = write(sock_fd,sortingCol,sizeof(char)*100);
   if(n == -1){
     printf("Error communicating sort request to server, terminating...\n");
     return;
@@ -791,7 +791,7 @@ void sortRequest(void* arguments){
     memset(resp,'\0',sizeof(char)*1000);
     len = read(sock_fd, resp, 999);
     resp[len] = '\0';
-    
+
     if(strcmp(resp, "Accepted line") != 0){
       printf("[SID: %s]Failed to recieve bufferIn line by server\n",sessionID);
       break;
