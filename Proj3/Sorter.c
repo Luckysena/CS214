@@ -1096,8 +1096,8 @@ void acceptService(void* arguments){
 
 			for (i = 0; i <(listSize-1) ; i++){
 				tempData = Heap_remove(heap,sortingCol);
-
-				memset(buffer,'\0',sizeof(buffer));
+				char buffer[9000];
+				memset(buffer,'\0',sizeof(*buffer));
 				strcat(buffer,tempData->color);
 				strcat(buffer,",");
 				strcat(buffer,tempData->dirName);
@@ -1153,7 +1153,7 @@ void acceptService(void* arguments){
 				strcat(buffer,tempData->ratio);
 				strcat(buffer,",");
 				strcat(buffer,tempData->movieFB);
-				write(client_fd, buffer, sizeof(*buffer));
+				write(client_fd, buffer, 9000);
 			}
 			write(client_fd,finish,strlen(finish));
 			printf("[SID:%s]Dump completed\n");

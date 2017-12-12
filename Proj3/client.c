@@ -724,8 +724,8 @@ void sortRequest(void* arguments){
 
   //send file contents
   for (i = 0; i <(init-1); i++){
-    char  bufferIn[9000]
-    //memset(bufferIn,'\0',sizeof(*bufferIn));
+    char  bufferIn[9000];
+    memset(bufferIn,'\0',sizeof(*bufferIn));
     strcat(bufferIn,total[i].color);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].dirName);
