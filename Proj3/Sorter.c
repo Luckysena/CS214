@@ -1150,7 +1150,7 @@ void acceptService(void* arguments){
 				strcat(buffer,tempData->ratio);
 				strcat(buffer,",");
 				strcat(buffer,tempData->movieFB);
-				write(client_fd, buffer, strlen(buffer));
+				write(client_fd, buffer, sizeof(*buffer));
 			}
 			write(client_fd,finish,strlen(finish));
 			printf("[SID:%s]Dump completed\n");

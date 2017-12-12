@@ -102,8 +102,8 @@ int main(int argc, char **argv){
   char *requestForID = "Requesting sessionID";
   write(sock_fd, requestForID, strlen(requestForID));
   char *sessionID = (char*)malloc(sizeof(char)*10);
-  memset(sessionID,'\0',sizeof(sessionID));
-  read(sock_fd, sessionID,strlen(sessionID));
+  memset(sessionID,'\0',sizeof(*sessionID));
+  read(sock_fd, sessionID,sizeof(*sessionID));
 
   printf("Connected to server with SID: %s\n",sessionID);
 
@@ -147,7 +147,7 @@ int main(int argc, char **argv){
 
   //sessionID for dumpRequest
   char tempbuff[100];
-  write(sock_fd,sessionID,strlen(sessionID));
+  write(sock_fd,sessionID,sizeof(*sessionID));
   read(sock_fd,tempbuff,strlen(tempbuff));
 
 
@@ -198,7 +198,7 @@ int main(int argc, char **argv){
 
   //open a file to output dump
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
-  memset(outputName,'\0',sizeof(outputName));
+  memset(outputName,'\0',sizeof(*outputName));
   strcat(outputName, "AllFiles-sorted-");
   strcat(outputName,_sortingCol);
   strcat(outputName,".csv");
@@ -210,7 +210,7 @@ int main(int argc, char **argv){
 
   //first row creation
   char * firstRow = (char *)malloc(sizeof(char)*1000);
-  memset(firstRow,'\0',sizeof(firstRow));
+  memset(firstRow,'\0',sizeof(*firstRow));
   for(i=0; i < 28; i++){
     strcat(firstRow,columnNames[i]);
     strcat(firstRow,",");
@@ -223,7 +223,7 @@ int main(int argc, char **argv){
   int len;
   char* buffer = (char*)malloc(sizeof(char)*9000);
   while(true){
-    memset(buffer,'\0',sizeof(buffer));
+    memset(buffer,'\0',sizeof(*buffer));
     len = read(sock_fd,buffer,sizeof(*buffer));
     if(len < 0) error("ERROR reading dump from socket\n");
     if(strcmp(buffer,"Finished") == 0){
@@ -671,7 +671,7 @@ void sortRequest(void* arguments){
 
 
   //conduct service request with sessionID
-	n = write(sock_fd, sessionID, strlen(sessionID));
+	n = write(sock_fd, sessionID, sizeof(*sessionID));
   if(n == -1){
     printf("Error communicating sort request to server, terminating...\n");
     return;
@@ -706,7 +706,7 @@ void sortRequest(void* arguments){
 
 
   //send sortingCol
-  n = write(sock_fd,sortingCol,strlen(sortingCol));
+  n = write(sock_fd,sortingCol,sizeof(*sortingCol));
   if(n == -1){
     printf("Error communicating sort request to server, terminating...\n");
     return;
@@ -726,7 +726,7 @@ void sortRequest(void* arguments){
   //send file contents
   for (i = 0; i <(init-1); i++){
     char * bufferIn = (char*) malloc(sizeof(char)*9000);  // create bufferIn for every line
-    memset(bufferIn,'\0',sizeof(bufferIn));
+    memset(bufferIn,'\0',sizeof(*bufferIn));
     strcat(bufferIn,total[i].color);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].dirName);
@@ -782,7 +782,7 @@ void sortRequest(void* arguments){
     strcat(bufferIn,total[i].ratio);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].movieFB);
-    n = write(sock_fd, bufferIn, sizeof(bufferIn));
+    n = write(sock_fd, bufferIn, sizeof(*bufferIn));
     if(n == -1){
       printf("[TID: %u]Failed to write bufferIn line\n",pthread_self());
       break;
@@ -822,7 +822,7 @@ void processDir(void* arguments){
   struct dirent* direntName;
   while((direntName = readdir(dirName)) != NULL){
     char * filename = (char*)malloc(sizeof(char)*1000);
-    memset(filename,'\0',sizeof(filename));
+    memset(filename,'\0',sizeof(*filename));
     strcat(filename,_dirName);
     strcat(filename,"/");
     strcat(filename,direntName->d_name);

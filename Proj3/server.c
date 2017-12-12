@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
         //wait for sessionID request
         char* request = (char*)malloc(sizeof(char)*100);
-        memset(request,'\0',sizeof(request));
+        memset(request,'\0',sizeof(*request));
         int len = read(client_fd, request, sizeof(*request));
         if(len < 0) error("ERROR reading from socket\n");
 
@@ -75,10 +75,10 @@ int main(int argc, char **argv)
 
           //send sessionID to client
           char* ID = (char*)malloc(sizeof(char)*4);
-          memset(ID,'\0',sizeof(ID));
+          memset(ID,'\0',sizeof(*ID));
           sprintf(ID,"%d",sessionID);
           printf("Giving away SIG: %s\n",ID);
-          write(client_fd,ID,strlen(ID));
+          write(client_fd,ID,sizeof(*ID));
           printf("New client, session ID: %i\n",sessionID);
 
           //update session list & pass as parameter
