@@ -721,11 +721,11 @@ void sortRequest(void* arguments){
   }
 
 
-
+  char bufferIn[9000];
   //send file contents
   for (i = 0; i <(init-1); i++){
-    char  bufferIn[9000];
-    memset(bufferIn,'\0',sizeof(*bufferIn));
+    memset(resp,'\0',sizeof(char)*1000);
+    memset(bufferIn,'\0',sizeof(char)*9000);
     strcat(bufferIn,total[i].color);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].dirName);
@@ -787,7 +787,7 @@ void sortRequest(void* arguments){
       printf("[SID: %s]Failed to write bufferIn line\n",sessionID);
       break;
     }
-    char resp[1000];
+    memset(resp,'\0',sizeof(char)*1000);
     len = read(sock_fd, resp, 999);
     resp[len] = '\0';
     if(strcmp(resp, "Accepted line") != 0){

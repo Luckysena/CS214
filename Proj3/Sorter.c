@@ -1047,7 +1047,7 @@ void acceptService(void* arguments){
 	char * ack = "Acknowledged!";
 	char * finish = "Finished";
 	char * sortingCol =(char*)malloc(sizeof(char)*100);
-	memset(sortingCol,'\0',sizeof(*sortingCol));
+	memset(sortingCol,'\0',sizeof(char)*100);
 	data * tempData;
 	int len;
 
@@ -1060,7 +1060,7 @@ void acceptService(void* arguments){
 
 
 		//Read in sortingCol
-		read(client_fd,sortingCol,sizeof(*sortingCol));
+		read(client_fd,sortingCol,sizeof(char)*100);
 
 
 		// Acknowledged sortingCol
@@ -1068,9 +1068,9 @@ void acceptService(void* arguments){
 
 
 		//accept file contents
+		char buffer[9000];
 		while(true){
-			char buffer[9000];
-			//memset(buffer,'\0',sizeof(*buffer));
+			memset(buffer,'\0',sizeof(char)*9000);
 			len = read(client_fd,buffer,8999);
 			buffer[len] = '\0';
 
@@ -1079,11 +1079,10 @@ void acceptService(void* arguments){
 				break;
 			}
 			printf("Adding: %s\n",buffer);
+			printf("\n");
+
 			//fill in the heap with data structs
 			tempData = fillData(buffer);
-			if(tempData==NULL){
-				printf("then ya lemme know\n");
-			}
 			Heap_add(heap,tempData,sortingCol);
 			write(client_fd,"Accepted line",strlen("Accepted line"));
 		}
