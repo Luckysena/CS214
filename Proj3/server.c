@@ -76,7 +76,7 @@ int main(int argc, char **argv)
           //send sessionID to client
           char* ID = (char*)malloc(sizeof(char)*4);
           memset(ID,'\0',sizeof(ID));
-          sprintf(ID,"d",sessionID);
+          sprintf(ID,"%d",sessionID);
           write(client_fd,ID,strlen(ID));
           printf("New client, session ID: %i\n",sessionID);
 
