@@ -106,7 +106,7 @@ int main(int argc, char **argv){
   sessionID[len] = "\0";
 
   printf("Connected to server with sessionID: %s\n",sessionID);
-
+  close(sock_fd);
 
   //pthread parameters
   DIR* dirIn = opendir(_dirIn);
@@ -126,7 +126,7 @@ int main(int argc, char **argv){
         pthread_join(tid[i],NULL);
   }
 
-
+  printf("pthreads are joined.. need to dump now\n");
   //need to restart connection here
 
   //sessionID for dumpRequest
@@ -793,6 +793,7 @@ void sortRequest(void* arguments){
   if(n == -1){
     printf("Error writing to socket\n");
   }
+  close(sock_fd);
   return;
 }
 
