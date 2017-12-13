@@ -105,7 +105,7 @@ int main(int argc, char **argv){
   int len = read(sock_fd, sessionID,9);
   sessionID[len] = "\0";
 
-  printf("Connected to server with SID: %s\n",sessionID);
+  printf("Connected to server with sessionID: %s\n",sessionID);
 
 
   //pthread parameters
@@ -127,35 +127,19 @@ int main(int argc, char **argv){
   }
 
 
-  /*open connection for dumpRequest
-  sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-  memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  s = getaddrinfo(host, port, &hints, &results);
-  if (s != 0) {
-          fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-          exit(1);
-  }
-  if(connect(sock_fd, results->ai_addr, results->ai_addrlen) == -1){
-                perror("connect");
-                exit(2);
-  }
-  */
-
-
+  //need to restart connection here
 
   //sessionID for dumpRequest
   char tempbuff[100];
-  write(sock_fd,sessionID,sizeof(*sessionID));
-  read(sock_fd,tempbuff,strlen(tempbuff));
+  write(sock_fd,sessionID,sizeof(char)*10);
+  read(sock_fd,tempbuff,sizeof(char)*100);
 
 
   //send dumpRequest
   char* dumpRequest = "Dump";
   write(sock_fd,dumpRequest,strlen(dumpRequest));
 
-  printf("Sending dump request with SID:%s\n",sessionID);
+  printf("Sending dump request with sessionID: %s\n",sessionID);
 
 
   //column name creation
@@ -253,7 +237,7 @@ void sortRequest(void* arguments){
 
   //File read-in
   if((_file == NULL)){
-    printf("[TID: %u]Error sorting file: %s, %s exiting...\n",pthread_self(),file, strerror(errno));
+    printf("[SID: %s]Error sorting file: %s, %s exiting...\n",sessionID,file, strerror(errno));
     return;
   }
   char * col_names[28];  // array which contains name of columns
@@ -670,7 +654,7 @@ void sortRequest(void* arguments){
 
 
   //conduct service request with sessionID
-	n = write(sock_fd, sessionID, sizeof(*sessionID));
+	n = write(sock_fd, sessionID, sizeof(char)*10);
   if(n == -1){
     printf("Error communicating sort request to server, terminating...\n");
     return;
@@ -781,14 +765,17 @@ void sortRequest(void* arguments){
     strcat(bufferIn,total[i].ratio);
     strcat(bufferIn,",");
     strcat(bufferIn,total[i].movieFB);
-    n = write(sock_fd, bufferIn, 9000);
+
+    //write data to socket
+    n = write(sock_fd, bufferIn, sizeof(char)*9000);
     printf("\n");
     printf("Sending: %s\n",bufferIn);
     if(n == -1){
       printf("[SID: %s]Failed to write bufferIn line\n",sessionID);
       break;
     }
-    memset(resp,'\0',sizeof(char)*1000);
+
+    //read back response
     len = read(sock_fd, resp, 999);
     resp[len] = '\0';
 

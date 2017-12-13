@@ -55,15 +55,16 @@ int main(int argc, char **argv)
     for(i; i < 1000; i++){
       sessions[i] = false;
     }
-
+    char request[100];
     sessionID = 1;
+    int checkID;
     //spawn service thread and keep listening
     while(true){
       if (listen(sock_fd, 100) == 0) {
         int client_fd = accept(sock_fd,NULL,NULL);
 
         //wait for sessionID request
-        char request[100];
+        memset(request,'\0',sizeof(char)*100);
         int len = read(client_fd, request, sizeof(request)-1);
         request[len] = '\0';
         if(len < 0) error("ERROR reading from socket\n");
@@ -75,6 +76,7 @@ int main(int argc, char **argv)
 
           //send sessionID to client
           char ID[4];
+          memset(ID,'\0',sizeof(char)*4);
           sprintf(ID,"%d",sessionID);
           printf("Giving away SIG: %s\n",ID);
           write(client_fd,ID,4);
@@ -88,8 +90,9 @@ int main(int argc, char **argv)
 
 
         //otherwise check if it is a valid sessionID/input
+
         else if(isNum(request)){
-          int checkID = atoi(request);
+          checkID = atoi(request);
           //check if sessionID number is in the correct range
           if((checkID > 1000)||(checkID<1)){
             char* sessionIDFailure = "Invalid sessionID, terminating connection";
@@ -106,7 +109,7 @@ int main(int argc, char **argv)
           }
           //if error checks were passed
           char* successfulID = "What is your request";
-          printf("Client input passed\n");
+          printf("Client input valid, Acknowledging connection...\n");
           write(client_fd, successfulID, strlen(successfulID));
         }
         //invalid client input scenario
@@ -119,6 +122,7 @@ int main(int argc, char **argv)
 
         //read in type of request
         char requestType[100];
+        memset(requestType,'\0',sizeof(char)*100);
         char* sortR = "Sort";
         char* dumpR = "Dump";
         len = read(client_fd, requestType, sizeof(requestType)-1);
@@ -135,20 +139,20 @@ int main(int argc, char **argv)
 
 
         //parameters to pass for each client request
-        serverParams[sessionID-1].sessionID = request;
-        serverParams[sessionID-1].requestType = requestType;
-        serverParams[sessionID-1].client_fd = client_fd;
+        serverParams[checkID-1].sessionID = request;
+        serverParams[checkID-1].requestType = requestType;
+        serverParams[checkID-1].client_fd = client_fd;
 
 
         //for sort requests create a heap
         if(strcmp(requestType,sortR) == 0){
-          serverParams[sessionID-1].heap = Heap_create(10000);
+          serverParams[checkID-1].heap = Heap_create(10000);
         }
 
 
 
         //thread creation for client connection
-        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[sessionID-1]);
+        pthread_create(&tid[numThreads],0,acceptService,(void*)&serverParams[checkID-1]);
         numThreads++;
 
 

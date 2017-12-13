@@ -1043,7 +1043,6 @@ void acceptService(void* arguments){
 
 
 	//string declarations
-	//char buffer[9000];
 	char * ack = "Acknowledged!";
 	char * finish = "Finished";
 	char * sortingCol =(char*)malloc(sizeof(char)*100);
@@ -1080,7 +1079,7 @@ void acceptService(void* arguments){
 
 			printf("Adding: %s\n",buffer);
 			printf("\n");
-			
+
 			//end of file content message
 			if(strcmp(buffer,"Finished") == 0){
 				break;
