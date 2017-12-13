@@ -1088,11 +1088,10 @@ void acceptService(void* arguments){
 			//convert data struct to strings
 			int i;
 			int listSize = heap->list->size;
-
+			char buffer[9000];
 			for (i = 0; i <(listSize-1) ; i++){
 				tempData = Heap_remove(heap,comp_ptr);
-				char buffer[900];
-				memset(buffer,'\0',sizeof(char)*900);
+				memset(buffer,'\0',sizeof(char)*9000);
 				strcat(buffer,tempData->color);
 				strcat(buffer,",");
 				strcat(buffer,tempData->dirName);

@@ -220,10 +220,10 @@ int main(int argc, char **argv){
 
 
   //dump response
-  char buffer[901];
+  char buffer[9001];
   while(true){
-    memset(buffer,'\0',sizeof(char)*901);
-    len = read(sock_fd,buffer,sizeof(char)*900);
+    memset(buffer,'\0',sizeof(char)*9001);
+    len = read(sock_fd,buffer,sizeof(char)*9000);
     if(len < 0) error("ERROR reading dump from socket\n");
     buffer[len] = '\0';
     printf("Received: %s\n",buffer);
