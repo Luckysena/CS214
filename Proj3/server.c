@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 
       		//Read in sortingCol
       		read(client_fd,sortingCol,sizeof(char)*100);
-      		printf("[SID:%s]Received sortingCol: %s\n",sortingCol);
+      		printf("[SID:%s]Received sortingCol: %s\n",sessionID,sortingCol);
 
           //get the int value of it to send over
           int sortingColumn;
