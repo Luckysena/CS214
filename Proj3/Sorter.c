@@ -1151,7 +1151,7 @@ void acceptService(void* arguments){
 				write(client_fd, buffer, 9000);
 			}
 			write(client_fd,finish,strlen(finish));
-			printf("[SID:%s]Dump completed\n");
+			printf("[SID:%s]Dump completed\n",sessionID);
 			close(client_fd);
 	}
 	return;

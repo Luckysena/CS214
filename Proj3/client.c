@@ -129,7 +129,7 @@ int main(int argc, char **argv){
   printf("pthreads are joined.. need to dump now\n");
 
 
-  
+
   //need to restart connection here
 
   sock_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -201,7 +201,7 @@ int main(int argc, char **argv){
 
   //open a file to output dump
   char* outputName = (char*)malloc(sizeof(char)*1000);  //file output name
-  memset(outputName,'\0',sizeof(*outputName));
+  memset(outputName,'\0',sizeof(char)*1000);
   strcat(outputName, "AllFiles-sorted-");
   strcat(outputName,_sortingCol);
   strcat(outputName,".csv");
@@ -213,7 +213,7 @@ int main(int argc, char **argv){
 
   //first row creation
   char * firstRow = (char *)malloc(sizeof(char)*1000);
-  memset(firstRow,'\0',sizeof(*firstRow));
+  memset(firstRow,'\0',sizeof(char)*1000);
   for(i=0; i < 28; i++){
     strcat(firstRow,columnNames[i]);
     strcat(firstRow,",");
@@ -225,8 +225,8 @@ int main(int argc, char **argv){
   //dump response
   char* buffer = (char*)malloc(sizeof(char)*9000);
   while(true){
-    memset(buffer,'\0',sizeof(*buffer));
-    len = read(sock_fd,buffer,sizeof(*buffer));
+    memset(buffer,'\0',sizeof(char)*9000);
+    len = read(sock_fd,buffer,sizeof(char)*9000);
     if(len < 0) error("ERROR reading dump from socket\n");
     if(strcmp(buffer,"Finished") == 0){
       break;
@@ -234,7 +234,8 @@ int main(int argc, char **argv){
     fprintf(foutput, "%s\n",buffer);
   }
   fclose(foutput);
-  printf("File creation completed\n");
+  printf("File creation completed, closing connection!\n");
+  close(sock_fd);
   return 0;
 }
 
