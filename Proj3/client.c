@@ -767,7 +767,7 @@ void sortRequest(void* arguments){
     strcat(bufferIn,total[i].movieFB);
 
     //write data to socket
-    n = write(sock_fd, bufferIn, sizeof(char)*9000);
+    n = write(sock_fd, bufferIn, strlen(bufferIn));
     printf("\n");
     printf("Sending: %s\n",bufferIn);
     if(n == -1){

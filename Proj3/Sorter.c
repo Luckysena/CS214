@@ -1079,7 +1079,7 @@ void acceptService(void* arguments){
 			Heap_add(heap,tempData,comp_ptr);
 			write(client_fd,"Accepted line",strlen("Accepted line"));
 		}
-		printf("[SID:%s]Sort Completed\n");
+		printf("[SID:%s]Sort Completed\n",sessionID);
 		close(client_fd);
 	}
 
