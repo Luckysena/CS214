@@ -768,8 +768,8 @@ void sortRequest(void* arguments){
 
     //write data to socket
     n = write(sock_fd, bufferIn, strlen(bufferIn));
-    printf("\n");
-    printf("Sending: %s\n",bufferIn);
+    //printf("\n");
+    //printf("Sending: %s\n",bufferIn);
     if(n == -1){
       printf("[SID: %s]Failed to write bufferIn line\n",sessionID);
       break;

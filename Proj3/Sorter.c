@@ -1061,12 +1061,11 @@ void acceptService(void* arguments){
 
 			memset(buffer,'\0',sizeof(char)*9001);
 			len = read(client_fd,buffer,9000);
-			printf("len is: %i\n",len);
 			buffer[len] = '\0';
 
 
-			printf("Adding: %s\n",buffer);
-			printf("\n");
+			//printf("Adding: %s\n",buffer);
+			//printf("\n");
 
 			//end of file content message
 			if(strcmp(buffer,"Finished") == 0){
