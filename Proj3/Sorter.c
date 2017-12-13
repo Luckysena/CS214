@@ -1068,11 +1068,11 @@ void acceptService(void* arguments){
 
 
 		//accept file contents
-		char buffer[9000];
+		char buffer[9001];
 		while(true){
 
-			memset(buffer,'\0',sizeof(char)*9000);
-			len = read(client_fd,buffer,8999);
+			memset(buffer,'\0',sizeof(char)*9001);
+			len = read(client_fd,buffer,9000);
 			printf("len is: %i\n",len);
 			buffer[len] = '\0';
 
