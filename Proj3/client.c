@@ -127,7 +127,26 @@ int main(int argc, char **argv){
   }
 
   printf("pthreads are joined.. need to dump now\n");
+
+
+  
   //need to restart connection here
+
+  sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  s = getaddrinfo(host, port, &hints, &results);
+  if (s != 0) {
+          fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+          exit(1);
+  }
+  if(connect(sock_fd, results->ai_addr, results->ai_addrlen) == -1){
+                perror("connect");
+                exit(2);
+  }
+
+
 
   //sessionID for dumpRequest
   char tempbuff[100];
