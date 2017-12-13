@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 
 
         //for sort requests create a heap
-        if(strcmp(requestType,sortR) == 0){
+        if(serverParams[checkID-1].heap == NULL){
           serverParams[checkID-1].heap = Heap_create(10000);
         }
 
