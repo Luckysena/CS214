@@ -1091,8 +1091,8 @@ void acceptService(void* arguments){
 
 			for (i = 0; i <(listSize-1) ; i++){
 				tempData = Heap_remove(heap,comp_ptr);
-				char buffer[9000];
-				memset(buffer,'\0',sizeof(*buffer));
+				char buffer[900];
+				memset(buffer,'\0',sizeof(char)*900);
 				strcat(buffer,tempData->color);
 				strcat(buffer,",");
 				strcat(buffer,tempData->dirName);
