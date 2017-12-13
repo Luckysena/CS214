@@ -1086,10 +1086,13 @@ void acceptService(void* arguments){
 	else if(strcmp(requestType,"Dump") == 0){
 
 			//convert data struct to strings
-			int i;
+			int i,len;
 			int listSize = heap->list->size;
 			char buffer[9000];
+			char tempbuf[1000];
 			for (i = 0; i <(listSize-1) ; i++){
+				len = read(client_fd,tempbuf,999*sizeof(char));
+				tempbuf[len] = '\0';
 				tempData = Heap_remove(heap,comp_ptr);
 				memset(buffer,'\0',sizeof(char)*9000);
 				strcat(buffer,tempData->color);

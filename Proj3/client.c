@@ -220,6 +220,7 @@ int main(int argc, char **argv){
 
 
   //dump response
+  char* ack = "Acknowledged";
   char buffer[9001];
   while(true){
     memset(buffer,'\0',sizeof(char)*9001);
@@ -232,6 +233,7 @@ int main(int argc, char **argv){
       break;
     }
     fprintf(foutput, "%s\n",buffer);
+    write(sock_fd,ack,strlen(ack));
   }
   fclose(foutput);
   printf("File creation completed, closing connection!\n");
