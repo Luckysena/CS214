@@ -1039,33 +1039,21 @@ void acceptService(void* arguments){
 	char * requestType = args -> requestType;
 	char * sessionID = args -> sessionID;
 	Heap * heap = args -> heap;
+	int comp_ptr = args -> sortingColumn;
 
 
 
 	//string declarations
 	char * ack = "Acknowledged!";
 	char * finish = "Finished";
-	char * sortingCol =(char*)malloc(sizeof(char)*100);
-	memset(sortingCol,'\0',sizeof(char)*100);
 	data * tempData;
-	int len;
+	int len, i;
 
 
 	//sort request
 	if(strcmp(requestType,"Sort") == 0){
-
-		//Acknowledged sort request
-		write(client_fd, ack, strlen(ack));
-
-
-		//Read in sortingCol
-		read(client_fd,sortingCol,sizeof(char)*100);
-		printf("Received sortingCol: %s\n",sortingCol);
-
-
 		// Acknowledged sortingCol
 		write(client_fd, ack, strlen(ack));
-
 
 		//accept file contents
 		char buffer[9001];
@@ -1088,7 +1076,7 @@ void acceptService(void* arguments){
 
 			//fill in the heap with data structs
 			tempData = fillData(buffer);
-			Heap_add(heap,tempData,sortingCol);
+			Heap_add(heap,tempData,comp_ptr);
 			write(client_fd,"Accepted line",strlen("Accepted line"));
 		}
 		printf("[SID:%s]Sort Completed\n");
@@ -1103,7 +1091,7 @@ void acceptService(void* arguments){
 			int listSize = heap->list->size;
 
 			for (i = 0; i <(listSize-1) ; i++){
-				tempData = Heap_remove(heap,sortingCol);
+				tempData = Heap_remove(heap,comp_ptr);
 				char buffer[9000];
 				memset(buffer,'\0',sizeof(*buffer));
 				strcat(buffer,tempData->color);

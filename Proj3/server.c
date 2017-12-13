@@ -55,9 +55,48 @@ int main(int argc, char **argv)
     for(i; i < 1000; i++){
       sessions[i] = false;
     }
+
+    //initializing some needed data
     char request[100];
     sessionID = 1;
     int checkID;
+    char * columnNames[28];
+    for(i = 0; i<28;i++){
+      columnNames[i] = (char *) malloc(sizeof(char)*250);
+    }
+    strcpy(columnNames[0],"color");
+    strcpy(columnNames[1],"director_name");
+    strcpy(columnNames[2],"num_critic_for_reviews");
+    strcpy(columnNames[3],"duration");
+    strcpy(columnNames[4],"director_facebook_likes");
+    strcpy(columnNames[5],"actor_3_facebook_likes");
+    strcpy(columnNames[6],"actor_2_name");
+    strcpy(columnNames[7],"actor_1_facebook_likes");
+    strcpy(columnNames[8],"gross");
+    strcpy(columnNames[9],"genres");
+    strcpy(columnNames[10],"actor_1_name");
+    strcpy(columnNames[11],"movie_title");
+    strcpy(columnNames[12],"num_voted_users");
+    strcpy(columnNames[13],"cast_total_facebook_likes");
+    strcpy(columnNames[14],"actor_3_name");
+    strcpy(columnNames[15],"facenumber_in_poster");
+    strcpy(columnNames[16],"plot_keywords");
+    strcpy(columnNames[17],"movie_imdb_link");
+    strcpy(columnNames[18],"num_user_for_reviews");
+    strcpy(columnNames[19],"language");
+    strcpy(columnNames[20],"country");
+    strcpy(columnNames[21],"content_rating");
+    strcpy(columnNames[22],"budget");
+    strcpy(columnNames[23],"title_year");
+    strcpy(columnNames[24],"actor_2_facebook_likes");
+    strcpy(columnNames[25],"imdb_score");
+    strcpy(columnNames[26],"aspect_ratio");
+    strcpy(columnNames[27],"movie_facebook_likes");
+    char * sortingCol =(char*)malloc(sizeof(char)*100);
+    char * ack = "Acknowledged!";
+
+
+
     //spawn service thread and keep listening
     while(true){
       if (listen(sock_fd, 100) == 0) {
@@ -135,6 +174,26 @@ int main(int argc, char **argv)
           write(client_fd, requestTypeFailure, strlen(requestTypeFailure));
           close(client_fd);
           continue;
+        }
+
+        //if its a sort we need the sortingCol
+        if(strcmp(requestType,sortR)==0){
+          //Acknowledged sort request
+      		write(client_fd, ack, strlen(ack));
+          memset(sortingCol,'\0',sizeof(char)*100);
+
+      		//Read in sortingCol
+      		read(client_fd,sortingCol,sizeof(char)*100);
+      		printf("Received sortingCol: %s\n",sortingCol);
+
+          //get the int value of it to send over
+          int sortingColumn;
+          for(sortingColumn = 0; sortingColumn < 28; sortingColumn++){
+            if(strcmp(columnNames[sortingColumn],sortingCol) == 0){
+              serverParams[checkID-1].sortingColumn = sortingColumn;
+              break;
+            }
+          }
         }
 
 

@@ -89,6 +89,7 @@ typedef struct _serverThreadParams{
 	char * requestType;
 	int  client_fd;
 	char * sessionID;
+	int sortingColumn;
 }serverThreadParams;
 
 void mergeData(data* A,int left , int middle , int right, int comp_ptr) ; // Merges the two arrays together returns a combined array
