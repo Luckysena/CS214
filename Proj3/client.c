@@ -223,6 +223,7 @@ int main(int argc, char **argv){
   char* ack = "Acknowledged";
   char buffer[9001];
   while(true){
+    write(sock_fd,ack,strlen(ack));
     memset(buffer,'\0',sizeof(char)*9001);
     len = read(sock_fd,buffer,sizeof(char)*9000);
     if(len < 0) error("ERROR reading dump from socket\n");
@@ -233,7 +234,7 @@ int main(int argc, char **argv){
       break;
     }
     fprintf(foutput, "%s\n",buffer);
-    write(sock_fd,ack,strlen(ack));
+
   }
   fclose(foutput);
   printf("File creation completed, closing connection!\n");
