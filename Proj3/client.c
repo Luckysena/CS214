@@ -226,8 +226,8 @@ int main(int argc, char **argv){
     len = read(sock_fd,buffer,sizeof(char)*9000);
     if(len < 0) error("ERROR reading dump from socket\n");
     buffer[len] = '\0';
-    printf("Received: %s\n",buffer);
-    printf("\n");
+    //printf("Received: %s\n",buffer);
+    //printf("\n");
     if(strcmp(buffer,"FinishedSend") == 0){
       break;
     }
