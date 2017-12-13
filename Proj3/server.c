@@ -108,7 +108,7 @@ int main(int argc, char **argv)
         request[len] = '\0';
         if(len < 0) error("ERROR reading from socket\n");
 
-        printf("request from client was: %s\n",request);
+        //printf("request from client was: %s\n",request);
         //if requesting a sessionID give one
         if(strcmp(request,"Requesting sessionID")==0){
 
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
           char ID[4];
           memset(ID,'\0',sizeof(char)*4);
           sprintf(ID,"%d",sessionID);
-          printf("Giving away SIG: %s\n",ID);
+          //printf("Giving away sessionID: %s\n",ID);
           write(client_fd,ID,4);
           printf("New client, session ID: %i\n",sessionID);
 
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
           }
           //if error checks were passed
           char* successfulID = "What is your request";
-          printf("Client input valid, Acknowledging connection...\n");
+          printf("[SID: %s]Client input valid, Acknowledging connection...\n",request);
           write(client_fd, successfulID, strlen(successfulID));
         }
         //invalid client input scenario
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
         char* dumpR = "Dump";
         len = read(client_fd, requestType, sizeof(requestType)-1);
         requestType[len] = '\0';
-        printf("[SID: %s]Request is: %s\n",request,requestType);
+        printf("[SID: %s]Request is:%s\n",request,requestType);
 
         //check for error on input
         if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){
