@@ -1148,9 +1148,9 @@ void acceptService(void* arguments){
 				strcat(buffer,tempData->ratio);
 				strcat(buffer,",");
 				strcat(buffer,tempData->movieFB);
-				write(client_fd, buffer, 9000);
+				write(client_fd, buffer, strlen(buffer));
 			}
-			write(client_fd,finish,strlen(finish));
+			write(client_fd,"FinishedSend",strlen("FinishedSend"));
 			printf("[SID:%s]Dump completed\n",sessionID);
 			close(client_fd);
 	}

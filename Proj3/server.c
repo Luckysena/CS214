@@ -148,7 +148,7 @@ int main(int argc, char **argv)
           }
           //if error checks were passed
           char* successfulID = "What is your request";
-          printf("[SID: %s]Client input valid, Acknowledging connection...\n",request);
+          printf("[SID:%s]Client input valid, Acknowledging connection...\n",request);
           write(client_fd, successfulID, strlen(successfulID));
         }
         //invalid client input scenario
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
         char* dumpR = "Dump";
         len = read(client_fd, requestType, sizeof(requestType)-1);
         requestType[len] = '\0';
-        printf("[SID: %s]Request is:%s\n",request,requestType);
+        printf("[SID:%s]Request is: %s\n",request,requestType);
 
         //check for error on input
         if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 
       		//Read in sortingCol
       		read(client_fd,sortingCol,sizeof(char)*100);
-      		printf("Received sortingCol: %s\n",sortingCol);
+      		printf("[SID:%s]Received sortingCol: %s\n",sortingCol);
 
           //get the int value of it to send over
           int sortingColumn;

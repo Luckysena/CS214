@@ -95,9 +95,6 @@ int main(int argc, char **argv){
 
 
 
-
-
-
   // need to get sessionID here and pass it along
   char *requestForID = "Requesting sessionID";
   write(sock_fd, requestForID, strlen(requestForID));
@@ -218,17 +215,18 @@ int main(int argc, char **argv){
     strcat(firstRow,columnNames[i]);
     strcat(firstRow,",");
   }
-  fprintf(foutput, "%s", firstRow);
+  fprintf(foutput, "%s\n", firstRow);
 
 
 
   //dump response
-  char* buffer = (char*)malloc(sizeof(char)*9000);
+  char buffer[9001];
   while(true){
-    memset(buffer,'\0',sizeof(char)*9000);
+    memset(buffer,'\0',sizeof(char)*9001);
     len = read(sock_fd,buffer,sizeof(char)*9000);
     if(len < 0) error("ERROR reading dump from socket\n");
-    if(strcmp(buffer,"Finished") == 0){
+    buffer[len] = '\0';
+    if(strcmp(buffer,"FinishedSend") == 0){
       break;
     }
     fprintf(foutput, "%s\n",buffer);
