@@ -840,11 +840,11 @@ void processDir(void* arguments){
     strcat(filename,direntName->d_name);
 
 
-
+    pthread_mutex_lock(&mutexA);
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
     if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-          pthread_mutex_lock(&mutexA);
+          //pthread_mutex_lock(&mutexA);
           values[c].dirName = opendir(filename);
           values[c]._dirName = filename;
           values[c].sessionID = sessionID;
@@ -852,7 +852,7 @@ void processDir(void* arguments){
           values[c].host = host;
           pthread_create(&tid[c],0,processDir,(void*)&values[c]);
           c++;
-          pthread_mutex_unlock(&mutexA);
+          //pthread_mutex_unlock(&mutexA);
           continue;  //to skip the current pointer value
       }
       else{
@@ -873,6 +873,7 @@ void processDir(void* arguments){
         pthread_mutex_unlock(&mutexB);
         continue;
     }
+    pthread_mutex_unlock(&mutexA);
   }
   return;
 }
