@@ -840,7 +840,7 @@ void processDir(void* arguments){
     strcat(filename,direntName->d_name);
 
 
-    pthread_mutex_lock(&mutexA);
+    //pthread_mutex_lock(&mutexA);
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
     if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
@@ -873,7 +873,7 @@ void processDir(void* arguments){
         //pthread_mutex_unlock(&mutexB);
         continue;
     }
-    pthread_mutex_unlock(&mutexA);
+    //pthread_mutex_unlock(&mutexA);
   }
   return;
 }
