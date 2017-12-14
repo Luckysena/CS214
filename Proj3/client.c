@@ -119,11 +119,11 @@ int main(int argc, char **argv){
   //directory traversals
   pthread_create(&tid[c],0,processDir,(void*)&values);
   c++;
-  /*
+  
   for(i = 0; i<c; i++){
         pthread_join(tid[i],NULL);
   }
-  */
+
   //printf("pthreads are joined.. need to dump now\n");
 
 
