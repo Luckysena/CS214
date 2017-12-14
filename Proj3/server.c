@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    printf("Server initialized\n");
+    //printf("Server initialized\n");
 
     //initialize sessions to false
     int i = 0;
@@ -119,7 +119,14 @@ int main(int argc, char **argv)
           sprintf(ID,"%d",sessionID);
           //printf("Giving away sessionID: %s\n",ID);
           write(client_fd,ID,4);
-          printf("New client, session ID: %i\n",sessionID);
+          //printf("New client, session ID: %i\n",sessionID);
+          //printing ip address:
+          struct sockaddr_in addr;
+          socklen_t addr_size = sizeof(struct sockaddr_in);
+          int res = getpeername(client_fd, (struct sockaddr *)&addr, &addr_size);
+          char *clientip = (char*)malloc(sizeof(char)*50);
+          strcpy(clientip, inet_ntoa(addr.sin_addr));
+          printf("New client connected with IP Address: %s and session ID: %i\n",clientip,sessionID);
 
           //update session list & pass as parameter
           sessions[sessionID-1] = true;
@@ -148,7 +155,7 @@ int main(int argc, char **argv)
           }
           //if error checks were passed
           char* successfulID = "What is your request";
-          printf("[SID:%s]Client input valid, Acknowledging connection...\n",request);
+          //printf("[SID:%s]Client input valid, Acknowledging connection...\n",request);
           write(client_fd, successfulID, strlen(successfulID));
         }
         //invalid client input scenario
@@ -184,7 +191,7 @@ int main(int argc, char **argv)
 
       		//Read in sortingCol
       		read(client_fd,sortingCol,sizeof(char)*100);
-      		printf("[SID:%s]Received sortingCol: %s\n",request,sortingCol);
+      		//printf("[SID:%s]Received sortingCol: %s\n",request,sortingCol);
 
           //get the int value of it to send over
           int sortingColumn;

@@ -123,7 +123,7 @@ int main(int argc, char **argv){
         pthread_join(tid[i],NULL);
   }
 
-  printf("pthreads are joined.. need to dump now\n");
+  //printf("pthreads are joined.. need to dump now\n");
 
 
 
@@ -155,7 +155,7 @@ int main(int argc, char **argv){
   char* dumpRequest = "Dump";
   write(sock_fd,dumpRequest,strlen(dumpRequest));
 
-  printf("Sending dump request with sessionID: %s\n",sessionID);
+  printf("[SID: %s] Sending dump request\n",sessionID);
 
 
   //column name creation
