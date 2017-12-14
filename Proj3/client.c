@@ -861,7 +861,7 @@ void processDir(void* arguments){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-        pthread_mutex_lock(&mutexB);
+        //pthread_mutex_lock(&mutexB);
         inputVals[d].sortingCol= _sortingCol;
         inputVals[d].file = filename;
         inputVals[d].sessionID = sessionID;
@@ -870,7 +870,7 @@ void processDir(void* arguments){
         pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
         c++;
         d++;
-        pthread_mutex_unlock(&mutexB);
+        //pthread_mutex_unlock(&mutexB);
         continue;
     }
     pthread_mutex_unlock(&mutexA);
