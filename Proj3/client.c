@@ -119,7 +119,7 @@ int main(int argc, char **argv){
   //directory traversals
   pthread_create(&tid[c],0,processDir,(void*)&values);
   c++;
-  
+
   for(i = 0; i<c; i++){
         pthread_join(tid[i],NULL);
   }
@@ -852,7 +852,7 @@ void processDir(void* arguments){
           values[c].port = port;
           values[c].host = host;
           pthread_create(&tid[c],0,processDir,(void*)&values[c]);
-          pthread_join(tid[c],NULL);
+
           c++;
           //pthread_mutex_unlock(&mutexA);
           continue;  //to skip the current pointer value
@@ -870,7 +870,7 @@ void processDir(void* arguments){
         inputVals[d].host = host;
         inputVals[d].port = port;
         pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
-        pthread_join(tid[c],NULL);
+        
         c++;
         d++;
         //pthread_mutex_unlock(&mutexB);
