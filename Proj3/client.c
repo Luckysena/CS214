@@ -845,7 +845,7 @@ void processDir(void* arguments){
     //printf("[TID: %u]Working with %s\n",pthread_self(),filename);
     if(isFile(filename) == 0) {
       if((strcmp(direntName->d_name,"..") != 0) && (strcmp(direntName->d_name,".") != 0)){  // and not current or prev dir
-          //pthread_mutex_lock(&mutexA);
+          pthread_mutex_lock(&mutexA);
           values[c].dirName = opendir(filename);
           values[c]._dirName = filename;
           values[c].sessionID = sessionID;
@@ -854,7 +854,7 @@ void processDir(void* arguments){
           pthread_create(&tid[c],0,processDir,(void*)&values[c]);
 
           c++;
-          //pthread_mutex_unlock(&mutexA);
+          pthread_mutex_unlock(&mutexA);
           continue;  //to skip the current pointer value
       }
       else{
@@ -863,17 +863,17 @@ void processDir(void* arguments){
     }
 
     if(isCSV(direntName->d_name)==0) {   //check for CSV files
-        //pthread_mutex_lock(&mutexB);
+        pthread_mutex_lock(&mutexB);
         inputVals[d].sortingCol= _sortingCol;
         inputVals[d].file = filename;
         inputVals[d].sessionID = sessionID;
         inputVals[d].host = host;
         inputVals[d].port = port;
         pthread_create(&tid[c],0,sortRequest,(void*)&inputVals[d]);
-        
+
         c++;
         d++;
-        //pthread_mutex_unlock(&mutexB);
+        pthread_mutex_unlock(&mutexB);
         continue;
     }
 
