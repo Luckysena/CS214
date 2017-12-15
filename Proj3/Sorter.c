@@ -494,8 +494,6 @@ char *strtok_new(char * string, char const* delimiter){
     }
 		return riturn;
 }
-
-//might need to mutex this
 data * fillData(char * input){
 	int type = 0;             // counter to assign proper struct attributes
 	char delimiter[] = ",";   // delim char
@@ -843,7 +841,6 @@ data * fillData(char * input){
 	}
   return read;
 }
-
 bool isNum(char* input){
 
 		if(input == NULL){
@@ -857,11 +854,6 @@ bool isNum(char* input){
 		}
 		return true;
 }
-
-
-
-
-
 Node * Node_create(data * elem){
 	Node * node = malloc(sizeof(Node));
 	node->entries = 1;
@@ -1030,7 +1022,6 @@ data * Heap_remove(Heap * heap, int comp_ptr){
 	return temp;
 
 }
-
 void acceptService(void* arguments){
 
 	//parameter unpacking from thread input
@@ -1078,7 +1069,7 @@ void acceptService(void* arguments){
 			Heap_add(heap,tempData,comp_ptr);
 			write(client_fd,"Accepted line",strlen("Accepted line"));
 		}
-		printf("[SID:%s]Sort Completed\n",sessionID);
+		//printf("[SID:%s]Sort Completed\n",sessionID);
 		close(client_fd);
 	}
 

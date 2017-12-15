@@ -156,7 +156,7 @@ int main(int argc, char **argv){
   char* dumpRequest = "Dump";
   write(sock_fd,dumpRequest,strlen(dumpRequest));
 
-  printf("[SID: %s] Sending dump request\n",sessionID);
+  //printf("[SID: %s] Sending dump request\n",sessionID);
 
 
   //column name creation
@@ -655,7 +655,7 @@ void sortRequest(void* arguments){
 
 
   //Socket creation
-  printf("[SID: %s]File: %s, has been closed, opening socket...\n",sessionID,file);
+  //printf("[SID: %s]File: %s, has been closed, opening socket...\n",sessionID,file);
   int s,n,i;
   int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   struct addrinfo hints, *result;
