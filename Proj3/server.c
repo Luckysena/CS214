@@ -173,7 +173,7 @@ int main(int argc, char **argv)
         char* dumpR = "Dump";
         len = read(client_fd, requestType, sizeof(requestType)-1);
         requestType[len] = '\0';
-        printf("[SID:%s]Request is: %s\n",request,requestType);
+        //printf("[SID:%s]Request is: %s\n",request,requestType);
 
         //check for error on input
         if((strcmp(requestType,sortR)!=0) && (strcmp(requestType,dumpR)!=0)){
